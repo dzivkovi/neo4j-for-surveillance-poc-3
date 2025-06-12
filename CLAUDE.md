@@ -82,3 +82,8 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - **Batch processing**: 128 texts per embedding batch
 - **Data format**: NDJSON with session/involvement/product structure
 - **Content extraction**: Handles data URIs for text content
+
+## Important Instructions
+- NEVER use emojis in any files or documentation unless explicitly requested by the User
+- Only create documentation files when explicitly requested
+- Always prefer editing existing files to creating new ones
