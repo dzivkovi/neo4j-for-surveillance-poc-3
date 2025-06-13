@@ -134,6 +134,22 @@ For eliminating Cypher learning curve, see `README_MCP.md` which demonstrates:
 - `queries/vector-search-verification.cypher` - Vector similarity testing
 - `queries/investigative.cypher` - Law enforcement use cases
 
+## Development Workflow
+
+### Business Rules Tracking
+
+Project discoveries and implementation priorities are tracked in `docs/business-rules/`:
+
+```bash
+# View current business rules and priorities
+cat docs/business-rules/README.md
+
+# Update the index after adding/editing rules
+bash scripts/bash/generate-business-rules-readme.sh > docs/business-rules/README.md
+```
+
+This system captures lessons learned from client meetings, technical analysis, and investigation findings to guide development priorities and ensure nothing important is forgotten.
+
 ## Design Decisions
 
 - **Session-centric POLE** schema – direct 1-to-1 mapping of NDJSON fields → graph nodes, minimising cognitive overhead while still matching law-enforcement ontologies (POLE / CASE / UCO). Sources ([1](https://neo4j.com/blog/government/graph-technology-pole-position-law-enforcement/), [2](https://caseontology.org/ontology/start.html))
