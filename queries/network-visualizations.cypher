@@ -32,8 +32,9 @@ LIMIT 30;
 // 3. HUB-AND-SPOKE ANALYSIS
 // =============================================================================
 // Centers on the most connected individuals to show their networks
-// Replace 'Hawk, Kenzie' with any person of interest
-MATCH (hub:Person {name: 'Hawk, Kenzie'})
+// Replace '@Kenzie Hawk' with any person of interest
+// Top hubs: @Kenzie Hawk (16 contacts), @Eagle, Richard (11 contacts), @Hawk, Kenzie (9 contacts)
+MATCH (hub:Person {name: '@Kenzie Hawk'})
 MATCH path = (hub)-[:USES]->()-[:PARTICIPATED_IN]->(s:Session)<-[:PARTICIPATED_IN]-()<-[:USES]-(contact:Person)
 WHERE hub <> contact
 RETURN hub, path
@@ -67,7 +68,7 @@ LIMIT 20;
 // =============================================================================
 // Explore network connections up to 3 hops from a person of interest
 // Adjust the person name and hop count as needed
-MATCH (poi:Person {name: 'Eagle, Richard'})
+MATCH (poi:Person {name: '@Eagle, Richard'})
 MATCH path = (poi)-[:USES|USES_DEVICE|PARTICIPATED_IN*1..6]-(connected)
 WHERE connected:Person AND connected <> poi
 RETURN path
@@ -90,8 +91,8 @@ LIMIT 50;
 // Returns a complete connected component with all relationships
 // Good for detailed analysis of a specific group
 MATCH (p1:Person)-[r1:USES]->(acc1)-[r2:PARTICIPATED_IN]->(s:Session)<-[r3:PARTICIPATED_IN]-(acc2)<-[r4:USES]-(p2:Person)
-WHERE p1.name IN ['Eagle, Richard', 'Eagle, William', 'Merlin, Fred']
-  AND p2.name IN ['Eagle, Richard', 'Eagle, William', 'Merlin, Fred']
+WHERE p1.name IN ['@Eagle, Richard', '@Eagle, William', '@Merlin, Fred']
+  AND p2.name IN ['@Eagle, Richard', '@Eagle, William', '@Merlin, Fred']
   AND p1 <> p2
 RETURN p1, r1, acc1, r2, s, r3, acc2, r4, p2
 LIMIT 30;

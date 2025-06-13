@@ -19,3 +19,6 @@ data/*.ndjson
 
 # dotenv / secrets
 .env
+
+# Claude settings
+.claude/settings.local.json
