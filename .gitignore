@@ -7,6 +7,9 @@ __pycache__/
 data/*.csv
 data/*.ndjson
 
+# tempprary analysis files
+analysis/
+
 # notebooks / checkpoints
 .ipynb_checkpoints/
 

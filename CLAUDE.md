@@ -6,6 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Neo4j-based surveillance analytics POC that ingests communication session data (phone calls, SMS, emails) into a graph database for law enforcement investigations. It uses the POLE (Person, Object, Location, Event) schema and combines graph relationships with semantic search capabilities.
 
+## Design Principles
+- **LESS IS MORE**: Simplicity always wins over complexity. The most intelligent solutions are usually the simplest ones.
+
 ## Essential Commands
 
 ### Neo4j Setup
