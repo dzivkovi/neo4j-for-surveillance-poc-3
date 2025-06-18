@@ -1,14 +1,23 @@
 {
   "permissions": {
     "allow": [
+      "mcp__neo4j__get_neo4j_schema",
+      "mcp__neo4j__read_neo4j_cypher",
+      "WebFetch(domain:neo4j.com)",
       "WebFetch(domain:github.com)",
+      "Bash(wget:*)",
       "Bash(ls:*)",
       "Bash(eza:*)",
       "Bash(find:*)",
       "Bash(cat:*)",
       "Bash(rg:*)",
       "Bash(grep:*)",
-      "Bash(wget:*)",
+      "Bash(jq:*)",
+      "Bash(cp:*)",
+      "Bash(mkdir:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
       "Bash(git add:*)"
     ],
     "deny": []
