@@ -1,11 +1,7 @@
-# GitGuardian configuration for Neo4j surveillance POC
-# Ignore known local development credentials
-
-paths-ignore:
-  - .mcp.json
-
-secrets-config:
-  ignored-matches:
-    - name: "Local Neo4j POC Password"
-      match: "Sup3rSecur3!"
-      comment: "Local development password for POC environment"
+version: 2
+secret:
+  ignored_paths:
+    - '.mcp.json'
+  ignored_matches:
+    - name: neo4j_poc_password
+      match: 'Sup3rSecur3!'
