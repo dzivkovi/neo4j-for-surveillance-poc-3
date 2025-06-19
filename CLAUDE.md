@@ -118,7 +118,7 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - Multi-hop relationship traversal
 
 ### Important Implementation Details
-- **Database credentials**: `neo4j` / `Sup3rSecur3!`
+- **Database credentials**: `neo4j` / `Sup3rSecur3!` (intentionally hardcoded for local POC)
 
 - **Data format**: NDJSON with session/involvement/product structure
 - **Content extraction**: Handles data URIs for text content
