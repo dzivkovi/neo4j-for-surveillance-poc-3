@@ -2,6 +2,8 @@
 
 End-to-end sandbox that ingests *sessions.ndjson* (law-enforcement communication sessions) into Neo4j 5.x, builds full-text & vector indexes, and runs evaluation queries defined by client.
 
+[![Project Board](https://img.shields.io/badge/Project%20Board-Kanban-blue)](https://github.com/users/dzivkovi/projects/1)
+
 ## Quick Start
 
 ```bash
@@ -18,17 +20,20 @@ docker run --name neo4j-sessions \
   -d neo4j:5.26.7-community
 
 # 2. create constraints, indexes & full-text/vector indexes
-cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/01-schema.cypher
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
 
 # 3. build virtualenv and import data + embeddings
-python -m venv .venv && source .venv/Scripts/activate
+python -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r scripts/python/requirements.txt
+
 python scripts/python/01-import-data.py         # ~2 min for 200 sessions
 python scripts/python/02-embed-text.py          # adds 384-dim vectors
 
-# 4. run sanity checks & sample investigations
-cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/02-sanity.cypher
-cypher-shell -u neo4j -p Sup3rSecur3! -f queries/investigative.cypher
+# 4. run sanity checks & evaluation queries
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 GraphRAG Example (LangChain + Neo4j) lives in
@@ -61,7 +66,7 @@ After container restart, follow this sequence (consistent with CLAUDE.md):
 
 ```bash
 # 1. Schema first (creates vector index)
-cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/01-schema.cypher
+docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/01-schema.cypher
 
 # 2. Import data (265 sessions in test dataset)
 python scripts/python/01-import-data.py
@@ -70,7 +75,7 @@ python scripts/python/01-import-data.py
 python scripts/python/02-embed-text.py
 
 # 4. Verify import
-cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/02-sanity.cypher
+docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/02-sanity.cypher
 ```
 
 ## Business Requirements Validation
@@ -107,7 +112,7 @@ This system addresses real law enforcement needs by answering critical surveilla
 Validate that your deployment meets all business requirements:
 
 ```bash
-cypher-shell -u neo4j -p Sup3rSecur3! -f queries/eval-suite.cypher
+docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f queries/eval-suite.cypher
 ```
 
 This comprehensive test suite covers:
