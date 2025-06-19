@@ -1,0 +1,124 @@
+# Contributing to Neo4j for Surveillance POC
+
+Thank you for considering contributing to this project! This guide outlines the process for contributing and the standards we follow.
+
+## Development Environment Setup
+
+### Installing Ruff
+```bash
+pip install ruff
+```
+
+### Project Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/dzivkovi/neo4j-for-surveillance-poc-3.git
+   cd neo4j-for-surveillance-poc-3
+   ```
+
+2. **Set up a virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   python -m pip install --upgrade pip
+   pip install -r scripts/python/requirements.txt
+   
+   # Install development tools
+   pip install ruff pytest
+   ```
+
+3. **Neo4j Setup**
+   - Install Neo4j in Docker
+   - Create a database with appropriate credentials
+   - Configure connection details in `.env` file (see `env.example`)
+
+## Development Workflow
+
+### Evaluation-First Development
+
+We follow strict TDD principles, especially important for AI-assisted development:
+
+1. **Write failing tests first** that demonstrate the bug or required feature
+   - Tests are immutable - no changing them to make implementation easier!
+   - Include edge cases and run multiple times (5+ runs) to catch nondeterminism
+2. **Implement the minimum code** necessary to make tests pass
+   - Let tests guide implementation, not vice versa
+   - For Neo4j: validate with MCP server during development
+3. **Refactor** while keeping tests passing
+   - Performance optimization only after correctness
+
+**Example workflow:**
+```python
+# 1. Write test (MUST fail initially)
+def test_fred_travel_mentions():
+    result = neo4j_query("MATCH ... WHERE Fred ... travel")
+    assert "Miami" in result
+    assert "Feb 11 2020" in result
+
+# 2. Run test - verify it fails
+# 3. Implement solution
+# 4. Run test 5+ times - verify consistent passes
+# 5. Only then create PR
+```
+
+### Coding Standards
+
+- **Python**: Follow [PEP 8](https://peps.python.org/pep-0008/) style guide (120 char line length)
+- **Docstrings**: Use [Google style](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) docstrings
+- **Code Quality**: Run `ruff check` and `ruff format` before committing
+  ```bash
+  ruff check .          # Linting (replaces flake8, pylint, and more)
+  ruff format .         # Formatting (replaces black)
+  ```
+- **Configuration**: See `pyproject.toml` for project-specific settings
+
+### Cypher Query Standards
+
+- Indent and format queries for readability
+- Use parameters instead of string concatenation
+- Include execution plan analysis for complex queries
+- Document any index requirements
+
+## Pull Request Process
+
+1. **Create a branch** for your feature or fix
+   ```bash
+   git checkout -b feature/github-issue-number-followed-by-your-feature-name
+   ```
+
+2. **Implement your changes** following TDD approach
+
+3. **Run code quality checks**
+   ```bash
+   ruff check . --fix   # Auto-fix what's possible
+   ruff format .        # Format code
+   ```
+
+4. **Ensure all tests pass**
+   ```bash
+   pytest
+   ```
+
+5. **Submit a PR** with a clear description:
+   - What problem does it solve?
+   - How was it tested?
+   - Any Neo4j schema changes required?
+
+## Documentation
+
+- Update README.md if introducing new features
+- Document any new Neo4j models or relationships
+- Provide example usage in docstrings
+- Include performance considerations for graph operations
+
+## Graph Data Considerations
+
+- Consider scalability implications of graph model changes
+- Document any new indexes or constraints
+- Be mindful of memory usage in complex traversals
+- Include test data where appropriate
+
+---
+
+Remember: "Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away."
