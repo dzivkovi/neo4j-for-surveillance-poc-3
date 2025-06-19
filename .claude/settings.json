@@ -5,6 +5,8 @@
       "mcp__neo4j__read_neo4j_cypher",
       "WebFetch(domain:neo4j.com)",
       "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:www.anthropic.com)",
       "Bash(wget:*)",
       "Bash(ls:*)",
       "Bash(eza:*)",
@@ -20,6 +22,12 @@
       "Bash(python:*)",
       "Bash(git add:*)"
     ],
-    "deny": []
-  }
+    "deny": [
+      "mcp__neo4j__write_neo4j_cypher"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "neo4j"
+  ]
 }

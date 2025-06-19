@@ -7,49 +7,88 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Neo4j-based surveillance analytics POC that ingests communication session data (phone calls, SMS, emails) into a graph database for law enforcement investigations. It uses the POLE (Person, Object, Location, Event) schema and combines graph relationships with semantic search capabilities.
 
 ## Design Principles
-- **LESS IS MORE**: Simplicity always wins over complexity. The most intelligent solutions are usually the simplest ones.
+- **Less is More**: Simplicity always wins over complexity. The most intelligent solutions are usually the simplest ones.
+- Follow **Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away** advice by Antoine de Saint-Exupéry.
+- **Evals are tests for prompts**: Just as tests verify code, evals verify AI behavior. Write tests first, let them fail, then implement until they pass consistently (5+ runs for nondeterministic systems).
+- **Tests are immutable**: Once written, tests define success. Implementation serves tests, not vice versa.
 
 ## Essential Commands
 
-### Neo4j Setup
-```bash
-# Start Neo4j container with required plugins and procedures
-docker run --name neo4j-sessions \
-  -p 7474:7474 -p 7687:7687 \
-  -e NEO4J_AUTH=neo4j/Sup3rSecur3! \
-  -e NEO4J_PLUGINS='["apoc","graph-data-science"]' \
-  -e NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*,db.* \
-  -e NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*,db.* \
-  -d neo4j:5.26.7-community
+*For initial setup, see README.md. These are operational commands for development work.*
 
-# Create schema (run first, before any data import)
-cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/01-schema.cypher
+### Neo4j Operations
+```bash
+# Quick connection test
+docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3!
+
+# Run schema validation
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
+
+# Test vector search capability
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/vector-search-verification.cypher
 ```
 
-### Python Environment & Data Pipeline
+### Development Validation
 ```bash
-# Setup Python environment
-python -m venv .venv
-source .venv/Scripts/activate  # On Windows: .venv\Scripts\activate
-pip install -r scripts/python/requirements.txt
-
-# Run data pipeline in order
-python scripts/python/01-import-data.py  # Import NDJSON data (~2 min for 200 sessions)
-python scripts/python/02-embed-text.py   # Generate text embeddings
+# Activate environment and run data pipeline validation
+source venv/bin/activate
 python scripts/python/03-graphrag-demo.py  # Test GraphRAG queries
 
-# Verify data import
-cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/02-sanity.cypher
+# Run evaluation suite (comprehensive business requirements test)
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
-### Query Execution
+### Debugging Commands
 ```bash
-# Run investigative queries
-cypher-shell -u neo4j -p Sup3rSecur3! -f queries/investigative.cypher
+# Check container status
+docker ps | grep neo4j-sessions
 
-# Run evaluation test suite
-cypher-shell -u neo4j -p Sup3rSecur3! -f queries/eval-suite.cypher
+# View Neo4j logs
+docker logs neo4j-sessions
+
+# Container restart (data loss - use for fresh start only)
+docker stop neo4j-sessions && docker rm neo4j-sessions
 ```
+
+## Neo4j GenAI Python Project
+
+### Project Context
+This project leverages Neo4j v5's latest Generative AI features including vector search, embeddings, and GraphRAG patterns.
+
+### Key Technologies
+- Neo4j v5.x with GDS (Graph Data Science) library
+- Python async driver for Neo4j
+- Vector embeddings and similarity search
+- GraphRAG implementation
+
+### Documentation References
+
+#### Core Libraries
+- [Python Driver](https://neo4j.com/docs/python-manual/current/)
+- [Python Driver GitHub](https://github.com/neo4j/neo4j-python-driver)
+- [GDS Python Client](https://neo4j.com/docs/graph-data-science-client/current/)
+- [GDS Client API](https://neo4j.com/docs/graph-data-science-client/current/api/)
+- [GDS GitHub](https://github.com/neo4j/graph-data-science)
+
+#### GenAI & Vector Features
+- [Cypher Vector Functions](https://neo4j.com/docs/cypher-manual/current/functions/vector/)
+- [GenAI Integrations](https://neo4j.com/docs/cypher-manual/current/genai-integrations/)
+- [Vector Indexes](https://neo4j.com/docs/cypher-manual/current/indexes/semantic-indexes/vector-indexes/)
+- [Embeddings Tutorial](https://neo4j.com/docs/genai/tutorials/embeddings-vector-indexes/)
+
+#### GraphRAG
+- [Neo4j GraphRAG Python](https://neo4j.com/docs/neo4j-graphrag-python/current/)
+- [GraphRAG Python API](https://neo4j.com/docs/neo4j-graphrag-python/current/api.html)
+
+#### General Resources
+- [Cypher Manual](https://neo4j.com/docs/cypher-manual/current/introduction/cypher-neo4j/)
+- [Graph Data Science Docs](https://neo4j.com/docs/graph-data-science/current/)
+
+### Common Patterns
+- Use async driver for all new features
+- Vector dimension: 1536 (OpenAI compatible)
+- Index naming: `{node_label}_embedding_index`
+
 
 ## Architecture & Key Design Patterns
 
@@ -67,8 +106,7 @@ Key relationships follow law enforcement ontologies:
 ### Data Processing Pipeline
 1. **Schema Creation**: Establishes constraints, indexes, and vector index (384 dimensions)
 2. **Data Import**: Processes NDJSON files, creating nodes/relationships while preserving raw data
-3. **Embedding Generation**: Uses `sentence-transformers/all-MiniLM-L6-v2` for 384-dim embeddings
-4. **GraphRAG Integration**: Enables semantic search via LangChain's Neo4j vector retriever
+
 
 ### Query Patterns
 The system supports extensive query types documented in `evals/evaluation_tests.md`:
@@ -80,9 +118,8 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - Multi-hop relationship traversal
 
 ### Important Implementation Details
-- **Database credentials**: `neo4j` / `Sup3rSecur3!`
-- **Vector dimensions**: 384 (matches all-MiniLM-L6-v2 model)
-- **Batch processing**: 128 texts per embedding batch
+- **Database credentials**: `neo4j` / `Sup3rSecur3!` (intentionally hardcoded for local POC)
+
 - **Data format**: NDJSON with session/involvement/product structure
 - **Content extraction**: Handles data URIs for text content
 

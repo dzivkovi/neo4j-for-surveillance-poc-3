@@ -1,0 +1,7 @@
+version: 2
+secret:
+  ignored_paths:
+    - '.mcp.json'
+  ignored_matches:
+    - name: neo4j_poc_password
+      match: 'Sup3rSecur3!'

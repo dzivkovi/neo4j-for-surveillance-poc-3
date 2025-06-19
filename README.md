@@ -161,3 +161,7 @@ This system captures lessons learned from client meetings, technical analysis, a
 - **Immutable raw data** under `data` – keeps provenance clear and simplifies reproducibility ([3](https://neo4j.com/developer/data-import/), [4](https://neo4j.com/docs/operations-manual/current/backup-restore/))
 - **Vector search** via Neo4j OSS 5.11+ `VECTOR INDEX` for semantic questions; embeddings generated with `sentence-transformers/all-MiniLM-L6-v2` (384 dims) ([5](https://github.com/neo4j/neo4j/releases/tag/5.11.0), [6](https://neo4j.com/docs/cypher-manual/current/indexes/semantic-indexes/vector-indexes/))
 - **GraphRAG** demo uses Neo4j retriever from LangChain so analysts can prototype QA pipelines without extra infra ([7](https://neo4j.com/developer/genai-ecosystem/))
+
+## For AI Assistants
+
+See `CLAUDE.md` for project context and documentation links.

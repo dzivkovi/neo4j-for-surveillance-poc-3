@@ -2,7 +2,10 @@
 Load `data/sessions.ndjson` into Neo4j using the session-centric
 schema.  Run AFTER 01-schema.cypher.
 """
-import json, pathlib, datetime, urllib.parse
+import json
+import pathlib
+import urllib.parse
+
 from neo4j import GraphDatabase
 from tqdm import tqdm
 
@@ -21,7 +24,7 @@ def dt(val: str):
 def ingest(tx, rec):
     # -------- Session --------------------------------------------------
     guid = rec["sessionguid"]
-    
+
     # Create a clean properties dict with only primitive values
     session_props = {}
     for key, value in rec.items():
@@ -31,7 +34,7 @@ def ingest(tx, rec):
                 session_props[key] = value
             elif isinstance(value, list) and all(isinstance(v, (str, int, float, bool)) for v in value):
                 session_props[key] = value
-    
+
     # Handle datetime conversions
     session_props["createddate"] = dt(session_props.get("createddate"))
     session_props["starttime"]   = dt(session_props.get("starttime"))

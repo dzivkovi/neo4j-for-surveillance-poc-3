@@ -16,20 +16,20 @@ def semantic_search(query_text, top_k=5):
     """Perform semantic search using vector similarity"""
     # Generate embedding for the query
     query_embedding = model.encode(query_text).tolist()
-    
+
     with driver.session() as session:
         result = session.run("""
             CALL db.index.vector.queryNodes('ContentVectorIndex', $k, $query_vector)
             YIELD node, score
             MATCH (s:Session)-[:HAS_CONTENT]->(node)
-            RETURN node.id as content_id, 
+            RETURN node.id as content_id,
                    node.text as content_text,
                    s.sessionguid as session_id,
                    s.sessiontype as session_type,
                    score
             ORDER BY score DESC
         """, k=top_k, query_vector=query_embedding)
-        
+
         return list(result)
 
 # Search for travel-related content
