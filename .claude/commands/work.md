@@ -40,8 +40,8 @@ gh issue view $ARGUMENTS
 pytest -v  # Run 5+ times for critical tests
 
 # Code quality (120 char line length configured)
-ruff check . --fix
 ruff format .
+ruff check . --fix
 
 # Neo4j validation (use available MCP tools like):
 # mcp__neo4j__read_neo4j_cypher(query) - test queries
