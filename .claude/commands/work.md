@@ -61,9 +61,6 @@ git commit -m "feat: implement [brief description]
 
 Closes #$ISSUE_NUMBER
 
-🤖 Generated with Claude Code
-Co-Authored-By: Claude <noreply@anthropic.com>"
-
 git push -u origin feat/$ISSUE_NUMBER-description
 
 # Create PR using template
