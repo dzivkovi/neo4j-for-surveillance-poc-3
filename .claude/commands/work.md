@@ -78,7 +78,6 @@ gh pr create --title "feat: [Issue title]" --body-file .github/PULL_REQUEST_TEMP
 ## Project-Specific Notes
 
 - Database: Neo4j with credentials `neo4j`/`Sup3rSecur3!`
-- Vector dimensions: 1536 (OpenAI compatible, specified in pyproject.toml)
 - Line length: 120 characters (configured in pyproject.toml)
 - Testing: Focus on evaluation tests that verify business requirements
 - Performance: Query responses should be <5s for evaluation criteria
