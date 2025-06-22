@@ -4,11 +4,6 @@ Thank you for considering contributing to this project! This guide outlines the 
 
 ## Development Environment Setup
 
-### Installing Ruff
-```bash
-pip install ruff
-```
-
 ### Project Setup
 
 1. **Clone the repository**
@@ -68,8 +63,8 @@ def test_fred_travel_mentions():
 - **Docstrings**: Use [Google style](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) docstrings
 - **Code Quality**: Run `ruff check` and `ruff format` before committing
   ```bash
-  ruff check .          # Linting (replaces flake8, pylint, and more)
   ruff format .         # Formatting (replaces black)
+  ruff check .          # Linting (replaces flake8, pylint, and more)
   ```
 - **Configuration**: See `pyproject.toml` for project-specific settings
 
@@ -91,8 +86,8 @@ def test_fred_travel_mentions():
 
 3. **Run code quality checks**
    ```bash
-   ruff check . --fix   # Auto-fix what's possible
    ruff format .        # Format code
+   ruff check . --fix   # Auto-fix what's possible
    ```
 
 4. **Ensure all tests pass**
