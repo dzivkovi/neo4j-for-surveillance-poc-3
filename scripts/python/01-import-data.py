@@ -24,6 +24,49 @@ def dt(val: str):
     return val.replace("Z", "")  # Neo4j datetime() will accept it.
 
 
+def create_aliases(tx, session_id, involvements):
+    """Create alias nodes for all identifiers (Feature #7)"""
+    for inv in involvements:
+        person_id = inv.get("personid", f"anon-{inv.get('guid', 'unknown')}")
+        
+        # Create Person node if it doesn't exist
+        tx.run("MERGE (p:Person {personId: $pid})", pid=person_id)
+        
+        # Create aliases for each identifier type
+        identifiers = [
+            ("msisdn", inv.get("msisdn")),
+            ("imei", inv.get("imei")),
+            ("email", inv.get("email")),
+            ("nickname", inv.get("personname"))
+        ]
+        
+        for alias_type, value in identifiers:
+            if value:
+                tx.run("""
+                    MERGE (a:Alias {rawValue: $value, type: $type})
+                    WITH a
+                    MATCH (p:Person {personId: $pid})
+                    MERGE (a)-[:ALIAS_OF]->(p)
+                """, value=str(value), type=alias_type, pid=person_id)
+
+
+def link_location(tx, session_id, location_data):
+    """Link session to location if coordinates available (Feature #7)"""
+    if location_data and location_data.get("latitude") and location_data.get("longitude"):
+        try:
+            lat = float(location_data["latitude"])
+            lon = float(location_data["longitude"])
+            tx.run("""
+                MERGE (l:Location {geo: point({latitude: $lat, longitude: $lon})})
+                WITH l
+                MATCH (s:Session {sessionguid: $sid})
+                MERGE (s)-[:LOCATED_AT]->(l)
+            """, lat=lat, lon=lon, sid=session_id)
+        except (ValueError, TypeError):
+            # Skip invalid coordinates
+            pass
+
+
 def ingest(tx, rec):
     # -------- Session --------------------------------------------------
     guid = rec["sessionguid"]
@@ -188,6 +231,15 @@ def ingest(tx, rec):
             guid=guid,
             cid=cid,
         )
+
+    # -------- Feature #7 Additions ------------------------------------
+    # Create aliases for all involvements
+    if "involvements" in rec:
+        create_aliases(tx, guid, rec["involvements"])
+    
+    # Link location if available
+    if "location" in rec:
+        link_location(tx, guid, rec["location"])
 
 
 with driver.session() as sess, open(RAW_PATH) as fh:
