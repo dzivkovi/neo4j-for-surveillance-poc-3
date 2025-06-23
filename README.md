@@ -40,6 +40,17 @@ GraphRAG Example (LangChain + Neo4j) lives in
 `scripts/python/03-graphrag-demo.py` and shows how to answer “Does Fred
 discuss travel plans?” using similarity search over the vector index.
 
+## Evaluation Framework ⭐
+
+This project includes a comprehensive **77-question evaluation suite** that validates real-world investigative capabilities. The evaluation framework ensures every feature delivers genuine law enforcement value.
+
+**📊 Current Status**: 23/77 questions implemented (30%) with core investigative capabilities operational:
+- ✅ Multi-identifier tracking: "What phone numbers is Kenzie using?" → 24 phones found instantly
+- ✅ Evidence discovery: "sago palms references?" → 5 content matches with relevance scoring  
+- ✅ Cross-entity analysis: "Has Kenzie referenced a shed?" → 7 references across communications
+
+**📚 Full Details**: See [README_EVALUATIONS.md](README_EVALUATIONS.md) for comprehensive evaluation framework documentation, progress tracking, and validation procedures.
+
 ## Operational Notes
 
 ### Docker Container Management
