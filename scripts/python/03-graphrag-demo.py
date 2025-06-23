@@ -3,14 +3,16 @@ Query Neo4j vector index (via LangChain retriever) to answer:
 
   "Does Fred discuss travel plans?"
 """
+
 from neo4j import GraphDatabase
 from sentence_transformers import SentenceTransformer
 
 # Initialize the embedding model
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 # Connect to Neo4j
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Sup3rSecur3!"))
+
 
 def semantic_search(query_text, top_k=5):
     """Perform semantic search using vector similarity"""
@@ -18,7 +20,8 @@ def semantic_search(query_text, top_k=5):
     query_embedding = model.encode(query_text).tolist()
 
     with driver.session() as session:
-        result = session.run("""
+        result = session.run(
+            """
             CALL db.index.vector.queryNodes('ContentVectorIndex', $k, $query_vector)
             YIELD node, score
             MATCH (s:Session)-[:HAS_CONTENT]->(node)
@@ -28,9 +31,13 @@ def semantic_search(query_text, top_k=5):
                    s.sessiontype as session_type,
                    score
             ORDER BY score DESC
-        """, k=top_k, query_vector=query_embedding)
+        """,
+            k=top_k,
+            query_vector=query_embedding,
+        )
 
         return list(result)
+
 
 # Search for travel-related content
 print("Searching for: 'travel plans vacation trip'")
