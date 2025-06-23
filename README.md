@@ -138,22 +138,14 @@ For eliminating Cypher learning curve, see `README_MCP.md` which demonstrates:
 - `queries/data-exploration.cypher` - 8 sections of validation queries
 - `queries/vector-search-verification.cypher` - Vector similarity testing
 - `queries/investigative.cypher` - Law enforcement use cases
+- `queries/network-visualizations.cypher` - Graph visualizations for communication networks
+- `queries/practical-investigation-queries.cypher` - Operational queries for active investigations
 
 ## Development Workflow
 
-### Business Rules Tracking
+### Task Tracking
 
-Project discoveries and implementation priorities are tracked in `docs/business-rules/`:
-
-```bash
-# View current business rules and priorities
-cat docs/business-rules/README.md
-
-# Update the index after adding/editing rules
-bash scripts/bash/generate-business-rules-readme.sh > docs/business-rules/README.md
-```
-
-This system captures lessons learned from client meetings, technical analysis, and investigation findings to guide development priorities and ensure nothing important is forgotten.
+Project tasks and priorities are tracked using GitHub Projects Kanban board. This system captures lessons learned from client meetings, technical analysis, and investigation findings to guide development priorities and ensure nothing important is forgotten.
 
 ## Design Decisions
 
