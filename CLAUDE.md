@@ -86,7 +86,7 @@ This project leverages Neo4j v5's latest Generative AI features including vector
 
 ### Common Patterns
 - Use async driver for all new features
-- Vector dimension: 1536 (OpenAI compatible)
+- Vector dimension: 384 (sentence-transformers compatible)
 - Index naming: `{node_label}_embedding_index`
 
 

@@ -29,7 +29,7 @@ python -m pip install --upgrade pip
 pip install -r scripts/python/requirements.txt
 
 python scripts/python/01-import-data.py         # ~2 min for 200 sessions
-python scripts/python/02-embed-text.py          # adds 384-dim vectors
+python scripts/python/02-import-transcripts.py  # imports LanceDB transcripts
 
 # 4. run sanity checks & evaluation queries
 docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
@@ -71,8 +71,8 @@ docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/
 # 2. Import data (265 sessions in test dataset)
 python scripts/python/01-import-data.py
 
-# 3. Generate embeddings (384-dim vectors)
-python scripts/python/02-embed-text.py
+# 3. Import transcripts from LanceDB
+python scripts/python/02-import-transcripts.py
 
 # 4. Verify import
 docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/02-sanity.cypher

@@ -80,21 +80,61 @@ Types: 'msisdn', 'imei', 'email', 'nickname'
 
 ### 4. Transcript Import Script (02-import-transcripts.py)
 
-New script to:
-1. Connect to LanceDB
-2. Aggregate transcript chunks by session_id
-3. Create Content nodes with full text
-4. Link to existing Session nodes via HAS_CONTENT
+**Architecture Decision**: JSON Export Pattern
 
-```python
-# Core logic:
-sql = """
-SELECT session_id, STRING_AGG(text, ' ') AS full_text
-FROM (SELECT * FROM lance ORDER BY timestamp, chunk_id)
-GROUP BY session_id
-"""
-# Then create Content nodes...
+**Problem**: LanceDB version conflicts (0.22.0 vs 0.24.0) caused core dumps  
+**Solution**: Use battle-tested adjacent project as data source via JSON export
+
+**Dependencies**:
+- Adjacent `lancedb-call-transcripts-browser` project ([GitHub](https://github.com/dzivkovi/lancedb-call-transcripts-browser)) with working LanceDB setup
+- JSON export containing aggregated transcript data with validation metadata
+
+**Export Data Structure**:
+```json
+{
+  "session_id": {
+    "text": "full aggregated transcript text",
+    "chunk_count": 15,
+    "char_count": 2847
+  }
+}
 ```
+
+**Implementation Process**:
+1. **Export**: Run `export_for_neo4j.py` in `lancedb-call-transcripts-browser/`
+2. **Transfer**: Copy generated `transcripts_export.json` to local `data/` folder  
+3. **Import**: Load JSON data (no LanceDB library dependencies)
+4. **Populate**: Create Content nodes with transcript text
+5. **Link**: Connect to existing Session nodes via HAS_CONTENT
+
+**Benefits**:
+- No version conflicts or dependency hell
+- Validation metadata included (chunk_count, char_count)
+- Reproducible export process from proven working system
+- Clear separation of concerns (LanceDB experts vs Neo4j implementation)
+
+**Business Value**:
+
+Our implementation enables these specific investigative capabilities:
+
+1. **Full-Text Search Across Call Transcripts**
+   - Search 42 telephony sessions containing suspect conversations
+   - Find mentions of evidence keywords: "sago palms", "shed", "murder", "cherry blasters"
+   - Support fuzzy matching and wildcards for typos and variations
+
+2. **Multi-Identifier Tracking** 
+   - Track suspects across phone numbers, IMEIs, emails, and nicknames
+   - Answer "What phone numbers is Kenzie using?" (Evaluation Question 68)
+   - Answer "Find all variations of Fred" (Evaluation Question 77)
+
+3. **Temporal Analysis**
+   - Identify long calls (7 sessions exceed 60 seconds)
+   - Filter by time of day for pattern analysis
+   - Support duration-based queries for behavioral profiling
+
+**Quantifiable Impact**: Enables answering evaluation questions C-11 through C-15, C-68, C-77, and C-29 that were previously impossible without transcript data.
+
+**Note**: Current import creates new Content nodes on each run (POC behavior). For production, consider MERGE with deterministic IDs to prevent duplicates.
 
 ### 5. Updated Sanity Check (02-sanity.cypher)
 
@@ -151,8 +191,22 @@ CREATE CONSTRAINT alias_raw_unique IF NOT EXISTS FOR (a:Alias) REQUIRE a.rawValu
 ### Step 2: Update Import Script (scripts/python/01-import-data.py)
 Add alias creation logic for each involvement
 
-### Step 3: Create Transcript Import (scripts/python/02-import-transcripts.py)  
-Aggregate LanceDB chunks by session_id
+### Step 3: Export & Import Transcripts
+**3a. Export from LanceDB project:**
+```bash
+cd ../lancedb-call-transcripts-browser
+python export_for_neo4j.py -o transcripts_export.json
+```
+
+**3b. Copy to Neo4j project:**
+```bash
+cp ../lancedb-call-transcripts-browser/transcripts_export.json data/
+```
+
+**3c. Import into Neo4j:**
+```bash
+python scripts/python/02-import-transcripts.py
+```
 
 ### Step 4: Update Validation (scripts/cypher/02-sanity.cypher)
 Add checks for aliases, transcripts, indexes
@@ -180,6 +234,7 @@ def test_duration(sess):
 - All additions are backward compatible
 - Existing data remains intact
 - Can be run incrementally
+- **Re-import**: For clean transcript re-import, use container restart or delete Content nodes with `contentType: 'text/plain'` before re-running import scripts
 
 ## Key Design Decisions
 
