@@ -297,6 +297,18 @@ gh issue edit 6 --add-label invalid --repo dzivkovi/neo4j-for-surveillance-poc-3
 gh issue close 6 \
   --comment "Closing: generated from incomplete docs; superseded by #7." \
   --repo dzivkovi/neo4j-for-surveillance-poc-3
+
+# Add a comment to an existing issue
+gh issue comment 7 --body "Design Complete
+
+After detailed analysis, complete implementation specification is ready:
+
+**Design Document**: \`analysis/7/DESIGN.md\`
+
+Validated against current Neo4j schema via MCP. Maps to 25+ of 77 evaluation questions.
+Ready for implementation (manual or automated via \`/work 7\`).
+
+Key insight: Reuse existing \`durationinseconds\` property, change location index from RANGE to POINT type."
 ```
 
 ## Additional Resources

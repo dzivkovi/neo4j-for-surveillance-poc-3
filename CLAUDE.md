@@ -125,5 +125,6 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 
 ## Important Instructions
 - NEVER use emojis in any files or documentation unless explicitly requested by the User
+- NEVER sign commits or changes as Claude/AI - use standard git authorship
 - Only create documentation files when explicitly requested
 - Always prefer editing existing files to creating new ones
