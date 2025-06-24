@@ -40,6 +40,16 @@ GraphRAG Example (LangChain + Neo4j) lives in
 `scripts/python/03-graphrag-demo.py` and shows how to answer “Does Fred
 discuss travel plans?” using similarity search over the vector index.
 
+## Data Import Pipeline
+
+The project includes comprehensive data import tools for processing surveillance NDJSON files:
+
+- **Data Extraction**: `extract-sessions.py` - Swiss Army knife for transforming large surveillance files
+- **Base Import**: `01-import-data.py` - Creates core graph structure
+- **Transcript Integration**: `02-import-transcripts.py` - Adds call transcripts from LanceDB
+
+📚 **Complete Guide**: See [README_DATA_IMPORT.md](README_DATA_IMPORT.md) for detailed usage examples, field selection, and pipeline workflows.
+
 ## Evaluation Framework ⭐
 
 This project includes a comprehensive **77-question evaluation suite** that validates real-world investigative capabilities. The evaluation framework ensures every feature delivers genuine law enforcement value.
