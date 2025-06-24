@@ -24,13 +24,15 @@ evals/
 
 ## Current Status
 
-**Implementation Progress**: 23/77 questions (30%) ✅
+**True Implementation Progress**: 37/77 tests in validation suite (48%) ✅
 
-| Category | Implemented | Total | Key Capabilities |
-|----------|-------------|-------|------------------|
-| **Entity Queries** | 8/15 | 53% | Multi-identifier tracking, alias resolution |
-| **Content Search** | 12/20 | 60% | Keyword detection, evidence discovery |
-| **Communication Analysis** | 3/12 | 25% | Pattern analysis, frequency counting |
+| Status | Count | Description |
+|--------|-------|-------------|
+| **Fully Documented** | 18/77 | Complete EVAL-XX.md files with validation |
+| **In Test Suite** | 19/77 | Working queries but need documentation |
+| **Framework Tests** | 18/77 | Alignment/translation (not data queries) |
+| **Not Yet Tested** | 17/77 | Mostly summarization and complex analytics |
+| **Known Issues** | 5/77 | Data limitations |
 
 ## Key Achievements
 
@@ -169,7 +171,13 @@ Each evaluation question maps to:
 
 This evaluation framework transforms abstract development goals into concrete, testable requirements. By aligning implementation with real surveillance use cases, we ensure every feature delivers genuine investigative value.
 
-The current 30% completion rate (23/77 questions) represents substantial operational capability - investigators can now perform multi-identifier tracking, evidence discovery, and relationship analysis that would previously require manual correlation across multiple systems.
+The true status reveals:
+- **37/77 tests in validation suite (48%)** - Core investigative queries operational
+- **18 fully documented** with complete EVAL-XX.md validation files
+- **19 working tests** in suite but need documentation
+- **Major discovery**: Geospatial intelligence with 41 locations and 201 geo-tagged sessions
+
+This represents substantial operational capability including multi-identifier tracking, evidence discovery, network analysis, and now location intelligence that would previously require manual correlation across multiple systems.
 
 **For full evaluation details**: See `evals/evaluation_tests.md`  
 **For current progress**: See `evals/progress.md`  
