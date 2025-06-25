@@ -86,7 +86,7 @@ This project leverages Neo4j v5's latest Generative AI features including vector
 
 ### Common Patterns
 - Use async driver for all new features
-- Vector dimension: 1536 (OpenAI compatible)
+- Vector dimension: 384 (sentence-transformers compatible)
 - Index naming: `{node_label}_embedding_index`
 
 
@@ -125,5 +125,6 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 
 ## Important Instructions
 - NEVER use emojis in any files or documentation unless explicitly requested by the User
+- NEVER sign commits or changes as Claude/AI - use standard git authorship
 - Only create documentation files when explicitly requested
 - Always prefer editing existing files to creating new ones

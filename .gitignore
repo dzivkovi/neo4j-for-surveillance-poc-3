@@ -8,8 +8,11 @@ venv/
 # data
 data/
 
-# tempprary analysis files
-analysis/
+# temporary conversation files (keep design docs)
+analysis/*/conversations/
+analysis/**/2025-*/
+# archived documents
+analysis/**/archive/
 
 # notebooks / checkpoints
 .ipynb_checkpoints/

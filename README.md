@@ -29,7 +29,7 @@ python -m pip install --upgrade pip
 pip install -r scripts/python/requirements.txt
 
 python scripts/python/01-import-data.py         # ~2 min for 200 sessions
-python scripts/python/02-embed-text.py          # adds 384-dim vectors
+python scripts/python/02-import-transcripts.py  # imports LanceDB transcripts
 
 # 4. run sanity checks & evaluation queries
 docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
@@ -39,6 +39,27 @@ docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/ev
 GraphRAG Example (LangChain + Neo4j) lives in
 `scripts/python/03-graphrag-demo.py` and shows how to answer “Does Fred
 discuss travel plans?” using similarity search over the vector index.
+
+## Data Import Pipeline
+
+The project includes comprehensive data import tools for processing surveillance NDJSON files:
+
+- **Data Extraction**: `extract-sessions.py` - Swiss Army knife for transforming large surveillance files
+- **Base Import**: `01-import-data.py` - Creates core graph structure
+- **Transcript Integration**: `02-import-transcripts.py` - Adds call transcripts from LanceDB
+
+📚 **Complete Guide**: See [README_DATA_IMPORT.md](README_DATA_IMPORT.md) for detailed usage examples, field selection, and pipeline workflows.
+
+## Evaluation Framework ⭐
+
+This project includes a comprehensive **77-question evaluation suite** that validates real-world investigative capabilities. The evaluation framework ensures every feature delivers genuine law enforcement value.
+
+**📊 Current Status**: 23/77 questions implemented (30%) with core investigative capabilities operational:
+- ✅ Multi-identifier tracking: "What phone numbers is Kenzie using?" → 24 phones found instantly
+- ✅ Evidence discovery: "sago palms references?" → 5 content matches with relevance scoring  
+- ✅ Cross-entity analysis: "Has Kenzie referenced a shed?" → 7 references across communications
+
+**📚 Full Details**: See [README_EVALUATIONS.md](README_EVALUATIONS.md) for comprehensive evaluation framework documentation, progress tracking, and validation procedures.
 
 ## Operational Notes
 
@@ -71,8 +92,8 @@ docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/
 # 2. Import data (265 sessions in test dataset)
 python scripts/python/01-import-data.py
 
-# 3. Generate embeddings (384-dim vectors)
-python scripts/python/02-embed-text.py
+# 3. Import transcripts from LanceDB
+python scripts/python/02-import-transcripts.py
 
 # 4. Verify import
 docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f scripts/cypher/02-sanity.cypher
@@ -138,22 +159,14 @@ For eliminating Cypher learning curve, see `README_MCP.md` which demonstrates:
 - `queries/data-exploration.cypher` - 8 sections of validation queries
 - `queries/vector-search-verification.cypher` - Vector similarity testing
 - `queries/investigative.cypher` - Law enforcement use cases
+- `queries/network-visualizations.cypher` - Graph visualizations for communication networks
+- `queries/practical-investigation-queries.cypher` - Operational queries for active investigations
 
 ## Development Workflow
 
-### Business Rules Tracking
+### Task Tracking
 
-Project discoveries and implementation priorities are tracked in `docs/business-rules/`:
-
-```bash
-# View current business rules and priorities
-cat docs/business-rules/README.md
-
-# Update the index after adding/editing rules
-bash scripts/bash/generate-business-rules-readme.sh > docs/business-rules/README.md
-```
-
-This system captures lessons learned from client meetings, technical analysis, and investigation findings to guide development priorities and ensure nothing important is forgotten.
+Project tasks and priorities are tracked using GitHub Projects Kanban board. This system captures lessons learned from client meetings, technical analysis, and investigation findings to guide development priorities and ensure nothing important is forgotten.
 
 ## Design Decisions
 

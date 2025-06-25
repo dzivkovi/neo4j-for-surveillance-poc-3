@@ -44,3 +44,24 @@ OPTIONS {
     `vector.similarity_function`: "COSINE"
   }
 };
+
+// —— Feature #7: Transcripts & Lucene Search Additions ——————————
+
+// Drop existing location index (wrong type)
+DROP INDEX location_coord IF EXISTS;
+
+// Point index for spatial queries
+CREATE POINT INDEX locationGeo IF NOT EXISTS
+FOR (l:Location) ON (l.geo);
+
+// Range index for temporal/duration queries  
+CREATE RANGE INDEX sessionDuration IF NOT EXISTS
+FOR (s:Session) ON (s.durationinseconds);
+
+// Full-text index for alias searches
+CREATE FULLTEXT INDEX AliasText IF NOT EXISTS
+FOR (a:Alias) ON EACH [a.rawValue];
+
+// Uniqueness constraint for aliases
+CREATE CONSTRAINT alias_raw_unique IF NOT EXISTS
+FOR (a:Alias) REQUIRE a.rawValue IS UNIQUE;

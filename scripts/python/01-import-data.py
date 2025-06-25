@@ -2,6 +2,7 @@
 Load `data/sessions.ndjson` into Neo4j using the session-centric
 schema.  Run AFTER 01-schema.cypher.
 """
+
 import json
 import pathlib
 import urllib.parse
@@ -10,16 +11,61 @@ from neo4j import GraphDatabase
 from tqdm import tqdm
 
 RAW_PATH = pathlib.Path(__file__).parent.parent.parent / "data" / "sessions.ndjson"
-BOLT_URI  = "bolt://localhost:7687"
-AUTH      = ("neo4j", "Sup3rSecur3!")
+BOLT_URI = "bolt://localhost:7687"
+AUTH = ("neo4j", "Sup3rSecur3!")
 
 driver = GraphDatabase.driver(BOLT_URI, auth=AUTH)
+
 
 def dt(val: str):
     """Return ISO8601 string or None"""
     if not val:
         return None
     return val.replace("Z", "")  # Neo4j datetime() will accept it.
+
+
+def create_aliases(tx, session_id, involvements):
+    """Create alias nodes for all identifiers (Feature #7)"""
+    for inv in involvements:
+        person_id = inv.get("personid", f"anon-{inv.get('guid', 'unknown')}")
+        
+        # Create Person node if it doesn't exist
+        tx.run("MERGE (p:Person {personId: $pid})", pid=person_id)
+        
+        # Create aliases for each identifier type
+        identifiers = [
+            ("msisdn", inv.get("msisdn")),
+            ("imei", inv.get("imei")),
+            ("email", inv.get("email")),
+            ("nickname", inv.get("personname"))
+        ]
+        
+        for alias_type, value in identifiers:
+            if value:
+                tx.run("""
+                    MERGE (a:Alias {rawValue: $value, type: $type})
+                    WITH a
+                    MATCH (p:Person {personId: $pid})
+                    MERGE (a)-[:ALIAS_OF]->(p)
+                """, value=str(value), type=alias_type, pid=person_id)
+
+
+def link_location(tx, session_id, location_data):
+    """Link session to location if coordinates available (Feature #7)"""
+    if location_data and location_data.get("latitude") and location_data.get("longitude"):
+        try:
+            lat = float(location_data["latitude"])
+            lon = float(location_data["longitude"])
+            tx.run("""
+                MERGE (l:Location {geo: point({latitude: $lat, longitude: $lon})})
+                WITH l
+                MATCH (s:Session {sessionguid: $sid})
+                MERGE (s)-[:LOCATED_AT]->(l)
+            """, lat=lat, lon=lon, sid=session_id)
+        except (ValueError, TypeError):
+            # Skip invalid coordinates
+            pass
+
 
 def ingest(tx, rec):
     # -------- Session --------------------------------------------------
@@ -29,7 +75,7 @@ def ingest(tx, rec):
     session_props = {}
     for key, value in rec.items():
         # Skip complex nested structures
-        if key not in ['involvements', 'products', 'fulltext', 'enrichment_']:
+        if key not in ["involvements", "products", "fulltext", "enrichment_"]:
             if isinstance(value, (str, int, float, bool)) or value is None:
                 session_props[key] = value
             elif isinstance(value, list) and all(isinstance(v, (str, int, float, bool)) for v in value):
@@ -37,10 +83,11 @@ def ingest(tx, rec):
 
     # Handle datetime conversions
     session_props["createddate"] = dt(session_props.get("createddate"))
-    session_props["starttime"]   = dt(session_props.get("starttime"))
-    session_props["endtime"]     = dt(session_props.get("endtime"))
+    session_props["starttime"] = dt(session_props.get("starttime"))
+    session_props["endtime"] = dt(session_props.get("endtime"))
 
-    tx.run("""
+    tx.run(
+        """
         MERGE (s:Session {sessionguid:$guid})
         SET  s += $props,
              s.createddate = CASE WHEN $props.createddate IS NULL
@@ -52,15 +99,18 @@ def ingest(tx, rec):
              s.endtime     = CASE WHEN $props.endtime IS NULL
                                   THEN NULL
                                   ELSE datetime($props.endtime) END
-        """, guid=guid, props=session_props)
+        """,
+        guid=guid,
+        props=session_props,
+    )
 
     # -------- Involvements --------------------------------------------
     for inv in rec.get("involvements", []):
         person = inv.get("personname")
-        phone  = inv.get("msisdn")
-        email  = inv.get("email")
-        imei   = inv.get("imei")
-        role   = inv.get("role")
+        phone = inv.get("msisdn")
+        email = inv.get("email")
+        imei = inv.get("imei")
+        role = inv.get("role")
 
         if person:
             tx.run("MERGE (p:Person {name:$name})", name=person)
@@ -69,77 +119,128 @@ def ingest(tx, rec):
         if phone:
             tx.run("MERGE (ph:Phone {number:$num})", num=phone)
             if person:
-                tx.run("""
+                tx.run(
+                    """
                     MATCH (p:Person {name:$name}), (ph:Phone {number:$num})
                     MERGE (p)-[:USES]->(ph)
-                """, name=person, num=phone)
+                """,
+                    name=person,
+                    num=phone,
+                )
 
         # email
         if email:
             tx.run("MERGE (em:Email {email:$email})", email=email)
             if person:
-                tx.run("""
+                tx.run(
+                    """
                     MATCH (p:Person {name:$name}), (em:Email {email:$email})
                     MERGE (p)-[:USES]->(em)
-                """, name=person, email=email)
+                """,
+                    name=person,
+                    email=email,
+                )
 
         # device
         if imei:
             tx.run("MERGE (d:Device {imei:$imei})", imei=imei)
             if person:
-                tx.run("""
+                tx.run(
+                    """
                     MATCH (p:Person {name:$name}),(d:Device {imei:$imei})
                     MERGE (p)-[:USES_DEVICE]->(d)
-                """, name=person, imei=imei)
+                """,
+                    name=person,
+                    imei=imei,
+                )
             if phone:
-                tx.run("""
+                tx.run(
+                    """
                     MATCH (d:Device {imei:$imei}),(ph:Phone {number:$num})
                     MERGE (d)-[:HAS_ACCOUNT]->(ph)
-                """, imei=imei, num=phone)
+                """,
+                    imei=imei,
+                    num=phone,
+                )
 
         # participation edge (phone/email if present, else person)
         if phone:
-            tx.run("""
+            tx.run(
+                """
                 MATCH (ph:Phone {number:$num}), (s:Session {sessionguid:$guid})
                 MERGE (ph)-[r:PARTICIPATED_IN {role:$role}]->(s)
-            """, num=phone, guid=guid, role=role)
+            """,
+                num=phone,
+                guid=guid,
+                role=role,
+            )
         elif email:
-            tx.run("""
+            tx.run(
+                """
                 MATCH (em:Email {email:$email}), (s:Session {sessionguid:$guid})
                 MERGE (em)-[r:PARTICIPATED_IN {role:$role}]->(s)
-            """, email=email, guid=guid, role=role)
+            """,
+                email=email,
+                guid=guid,
+                role=role,
+            )
         elif person:
-            tx.run("""
+            tx.run(
+                """
                 MATCH (p:Person {name:$name}), (s:Session {sessionguid:$guid})
                 MERGE (p)-[r:PARTICIPATED_IN {role:$role}]->(s)
-            """, name=person, guid=guid, role=role)
+            """,
+                name=person,
+                guid=guid,
+                role=role,
+            )
 
     # -------- Content (products) --------------------------------------
     for prod in rec.get("products", []):
-        cid   = prod.get("id") or prod.get("contentid")
+        cid = prod.get("id") or prod.get("contentid")
         ctype = prod.get("contenttype")
-        size  = prod.get("size")
-        text  = None
+        size = prod.get("size")
+        text = None
 
         # if it's a text/vcard or text/plain
-        if prod.get("contenttype_tltype","").lower() == "text":
-            if prod.get("uri","").startswith("data:"):
-                _, data_part = prod["uri"].split(",",1)
+        if prod.get("contenttype_tltype", "").lower() == "text":
+            if prod.get("uri", "").startswith("data:"):
+                _, data_part = prod["uri"].split(",", 1)
                 text = urllib.parse.unquote(data_part)
             elif rec.get("fulltext"):
                 ft = rec["fulltext"]
                 text = "\n".join(ft) if isinstance(ft, list) else ft
 
-        tx.run("""
+        tx.run(
+            """
             MERGE (c:Content {id:$cid})
             SET   c.contentType = $ctype,
                   c.size = $size,
                   c.text = COALESCE($text, c.text)
-            """, cid=cid, ctype=ctype, size=size, text=text)
-        tx.run("""
+            """,
+            cid=cid,
+            ctype=ctype,
+            size=size,
+            text=text,
+        )
+        tx.run(
+            """
             MATCH (s:Session {sessionguid:$guid}), (c:Content {id:$cid})
             MERGE (s)-[:HAS_CONTENT]->(c)
-        """, guid=guid, cid=cid)
+        """,
+            guid=guid,
+            cid=cid,
+        )
+
+    # -------- Feature #7 Additions ------------------------------------
+    # Create aliases for all involvements
+    if "involvements" in rec:
+        create_aliases(tx, guid, rec["involvements"])
+    
+    # Link location if available
+    if "location" in rec:
+        link_location(tx, guid, rec["location"])
+
 
 with driver.session() as sess, open(RAW_PATH) as fh:
     for line in tqdm(fh, desc="Importing sessions"):
