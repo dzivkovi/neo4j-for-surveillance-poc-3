@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenzie's Connections to Eagles Family</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.2/d3.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        h3 {
+            text-align: center;
+            color: #666;
+            font-weight: normal;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        #container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .visualization {
+            height: 500px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        svg {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #ffffff;
+        }
+        .tooltip {
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .legend-item {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        .analysis {
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+        .analysis h2 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            color: #444;
+        }
+        .analysis ul {
+            padding-left: 20px;
+        }
+        .analysis li {
+            margin-bottom: 8px;
+        }
+        .key-finding {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            margin: 3px;
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Kenzie Hawk's Connections to Eagles Family</h1>
+        <h3>Network Analysis of Direct and Indirect Relationships</h3>
+        
+        <div class="visualization">
+            <div class="controls">
+                <button id="zoom-in">Zoom In</button>
+                <button id="zoom-out">Zoom Out</button>
+                <button id="reset">Reset</button>
+            </div>
+            <div class="legend">
+                <h4>Network Groups</h4>
+                <div class="legend-item"><span class="legend-color" style="background-color: #ff7043;"></span> Kenzie Hawk</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #1e88e5;"></span> Eagles Family</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #43a047;"></span> Mutual Contacts</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: #9575cd;"></span> Other Contacts</div>
+                <h4>Connection Strength</h4>
+                <div class="legend-item">Thicker lines = More communications</div>
+            </div>
+            <div id="tooltip" class="tooltip"></div>
+        </div>
+        
+        <div class="analysis">
+            <h2>Key Findings: How Kenzie Connects to the Eagles Family</h2>
+            
+            <div class="key-finding">
+                Kenzie Hawk has direct connections to multiple members of the Eagles family, eliminating the need for intermediaries. These connections appear robust and multifaceted.
+            </div>
+            
+            <h3>Direct Connections (1st Degree)</h3>
+            <ul>
+                <li><strong>Richard Eagle</strong> - 15 communications (strongest Eagles connection)</li>
+                <li><strong>William Eagle</strong> - 12 communications</li>
+                <li><strong>Eagles Maintenance and Landscaping</strong> - 1 communication</li>
+            </ul>
+            
+            <h3>Temporal Analysis</h3>
+            <ul>
+                <li>First contact with Eagles family: February 7, 2020 (with William)</li>
+                <li>Communications clustered around February 11-13, 2020 (with Richard)</li>
+                <li>All communications are text messages (no recorded calls)</li>
+                <li>The communication pattern shows a mix of incoming and outgoing messages, indicating two-way conversations</li>
+            </ul>
+            
+            <h3>Communication Network Context</h3>
+            <ul>
+                <li>Kenzie maintains her strongest communication link with Owen Frasier (32 communications)</li>
+                <li>Richard Eagle is Kenzie's second strongest contact (15 communications)</li>
+                <li>Kenzie appears to function as a bridge between different groups in the network</li>
+                <li>No shared devices were detected between Kenzie and the Eagles family</li>
+            </ul>
+            
+            <h3>Conclusions</h3>
+            <p>
+                Kenzie Hawk maintains direct connections to multiple members of the Eagles family, with a particularly strong link to Richard Eagle. The communication pattern suggests an established relationship rather than casual or incidental contact. Given that she also maintains strong links with other individuals outside the Eagles family (Owen Frasier, Fiona Finch, Martha Hawk), Kenzie appears to serve as a significant network bridge or connector between different groups within the surveillance database.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Define the data
+        const nodes = [
+            // Core nodes - Kenzie and Eagles family
+            { id: "Kenzie Hawk", group: 1, size: 8 },
+            { id: "Richard Eagle", group: 2, size: 7 },
+            { id: "William Eagle", group: 2, size: 7 },
+            { id: "Eagles Maintenance", group: 2, size: 4 },
+            { id: "Beverly Eagle", group: 2, size: 3 },
+            
+            // Kenzie's other connections
+            { id: "Owen Frasier", group: 3, size: 7 },
+            { id: "Fiona Finch", group: 3, size: 6 },
+            { id: "Martha Hawk", group: 3, size: 5 },
+            
+            // Connected to Eagles
+            { id: "Fred Merlin", group: 4, size: 6 },
+            { id: "Ted Dowitcher", group: 4, size: 4 },
+            { id: "Ray", group: 4, size: 3 },
+            
+            // Minor connections
+            { id: "Mildred", group: 4, size: 3 },
+            { id: "TBI-C", group: 4, size: 2 },
+            { id: "Evie Santos", group: 4, size: 2 }
+        ];
+
+        // Define connections
+        const links = [
+            // Direct Kenzie to Eagles connections
+            { source: "Kenzie Hawk", target: "Richard Eagle", value: 15, type: "direct" },
+            { source: "Kenzie Hawk", target: "William Eagle", value: 12, type: "direct" },
+            { source: "Kenzie Hawk", target: "Eagles Maintenance", value: 1, type: "direct" },
+            
+            // Kenzie's other primary connections
+            { source: "Kenzie Hawk", target: "Owen Frasier", value: 32, type: "other" },
+            { source: "Kenzie Hawk", target: "Fiona Finch", value: 14, type: "other" },
+            { source: "Kenzie Hawk", target: "Martha Hawk", value: 13, type: "other" },
+            { source: "Kenzie Hawk", target: "Mildred", value: 5, type: "other" },
+            { source: "Kenzie Hawk", target: "TBI-C", value: 2, type: "other" },
+            { source: "Kenzie Hawk", target: "Evie Santos", value: 1, type: "other" },
+            
+            // Eagles family internal connections
+            { source: "Richard Eagle", target: "William Eagle", value: 30, type: "family" },
+            { source: "Richard Eagle", target: "Eagles Maintenance", value: 4, type: "family" },
+            { source: "William Eagle", target: "Eagles Maintenance", value: 4, type: "family" },
+            { source: "William Eagle", target: "Beverly Eagle", value: 5, type: "family" },
+            
+            // Eagles to others
+            { source: "William Eagle", target: "Fred Merlin", value: 16, type: "other" },
+            { source: "Richard Eagle", target: "Fred Merlin", value: 3, type: "other" },
+            { source: "William Eagle", target: "Ted Dowitcher", value: 8, type: "other" },
+            { source: "Richard Eagle", target: "Ted Dowitcher", value: 4, type: "other" },
+            { source: "William Eagle", target: "Ray", value: 3, type: "other" },
+            
+            // Other inter-connections
+            { source: "Owen Frasier", target: "Fiona Finch", value: 15, type: "other" }
+        ];
+
+        // Set up dimensions
+        const width = document.querySelector('.visualization').clientWidth;
+        const height = 500;
+
+        // Create SVG
+        const svg = d3.select(".visualization")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Add zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 4])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+
+        svg.call(zoom);
+
+        const g = svg.append("g");
+
+        // Create a tooltip
+        const tooltip = d3.select("#tooltip");
+
+        // Create a force simulation
+        const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links).id(d => d.id).distance(d => 200 - d.value * 3))
+            .force("charge", d3.forceManyBody().strength(-400))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(d => 15 + d.size * 2));
+
+        // Define color scale
+        const color = d3.scaleOrdinal()
+            .domain([1, 2, 3, 4])
+            .range(["#ff7043", "#1e88e5", "#43a047", "#9575cd"]);
+
+        // Create links
+        const link = g.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("stroke-width", d => Math.sqrt(d.value) * 0.8)
+            .attr("stroke", d => {
+                if (d.type === "direct") return "#ff7043";
+                if (d.type === "family") return "#1e88e5";
+                return "#aaa";
+            })
+            .attr("opacity", 0.7)
+            .on("mouseover", function(event, d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                
+                tooltip.html(`<strong>${d.source.id || d.source} → ${d.target.id || d.target}</strong><br>${d.value} communications`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+                
+                d3.select(this)
+                    .attr("stroke-width", Math.sqrt(d.value) * 1.5)
+                    .attr("opacity", 1);
+            })
+            .on("mouseout", function(event, d) {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+                
+                d3.select(this)
+                    .attr("stroke-width", Math.sqrt(d.value) * 0.8)
+                    .attr("opacity", 0.7);
+            });
+
+        // Create nodes
+        const node = g.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(nodes)
+            .enter().append("circle")
+            .attr("r", d => 5 + d.size * 1.5)
+            .attr("fill", d => color(d.group))
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5)
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended))
+            .on("mouseover", function(event, d) {
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                
+                // Count connections
+                const connections = links.filter(link => 
+                    link.source.id === d.id || link.source === d.id || 
+                    link.target.id === d.id || link.target === d.id
+                );
+                
+                const groupNames = {
+                    1: "Kenzie Hawk",
+                    2: "Eagles Family",
+                    3: "Mutual Contact",
+                    4: "Other Contact"
+                };
+                
+                tooltip.html(`<strong>${d.id}</strong><br>
+                              Group: ${groupNames[d.group]}<br>
+                              Total Connections: ${connections.length}`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+                
+                // Highlight connected links
+                link.attr("opacity", l => 
+                    l.source.id === d.id || l.source === d.id || 
+                    l.target.id === d.id || l.target === d.id ? 1 : 0.2
+                );
+                
+                // Highlight connected nodes
+                node.attr("opacity", n => {
+                    const isConnected = connections.some(l => 
+                        (l.source.id === n.id || l.source === n.id) && (l.target.id === d.id || l.target === d.id) ||
+                        (l.target.id === n.id || l.target === n.id) && (l.source.id === d.id || l.source === d.id)
+                    );
+                    return n.id === d.id || isConnected ? 1 : 0.2;
+                });
+            })
+            .on("mouseout", function() {
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+                
+                // Reset opacity
+                link.attr("opacity", 0.7);
+                node.attr("opacity", 1);
+            });
+
+        // Add labels
+        const label = g.append("g")
+            .attr("class", "labels")
+            .selectAll("text")
+            .data(nodes)
+            .enter().append("text")
+            .attr("dx", 12)
+            .attr("dy", ".35em")
+            .text(d => d.id)
+            .style("font-size", "12px")
+            .style("pointer-events", "none");
+
+        // Set up simulation ticks
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+            label
+                .attr("x", d => d.x)
+                .attr("y", d => d.y);
+        });
+
+        // Drag functions
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        // Set up control buttons
+        document.getElementById('zoom-in').addEventListener('click', function() {
+            svg.transition().call(zoom.scaleBy, 1.5);
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', function() {
+            svg.transition().call(zoom.scaleBy, 0.75);
+        });
+
+        document.getElementById('reset').addEventListener('click', function() {
+            svg.transition().call(zoom.transform, d3.zoomIdentity);
+        });
+    </script>
+</body>
+</html>
