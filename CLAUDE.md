@@ -125,8 +125,8 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - **Content extraction**: Handles data URIs for text content
 
 ## Important Instructions
+- **NEVER sign commits or changes as Claude/AI** - use standard git authorship only
 - NEVER use emojis in any files or documentation unless explicitly requested by the User
-- NEVER sign commits or changes as Claude/AI - use standard git authorship
 - Only create documentation files when explicitly requested
 - Always prefer editing existing files to creating new ones
 - NEVER write Cypher queries into files without first validating them using the MCP Neo4j server
