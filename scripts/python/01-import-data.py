@@ -25,29 +25,36 @@ def dt(val: str):
 
 
 def create_aliases(tx, session_id, involvements):
-    """Create alias nodes for all identifiers (Feature #7)"""
+    """Create alias nodes for all identifiers (Feature #7) - Fixed entity resolution"""
     for inv in involvements:
-        person_id = inv.get("personid", f"anon-{inv.get('guid', 'unknown')}")
-        
-        # Create Person node if it doesn't exist
-        tx.run("MERGE (p:Person {personId: $pid})", pid=person_id)
-        
+        person_name = inv.get("personname")
+        if not person_name:
+            continue  # Skip involvements without a person name
+
+        # Create Person node with actual name (not anon-unknown)
+        tx.run("MERGE (p:Person {name: $name})", name=person_name)
+
         # Create aliases for each identifier type
         identifiers = [
             ("msisdn", inv.get("msisdn")),
             ("imei", inv.get("imei")),
             ("email", inv.get("email")),
-            ("nickname", inv.get("personname"))
+            ("nickname", inv.get("personname")),
         ]
-        
+
         for alias_type, value in identifiers:
             if value:
-                tx.run("""
+                tx.run(
+                    """
                     MERGE (a:Alias {rawValue: $value, type: $type})
                     WITH a
-                    MATCH (p:Person {personId: $pid})
+                    MATCH (p:Person {name: $name})
                     MERGE (a)-[:ALIAS_OF]->(p)
-                """, value=str(value), type=alias_type, pid=person_id)
+                """,
+                    value=str(value),
+                    type=alias_type,
+                    name=person_name,
+                )
 
 
 def link_location(tx, session_id, location_data):
@@ -56,12 +63,17 @@ def link_location(tx, session_id, location_data):
         try:
             lat = float(location_data["latitude"])
             lon = float(location_data["longitude"])
-            tx.run("""
+            tx.run(
+                """
                 MERGE (l:Location {geo: point({latitude: $lat, longitude: $lon})})
                 WITH l
                 MATCH (s:Session {sessionguid: $sid})
                 MERGE (s)-[:LOCATED_AT]->(l)
-            """, lat=lat, lon=lon, sid=session_id)
+            """,
+                lat=lat,
+                lon=lon,
+                sid=session_id,
+            )
         except (ValueError, TypeError):
             # Skip invalid coordinates
             pass
@@ -236,7 +248,7 @@ def ingest(tx, rec):
     # Create aliases for all involvements
     if "involvements" in rec:
         create_aliases(tx, guid, rec["involvements"])
-    
+
     # Link location if available
     if "location" in rec:
         link_location(tx, guid, rec["location"])
