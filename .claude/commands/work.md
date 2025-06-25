@@ -18,9 +18,10 @@ gh issue view $ARGUMENTS
 ### 2. Research Codebase
 - Read CLAUDE.md for project context and commands
 - **Check for design document**: Read `analysis/$ARGUMENTS/DESIGN.md` if it exists
+- **Check README_ENTITY_RESOLUTION.md** for entity resolution context if applicable
 - Search for relevant files using available tools
 - Understand existing patterns and conventions
-- Check current Neo4j schema and data structure
+- Check current Neo4j schema and data structure using MCP tools
 
 ### 3. Write Failing Tests First (Evaluation-First)
 **Critical:** Tests define success. Implementation serves tests.
