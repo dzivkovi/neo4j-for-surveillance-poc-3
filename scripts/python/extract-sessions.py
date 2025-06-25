@@ -30,15 +30,16 @@ DEFAULT_FIELDS = {
     'sourceid',           # Links to data source
     'displaytypeid',      # Links to phones/emails
     'targetname',         # Quick participant reference
+    'involvements',       # CRITICAL for entity resolution (phones, emails, IMEIs)
 }
 
 # Fields that significantly increase file size
 LARGE_FIELDS = {
     'products',           # Complex nested structures
-    'involvements',       # Relationship arrays
     'previewcontent',     # Base64 encoded content
     'fulltext',           # Complete text content
     'enrichment_',        # AI/ML enrichments
+    'trackpoints',        # Location data arrays
 }
 
 # Fields useful for debugging but not core functionality
@@ -112,6 +113,14 @@ def extract_sessions(
         'output_size_mb': 0,
         'sessiontype_counts': {},
         'classification_counts': {},
+        'targetname_counts': {},
+        'involvement_stats': {
+            'total': 0,
+            'with_msisdn': 0,
+            'with_email': 0,
+            'with_imei': 0,
+            'with_personname': 0,
+        },
     }
     
     extracted_sessions = []
@@ -155,6 +164,23 @@ def extract_sessions(
                 if 'classification' in extracted:
                     ctype = extracted['classification']
                     stats['classification_counts'][ctype] = stats['classification_counts'].get(ctype, 0) + 1
+                    
+                if 'targetname' in extracted:
+                    tname = extracted['targetname']
+                    stats['targetname_counts'][tname] = stats['targetname_counts'].get(tname, 0) + 1
+                
+                # Analyze involvements for entity resolution
+                if 'involvements' in extracted:
+                    for inv in extracted['involvements']:
+                        stats['involvement_stats']['total'] += 1
+                        if inv.get('msisdn'):
+                            stats['involvement_stats']['with_msisdn'] += 1
+                        if inv.get('email'):
+                            stats['involvement_stats']['with_email'] += 1
+                        if inv.get('imei'):
+                            stats['involvement_stats']['with_imei'] += 1
+                        if inv.get('personname'):
+                            stats['involvement_stats']['with_personname'] += 1
                     
             except json.JSONDecodeError:
                 print(f"⚠️  Skipping invalid JSON at line {i+1}", file=sys.stderr)
@@ -200,6 +226,22 @@ def print_stats(stats: Dict[str, Any]) -> None:
         print("\n🏷️  Classifications:", file=sys.stderr)
         for ctype, count in sorted(stats['classification_counts'].items()):
             print(f"   {ctype}: {count:,}", file=sys.stderr)
+    
+    if stats['targetname_counts']:
+        print("\n👤 Target Names (Entity Resolution):", file=sys.stderr)
+        for tname, count in sorted(stats['targetname_counts'].items(), key=lambda x: x[1], reverse=True)[:5]:
+            print(f"   {tname}: {count:,} sessions", file=sys.stderr)
+        if len(stats['targetname_counts']) > 5:
+            print(f"   ... and {len(stats['targetname_counts']) - 5} more unique targets", file=sys.stderr)
+    
+    if stats['involvement_stats']['total'] > 0:
+        print("\n🔗 Involvement Statistics (for Entity Resolution):", file=sys.stderr)
+        inv = stats['involvement_stats']
+        print(f"   Total involvements: {inv['total']:,}", file=sys.stderr)
+        print(f"   With phone (msisdn): {inv['with_msisdn']:,} ({inv['with_msisdn']/inv['total']*100:.1f}%)", file=sys.stderr)
+        print(f"   With email: {inv['with_email']:,} ({inv['with_email']/inv['total']*100:.1f}%)", file=sys.stderr)
+        print(f"   With IMEI: {inv['with_imei']:,} ({inv['with_imei']/inv['total']*100:.1f}%)", file=sys.stderr)
+        print(f"   With person name: {inv['with_personname']:,} ({inv['with_personname']/inv['total']*100:.1f}%)", file=sys.stderr)
 
 
 def main():
@@ -455,6 +497,14 @@ def main():
             'output_size_mb': 0,
             'sessiontype_counts': {},
             'classification_counts': {},
+            'targetname_counts': {},
+            'involvement_stats': {
+                'total': 0,
+                'with_msisdn': 0,
+                'with_email': 0,
+                'with_imei': 0,
+                'with_personname': 0,
+            },
         }
         with open(args.input, 'r') as f:
             for line in f:
@@ -467,6 +517,20 @@ def main():
                     if 'classification' in record:
                         ctype = record['classification']
                         stats['classification_counts'][ctype] = stats['classification_counts'].get(ctype, 0) + 1
+                    if 'targetname' in record:
+                        tname = record['targetname']
+                        stats['targetname_counts'][tname] = stats['targetname_counts'].get(tname, 0) + 1
+                    if 'involvements' in record:
+                        for inv in record['involvements']:
+                            stats['involvement_stats']['total'] += 1
+                            if inv.get('msisdn'):
+                                stats['involvement_stats']['with_msisdn'] += 1
+                            if inv.get('email'):
+                                stats['involvement_stats']['with_email'] += 1
+                            if inv.get('imei'):
+                                stats['involvement_stats']['with_imei'] += 1
+                            if inv.get('personname'):
+                                stats['involvement_stats']['with_personname'] += 1
                 except:
                     stats['skipped_records'] += 1
     
