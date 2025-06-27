@@ -9,6 +9,7 @@ This is a Neo4j-based surveillance analytics POC that ingests communication sess
 ## Design Principles
 - **Less is More**: Simplicity always wins over complexity. The most intelligent solutions are usually the simplest ones.
 - Follow **Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away** advice by Antoine de Saint-Exupéry.
+- **Defensive Programming**: Test everything, validate all assumptions, never rush implementation. Every query must be tested with MCP server before documentation. Expect failures and plan for them.
 - **Evals are tests for prompts**: Just as tests verify code, evals verify AI behavior. Write tests first, let them fail, then implement until they pass consistently (5+ runs for nondeterministic systems).
 - **Tests are immutable**: Once written, tests define success. Implementation serves tests, not vice versa.
 
@@ -124,7 +125,9 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - **Content extraction**: Handles data URIs for text content
 
 ## Important Instructions
+- **NEVER sign commits or changes as Claude/AI** - use standard git authorship only
 - NEVER use emojis in any files or documentation unless explicitly requested by the User
-- NEVER sign commits or changes as Claude/AI - use standard git authorship
 - Only create documentation files when explicitly requested
 - Always prefer editing existing files to creating new ones
+- NEVER write Cypher queries into files without first validating them using the MCP Neo4j server
+- ALWAYS test Cypher queries with mcp__neo4j__read_neo4j_cypher before documenting them
