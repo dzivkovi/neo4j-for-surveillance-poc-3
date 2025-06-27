@@ -15,7 +15,8 @@ Oui, Fred parle de ses projets de voyage à plusieurs reprises. (Yes, Fred talks
 ### Query
 ```cypher
 // Same semantic search works regardless of query language
-CALL db.index.fulltext.queryNodes('ContentFullText', 'Fred travel plans departure leaving Miami Mobile') 
+CALL db.index.fulltext.queryNodes('ContentFullText', 'Fred discute-t-il de ses projets de voyage?',
+    {analyzer:'french'})  // Optional language-specific analyzer
 YIELD node, score
 MATCH (node)<-[:HAS_CONTENT]-(s:Session)
 OPTIONAL MATCH (s)<-[:PARTICIPATED_IN]-()<-[:USES]-(p:Person)
@@ -26,7 +27,7 @@ RETURN count(*) as discussions_voyage,
 
 ### Actual Result
 ```
-discussions_voyage: 91
+discussions_voyage: 25
 meilleur_score: 5.895384311676025
 ```
 
