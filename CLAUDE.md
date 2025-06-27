@@ -124,6 +124,12 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - **Data format**: NDJSON with session/involvement/product structure
 - **Content extraction**: Handles data URIs for text content
 
+## Daily Analysis Notes
+When asked to "save our chat", "save your finding", or "save our analysis", or simply "save that" (or "save this"), always create a new file at `analysis/YYYY-MM-DD/meaningful-file-name.md` (named to match our conversation). Each entry should include:
+- Timestamp and context
+- The question/query
+- Your analysis and findings as seen in the chat
+
 ## Important Instructions
 - **NEVER sign commits or changes as Claude/AI** - use standard git authorship only
 - NEVER use emojis in any files or documentation unless explicitly requested by the User
