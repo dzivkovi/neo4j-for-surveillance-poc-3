@@ -18,7 +18,7 @@ gh issue view $ARGUMENTS
 ### 2. Research Codebase
 - Read CLAUDE.md for project context and commands
 - **Check for design document**: Read `analysis/$ARGUMENTS/DESIGN.md` if it exists
-- **Check README_ENTITY_RESOLUTION.md** for entity resolution context if applicable
+- **Check docs/entity-resolution.md** for entity-resolution context if applicable
 - Search for relevant files using available tools
 - Understand existing patterns and conventions
 - Check current Neo4j schema and data structure using MCP tools
@@ -53,9 +53,10 @@ ruff check . --fix
 
 ### 6. Create Pull Request
 ```bash
+# Use appropriate work type prefix: feat|fix|docs|chore
 # Descriptive commit following project patterns
 git add -A
-git commit -m "feat: implement [brief description]
+git commit -m "<TYPE>: implement [brief description]
 
 - Key changes made
 - Evaluation tests now passing
@@ -63,10 +64,10 @@ git commit -m "feat: implement [brief description]
 
 Closes #$ISSUE_NUMBER
 
-git push -u origin feat/$ISSUE_NUMBER-description
+git push -u origin <TYPE>/$ISSUE_NUMBER-description
 
 # Create PR using template
-gh pr create --title "feat: [Issue title]" --body-file .github/PULL_REQUEST_TEMPLATE.md
+gh pr create --title "<TYPE>: [Issue title]" --body-file .github/PULL_REQUEST_TEMPLATE.md
 ```
 
 ## Key Principles for This Project

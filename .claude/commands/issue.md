@@ -6,6 +6,9 @@ First, you will be given a feature description. Here it is:
 #$ARGUMENTS
 </feature_description>
 
+Always replace <TYPE> with one of: feat, fix, docs, chore (based on work category).
+If analysis/0000/DESIGN.md does not exist, generate the stub shown in the repo and link it.
+
 Follow these steps to complete the task, make a todo list and think ultrahard:
 
 1. Research the repository:

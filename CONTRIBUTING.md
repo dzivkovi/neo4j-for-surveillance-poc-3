@@ -77,9 +77,14 @@ def test_fred_travel_mentions():
 
 ## Pull Request Process
 
+* **Branches & titles**: Use `feat|fix|docs|chore/<issue#>-slug` for branches and the same `feat:` / `fix:` / `docs:` / `chore:` prefix in commit headers and issue titles.
+
 1. **Create a branch** for your feature or fix
    ```bash
-   git checkout -b feature/github-issue-number-followed-by-your-feature-name
+   git checkout -b feat/123-add-new-feature
+   # or: fix/456-bug-description
+   # or: docs/789-update-readme  
+   # or: chore/101-cleanup-code
    ```
 
 2. **Implement your changes** following TDD approach
