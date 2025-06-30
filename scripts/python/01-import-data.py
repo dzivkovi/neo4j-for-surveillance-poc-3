@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Load `data/sessions.ndjson` into Neo4j using the session-centric
 schema.  Run AFTER 01-schema.cypher.

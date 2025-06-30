@@ -11,7 +11,7 @@ Academic and industry resources that inform our graph analytics approach:
 - **Social Network Analysis: Methods and Applications** - Wasserman & Faust's foundational work on network analysis
 - **Graph-Powered Fraud Detection** - Neo4j whitepaper on applying graph analytics to security use cases
 
-These references support the methodologies demonstrated in our [Graph Analytics Case Study](../README_GRAPH_ANALYTICS_CASE_STUDY.md).
+These references support the methodologies demonstrated in our [Graph Analytics Case Study](case-study.md).
 
 ## Visualizations
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 compute embeddings for any Content node missing .embedding
 """
