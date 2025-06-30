@@ -1,68 +1,84 @@
+#!/usr/bin/env python
 """
 Query Neo4j vector index (via LangChain retriever) to answer:
 
   "Does Fred discuss travel plans?"
 """
-
+import os
+import asyncio
 from neo4j import GraphDatabase
 from sentence_transformers import SentenceTransformer
-
-# Initialize the embedding model
-model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
-# Connect to Neo4j
-driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "Sup3rSecur3!"))
+from langchain_community.vectorstores import Neo4jVector
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.schema import Document
 
 
-def semantic_search(query_text, top_k=5):
-    """Perform semantic search using vector similarity"""
-    # Generate embedding for the query
-    query_embedding = model.encode(query_text).tolist()
-
-    with driver.session() as session:
-        result = session.run(
-            """
-            CALL db.index.vector.queryNodes('ContentVectorIndex', $k, $query_vector)
-            YIELD node, score
-            MATCH (s:Session)-[:HAS_CONTENT]->(node)
-            RETURN node.id as content_id,
-                   node.text as content_text,
-                   s.sessionguid as session_id,
-                   s.sessiontype as session_type,
-                   score
-            ORDER BY score DESC
-        """,
-            k=top_k,
-            query_vector=query_embedding,
-        )
-
-        return list(result)
+NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")
+NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "Sup3rSecur3!")
 
 
-# Search for travel-related content
-print("Searching for: 'travel plans vacation trip'")
-results = semantic_search("travel plans vacation trip", top_k=5)
+async def graphrag_demo():
+    """Demonstrate GraphRAG capabilities with Neo4j and LangChain."""
+    # Initialize embeddings
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+    
+    # Create Neo4j vector store instance
+    vector_store = Neo4jVector.from_existing_index(
+        embedding=embeddings,
+        url=NEO4J_URI,
+        username=NEO4J_USERNAME,
+        password=NEO4J_PASSWORD,
+        index_name="content_embedding_index",
+        node_label="Content",
+        text_node_properties=["text"],
+        embedding_node_property="embedding"
+    )
+    
+    # Query about Fred's travel plans
+    question = "Does Fred discuss travel plans?"
+    print(f"🔍 Question: {question}\n")
+    
+    # Perform similarity search
+    results = vector_store.similarity_search(question, k=5)
+    
+    if results:
+        print(f"✅ Found {len(results)} relevant content pieces:\n")
+        for i, doc in enumerate(results, 1):
+            print(f"{i}. Content excerpt:")
+            print(f"   {doc.page_content[:200]}...")
+            if hasattr(doc, 'metadata'):
+                print(f"   Metadata: {doc.metadata}")
+            print()
+    else:
+        print("❌ No relevant content found.\n")
+    
+    # Enhanced query with context
+    print("\n🔍 Enhanced Query: Finding specific travel mentions...")
+    travel_query = "travel Miami meeting February"
+    travel_results = vector_store.similarity_search(travel_query, k=3)
+    
+    if travel_results:
+        print(f"\n✅ Found {len(travel_results)} travel-related discussions:\n")
+        for i, doc in enumerate(travel_results, 1):
+            print(f"{i}. {doc.page_content[:300]}...")
+            print()
 
-print(f"\nTop {len(results)} similarity hits:")
-for i, record in enumerate(results, 1):
-    content_preview = record["content_text"][:120].replace("\n", " ") if record["content_text"] else "No text"
-    print(f"{i}. Score: {record['score']:.4f}")
-    print(f"   Session: {record['session_id']} ({record['session_type']})")
-    print(f"   Content: {content_preview}...")
-    print()
 
-# Search for specific person mentions
-print("\nSearching for: 'Fred Merlin contact information'")
-fred_results = semantic_search("Fred Merlin contact information", top_k=3)
+def main():
+    """Run the GraphRAG demo."""
+    print("=== Neo4j GraphRAG Demo ===\n")
+    print("This demo uses LangChain's Neo4jVector to query our graph database")
+    print("using natural language via vector similarity search.\n")
+    
+    asyncio.run(graphrag_demo())
+    
+    print("\n=== Analysis Complete ===")
+    print("\nThis demonstrates how GraphRAG can answer investigative questions")
+    print("by combining graph traversal with semantic search capabilities.")
 
-print(f"\nFred-related results ({len(fred_results)} hits):")
-for i, record in enumerate(fred_results, 1):
-    content_preview = record["content_text"][:150].replace("\n", " ") if record["content_text"] else "No text"
-    print(f"{i}. Score: {record['score']:.4f}")
-    print(f"   Content: {content_preview}...")
-    print()
 
-# Close the driver
-driver.close()
-
-print("Demo complete! You can modify the search terms to explore different concepts.")
+if __name__ == "__main__":
+    main()

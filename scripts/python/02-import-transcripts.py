@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Import LanceDB transcript data into Neo4j with proper timestamp conversion.
 

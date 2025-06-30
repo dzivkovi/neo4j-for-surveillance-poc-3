@@ -147,7 +147,7 @@ Every query is auditable, every relationship is traceable, and every insight inc
 
 ### **For Operations**:
 
-Neo4j MCP integration (see `README_MCP.md`) means investigators can ask questions in plain English—no technical training required.
+Neo4j MCP integration (see [mcp.md](mcp.md)) means investigators can ask questions in plain English—no technical training required.
 
 ---
 
