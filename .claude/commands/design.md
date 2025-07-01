@@ -1,5 +1,7 @@
 # Design Command
 
+**Model Preference**: Use the latest Claude 4 Opus model
+
 You are creating a design document for a new feature or improvement. Your task is to generate a comprehensive DESIGN.md file that will guide implementation.
 
 First, you will be given a feature description:

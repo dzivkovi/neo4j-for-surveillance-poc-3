@@ -1,5 +1,7 @@
 You are implementing a GitHub issue for the Neo4j surveillance analytics project using evaluation-first development.
 
+**Model Preference**: Use the latest Claude 4 Sonnet model
+
 **Issue to implement:**
 $ARGUMENTS
 
