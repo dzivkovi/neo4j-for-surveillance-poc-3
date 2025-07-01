@@ -26,7 +26,7 @@ RETURN c.id, substring(c.text, 0, 200) as TextPreview, size(c.embedding) as Embe
 // 3. Check vector index status
 // ============================================
 SHOW INDEXES
-WHERE name = 'ContentVectorIndex';
+WHERE name = 'content_vector_index';
 
 // ============================================
 // 4. Find similar content using vector search
@@ -37,7 +37,7 @@ WHERE c.embedding IS NOT NULL
 WITH c.embedding as queryVector
 LIMIT 1
 // Search for similar content
-CALL db.index.vector.queryNodes('ContentVectorIndex', 5, queryVector) 
+CALL db.index.vector.queryNodes('content_vector_index', 5, queryVector) 
 YIELD node, score
 RETURN node.id as ContentId, score, substring(node.text, 0, 100) as Preview
 ORDER BY score DESC;
@@ -57,7 +57,7 @@ MATCH (c1:Content)
 WHERE c1.embedding IS NOT NULL
 WITH collect({id: c1.id, embedding: c1.embedding, text: substring(c1.text, 0, 50)}) as contents
 UNWIND contents as content1
-CALL db.index.vector.queryNodes('ContentVectorIndex', 3, content1.embedding) 
+CALL db.index.vector.queryNodes('content_vector_index', 3, content1.embedding) 
 YIELD node as content2, score
 WHERE content1.id <> content2.id
 RETURN 
@@ -86,7 +86,7 @@ ORDER BY Content1_ID, score DESC;
 //
 // Then use in Cypher:
 // WITH [<paste embedding array here>] as searchVector
-// CALL db.index.vector.queryNodes('ContentVectorIndex', 10, searchVector)
+// CALL db.index.vector.queryNodes('content_vector_index', 10, searchVector)
 // YIELD node, score
 // RETURN node.id, score, substring(node.text, 0, 200) as Preview
 // ORDER BY score DESC;

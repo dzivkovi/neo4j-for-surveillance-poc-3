@@ -31,7 +31,7 @@ async def graphrag_demo():
         url=NEO4J_URI,
         username=NEO4J_USERNAME,
         password=NEO4J_PASSWORD,
-        index_name="content_vector_index",
+        index_name="ContentVectorIndex",  # Use correct PascalCase index name for Neo4j
         node_label="Content",
         text_node_property="text",
         embedding_node_property="embedding",
