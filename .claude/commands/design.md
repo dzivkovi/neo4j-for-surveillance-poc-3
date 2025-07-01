@@ -10,9 +10,10 @@ $ARGUMENTS
 
 Follow these steps carefully:
 
-1. **Check for existing design**:
-   - NEVER overwrite an existing DESIGN.md in analysis/0000/
-   - If one exists, inform the user and suggest moving it first
+1. **Check for existing designs**:
+   - Check for DESIGN.md, DESIGN_b.md, DESIGN_c.md, etc. in analysis/0000/
+   - Use alphabetic suffixes to avoid confusion with numbered issue folders
+   - If DESIGN.md exists, create DESIGN_b.md; if both exist, create DESIGN_c.md, etc.
    - These represent uncommitted work that hasn't been turned into issues yet
 
 2. **Analyze the request**:
@@ -28,7 +29,7 @@ Follow these steps carefully:
    - Include concrete acceptance criteria
 
 4. **Save the design**:
-   - Write to `analysis/0000/DESIGN.md`
+   - Write to `analysis/0000/DESIGN.md` (or DESIGN_b.md, DESIGN_c.md if others exist)
    - Include clear title and comprehensive details
    - Make it ready for `/issue` command to reference
 
