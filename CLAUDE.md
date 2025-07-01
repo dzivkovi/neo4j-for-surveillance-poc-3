@@ -10,6 +10,7 @@ This is a Neo4j-based surveillance analytics POC that ingests communication sess
 - Follow **Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away** advice by Antoine de Saint-Exupéry.
 - **Optimize for User Interaction Pattern**: Before structuring anything, ask "How will users interact with this?" Browsing/scanning tasks favor flat layouts that minimize cognitive load; direct navigation tasks can use logical hierarchy.
 - **Defensive Programming**: Test everything, validate all assumptions, never rush implementation. Every query must be tested with MCP server before documentation. Expect failures and plan for them.
+- **Documentation-First**: Always check latest official docs before implementing. Technology changes faster than training data or existing code.
 - **Evals are tests for prompts**: Just as tests verify code, evals verify AI behavior. Write tests first, let them fail, then implement until they pass consistently (5+ runs for nondeterministic systems).
 - **Tests are immutable**: Once written, tests define success. Implementation serves tests, not vice versa.
 
@@ -86,8 +87,18 @@ This project leverages Neo4j v5's latest Generative AI features including vector
 
 ### Common Patterns
 - Use async driver for all new features
-- Vector dimension: 384 (sentence-transformers compatible)
+- Vector dimensions: CHECK LATEST DOCS (legacy: 384, current: see documentation)
 - Index naming: `{node_label}_embedding_index`
+
+## Documentation-First Development
+**IMPORTANT**: Technology evolves rapidly. When implementing any feature:
+1. ALWAYS check official documentation first (links provided above)
+2. Compare with existing code patterns second
+3. Explain any differences between docs and local implementation
+4. Trust latest documentation over:
+   - My training data (likely outdated)
+   - Existing codebase (may be legacy)
+   - Examples in this file (may be from earlier versions)
 
 ## Architecture & Key Design Patterns
 
