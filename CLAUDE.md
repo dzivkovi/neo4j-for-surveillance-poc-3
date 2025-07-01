@@ -19,7 +19,7 @@ This is a Neo4j-based surveillance analytics POC that ingests communication sess
 
 ### Neo4j Operations
 ```bash
-# Quick connection test
+# Quick connection test for development
 docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3!
 
 # Run schema validation
@@ -31,11 +31,10 @@ docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/ve
 
 ### Development Validation
 ```bash
-# Activate environment and run data pipeline validation
-source venv/bin/activate
-python scripts/python/03-graphrag-demo.py  # Test GraphRAG queries
+# Test GraphRAG queries after environment setup
+source venv/bin/activate && python scripts/python/03-graphrag-demo.py
 
-# Run evaluation suite (comprehensive business requirements test)
+# Run comprehensive business requirements test
 docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
@@ -44,7 +43,7 @@ docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/ev
 # Check container status
 docker ps | grep neo4j-sessions
 
-# View Neo4j logs
+# View Neo4j logs for troubleshooting
 docker logs neo4j-sessions
 
 # Container restart (data loss - use for fresh start only)
@@ -89,7 +88,6 @@ This project leverages Neo4j v5's latest Generative AI features including vector
 - Use async driver for all new features
 - Vector dimension: 384 (sentence-transformers compatible)
 - Index naming: `{node_label}_embedding_index`
-
 
 ## Architecture & Key Design Patterns
 
