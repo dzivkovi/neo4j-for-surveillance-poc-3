@@ -1,3 +1,10 @@
+[project]
+name = "neo4j-surveillance-poc"
+version = "0.1.0"
+dependencies = [
+    "pytest>=7.0.0",
+]
+
 [tool.ruff]
 # Less is more: One tool, simple config
 target-version = "py39"
@@ -23,3 +30,4 @@ ignore = []
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+pythonpath = ["."]
