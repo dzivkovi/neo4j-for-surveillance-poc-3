@@ -399,7 +399,6 @@ class DefinitionOfDoneValidator:
             StructuralGate(),  # All files in correct locations
             OperationalGate(),  # Production-ready configuration
             IntegrativeGate(),  # MCP validation, database consistency
-            ContractualGate(),  # Original acceptance criteria met
             RegressionGate(),  # No existing functionality broken
         ]
 

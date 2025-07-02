@@ -149,7 +149,6 @@ def process_data():
             "StructuralGate",
             "OperationalGate",
             "IntegrativeGate",
-            "ContractualGate",
             "RegressionGate",
         ]
 
@@ -187,7 +186,6 @@ def process_data():
             patch.object(validator.quality_gates[3], "validate", return_value=True),
             patch.object(validator.quality_gates[4], "validate", return_value=True),
             patch.object(validator.quality_gates[5], "validate", return_value=True),
-            patch.object(validator.quality_gates[6], "validate", return_value=True),
         ):
             result = validator.validate_completion()
         self.assertIn("All Definition of Done criteria met", result)
