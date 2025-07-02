@@ -36,11 +36,12 @@ CREATE FULLTEXT INDEX ContentFullText IF NOT EXISTS
 FOR (c:Content) ON EACH [c.text];
 
 // —— Vector index for semantic similarity ——————————
+// Updated to 1536 dimensions for OpenAI embeddings (was 384 for sentence-transformers)
 CREATE VECTOR INDEX ContentVectorIndex IF NOT EXISTS
 FOR (c:Content) ON (c.embedding)
 OPTIONS {
   indexConfig: {
-    `vector.dimensions`: 384,
+    `vector.dimensions`: 1536,
     `vector.similarity_function`: "COSINE"
   }
 };

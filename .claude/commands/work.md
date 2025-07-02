@@ -53,7 +53,24 @@ ruff check . --fix
 # Verify evaluation test scenarios work
 ```
 
-### 6. Create Pull Request
+### 6. Quality Gates Validation
+**Critical:** Cannot proceed until ALL quality gates pass.
+```bash
+python -c "
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path('.claude')))
+from workflow.definition_of_done import enforce_definition_of_done
+print(enforce_definition_of_done())
+"
+```
+
+### 7. DESIGN.md Handoff
+```bash
+mkdir -p analysis/$ARGUMENTS && mv analysis/0000/DESIGN.md analysis/$ARGUMENTS/DESIGN.md
+```
+
+### 8. Create Pull Request
 ```bash
 # Use appropriate work type prefix: feat|fix|docs|chore
 # Descriptive commit following project patterns
@@ -63,8 +80,9 @@ git commit -m "<TYPE>: implement [brief description]
 - Key changes made
 - Evaluation tests now passing
 - Neo4j MCP validation confirmed
+- All quality gates passing
 
-Closes #$ISSUE_NUMBER
+Closes #$ISSUE_NUMBER"
 
 git push -u origin <TYPE>/$ISSUE_NUMBER-description
 
@@ -79,6 +97,7 @@ gh pr create --title "<TYPE>: [Issue title]" --body-file .github/PULL_REQUEST_TE
 - **Law Enforcement Context:** Remember this serves surveillance analytics use cases
 - **Tests are Immutable:** Never modify tests to make implementation easier
 - **Less is More:** Simplest solution that passes tests wins
+- **Quality Gates:** All automated validation must pass before completion
 
 ## Project-Specific Notes
 
