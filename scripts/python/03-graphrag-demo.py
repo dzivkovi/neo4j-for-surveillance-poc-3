@@ -7,10 +7,7 @@ Query Neo4j vector index (via LangChain retriever) to answer:
 
 import os
 import asyncio
-from neo4j import GraphDatabase
-from sentence_transformers import SentenceTransformer
 from langchain_community.vectorstores import Neo4jVector
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 
 
@@ -31,7 +28,7 @@ async def graphrag_demo():
         url=NEO4J_URI,
         username=NEO4J_USERNAME,
         password=NEO4J_PASSWORD,
-        index_name="content_vector_index",
+        index_name="ContentVectorIndex",  # Use correct PascalCase index name for Neo4j
         node_label="Content",
         text_node_property="text",
         embedding_node_property="embedding",
