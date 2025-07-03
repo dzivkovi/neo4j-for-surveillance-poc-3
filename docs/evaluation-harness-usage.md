@@ -220,11 +220,76 @@ The system is designed to be extended. Future enhancements could include:
 - Check for UTF-8 encoding issues
 - Ensure no manual edits broke the header structure
 
+## Confidence Generation for Tests
+
+### Overview
+
+Many tests need confidence scores for auto-promotion. This is handled through a two-part approach:
+
+### Part 1: Query Development with `/eval` Command
+
+For tests with placeholder queries (`// TODO: Implement Cypher query`):
+
+```bash
+# Interactive query development
+/eval 05  # Opens EVAL-05 and guides Cypher development
+```
+
+Claude will:
+1. Load the test file and show the business question
+2. Reference expected answers from `evaluation_tests.md`
+3. Use Neo4j MCP to explore data and test queries
+4. Update the file with working Cypher when validated
+
+### Part 2: Automated Confidence Generation
+
+For tests with existing Cypher queries:
+
+```bash
+# Generate confidence for single test
+python scripts/python/evaluation_harness.py generate-confidence --test-id EVAL-03
+
+# Process all eligible tests
+python scripts/python/evaluation_harness.py generate-confidence --batch
+```
+
+The script will:
+- Skip tests with placeholder queries (use `/eval` instead)
+- Execute existing queries via Neo4j MCP
+- Calculate confidence scores using the standard algorithm
+- Add confidence sections to enable auto-promotion
+
+### Current Test Distribution
+
+- **43 tests** have placeholder queries → Use `/eval NN` command
+- **34 tests** have existing queries → Use confidence generator
+- Tests in TODO folder are skipped (not ready for confidence)
+
+### Workflow Example
+
+1. **Identify tests needing queries**:
+   ```bash
+   python scripts/python/evaluation_harness.py generate-confidence --batch
+   # Output: "Skipped EVAL-05 - needs /eval command"
+   ```
+
+2. **Develop query interactively**:
+   ```bash
+   /eval 05
+   # Claude guides you through query development
+   ```
+
+3. **Re-run confidence generation**:
+   ```bash
+   python scripts/python/evaluation_harness.py generate-confidence --test-id EVAL-05
+   # Now generates confidence for the newly created query
+   ```
+
 ## Future Roadmap
 
 This is v2 of the evaluation harness. Planned improvements:
 
-1. **Neo4j Integration**: Direct query execution via MCP
+1. **Enhanced Neo4j Integration**: Confidence generation for all tests
 2. **Parallel Execution**: Run multiple tests concurrently
 3. **Performance Tracking**: Historical performance trends
 4. **Custom Categories**: Beyond the current classification
