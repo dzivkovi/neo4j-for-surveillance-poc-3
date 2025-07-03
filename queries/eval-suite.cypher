@@ -25,7 +25,7 @@ RETURN '--- A-2: Checking Indexes ---' AS step;
 SHOW INDEXES
 YIELD name, type, state, populationPercent, entityType, labelsOrTypes, properties
 ORDER BY type, name;
-/* Look for: ContentFullText (FULLTEXT), content_vector_index (VECTOR) */
+/* Look for: ContentFullText (FULLTEXT), ContentVectorIndex (VECTOR) */
 
 // A-3: Ensure indexes are ready
 CALL db.awaitIndexes();

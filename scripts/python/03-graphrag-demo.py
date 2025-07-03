@@ -7,10 +7,7 @@ Query Neo4j vector index (via LangChain retriever) to answer:
 
 import os
 import asyncio
-from neo4j import GraphDatabase
-from sentence_transformers import SentenceTransformer
 from langchain_community.vectorstores import Neo4jVector
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 
 

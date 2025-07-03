@@ -66,10 +66,10 @@ class TestOpenAIEmbeddings:
         """ACCEPTANCE CRITERIA 2: New 1536d vector index is created"""
         with neo4j_driver.session() as session:
             # This will FAIL until new index is created
-            result = session.run("SHOW INDEXES YIELD name, properties, options WHERE name = 'content_vector_index'")
+            result = session.run("SHOW INDEXES YIELD name, properties, options WHERE name = 'ContentVectorIndex'")
 
             index_info = result.single()
-            assert index_info is not None, "content_vector_index must exist"
+            assert index_info is not None, "ContentVectorIndex must exist"
 
             # Check index configuration (options.indexConfig contains the vector config)
             options = index_info["options"]
@@ -102,7 +102,7 @@ class TestOpenAIEmbeddings:
             # This will FAIL until vector search is implemented with new embeddings
             result = session.run(
                 """
-                CALL db.index.vector.queryNodes('content_vector_index', 10, $query_vector)
+                CALL db.index.vector.queryNodes('ContentVectorIndex', 10, $query_vector)
                 YIELD node, score
                 WHERE score > 0.6
                 RETURN node.text as content, score
@@ -134,7 +134,7 @@ class TestOpenAIEmbeddings:
             # This will FAIL until implementation is complete
             result = session.run(
                 """
-                CALL db.index.vector.queryNodes('content_vector_index', 10, $query_vector)
+                CALL db.index.vector.queryNodes('ContentVectorIndex', 10, $query_vector)
                 YIELD node, score
                 WHERE score > 0.6
                 RETURN node.text as content, score
@@ -163,7 +163,7 @@ class TestOpenAIEmbeddings:
             # This will FAIL until implementation is complete
             result = session.run(
                 """
-                CALL db.index.vector.queryNodes('content_vector_index', 10, $query_vector)
+                CALL db.index.vector.queryNodes('ContentVectorIndex', 10, $query_vector)
                 YIELD node, score
                 WHERE score > 0.6
                 RETURN node.text as content, score
@@ -195,7 +195,7 @@ class TestOpenAIEmbeddings:
                 # Test new 1536d embeddings
                 result_v2 = session.run(
                     """
-                    CALL db.index.vector.queryNodes('content_vector_index', 5, $query_vector)
+                    CALL db.index.vector.queryNodes('ContentVectorIndex', 5, $query_vector)
                     YIELD node, score
                     RETURN count(*) as result_count, avg(score) as avg_score
                 """,
@@ -256,7 +256,7 @@ class TestOpenAIEmbeddings:
             assert content_count > 0, "Content nodes should still exist"
 
             # Verify we're using the new index exclusively
-            result = session.run("SHOW INDEXES WHERE name = 'content_vector_index'")
+            result = session.run("SHOW INDEXES WHERE name = 'ContentVectorIndex'")
             new_index = result.single()
             assert new_index is not None, "New 1536d OpenAI vector index should exist"
 

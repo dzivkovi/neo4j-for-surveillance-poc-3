@@ -2,7 +2,7 @@
   Vector Index Migration Patch: 384 → 1536 Dimensions
   =====================================================
   
-  This patch safely migrates the existing content_vector_index from 384 
+  This patch safely migrates the existing ContentVectorIndex from 384 
   to 1536 dimensions to support OpenAI embeddings without losing data.
   
   IMPORTANT: This only updates the index schema. Existing embeddings will 

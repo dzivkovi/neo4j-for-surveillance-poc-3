@@ -1,18 +1,18 @@
 /***************************************************************************
   Vector Index Cleanup Script
   ============================
-  Purpose: Remove old CamelCase vector indexes and ensure correct snake_case
-           index exists for OpenAI embeddings
+  Purpose: Remove old vector indexes and ensure correct PascalCase index
+           exists for OpenAI embeddings (following Neo4j conventions)
   
   Usage: docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/cleanup-vector-indexes.cypher
 ***************************************************************************/
 
-// Drop old CamelCase indexes if they exist
-DROP INDEX ContentVectorIndex IF EXISTS;
+// Drop old incorrectly named indexes if they exist
+DROP INDEX content_vector_index IF EXISTS;
 DROP INDEX ContentVectorIndexV2 IF EXISTS;
 
-// Ensure the correct snake_case vector index exists
-CREATE VECTOR INDEX content_vector_index IF NOT EXISTS
+// Ensure the correct PascalCase vector index exists (Neo4j convention)
+CREATE VECTOR INDEX ContentVectorIndex IF NOT EXISTS
 FOR (c:Content) ON (c.embedding)
 OPTIONS {
   indexConfig: {

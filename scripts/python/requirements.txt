@@ -1,7 +1,6 @@
 neo4j>=5.17
 pandas>=2.2
 tqdm>=4.66
-sentence-transformers>=2.6
 python-dotenv>=1.0
 langchain>=0.1.0
 langchain-community>=0.0.10
