@@ -8,7 +8,6 @@ This module provides simple, language-agnostic validation following the
 import os
 import shutil
 from pathlib import Path
-from typing import List
 
 
 class ConventionValidator:
@@ -51,7 +50,7 @@ class ConventionValidator:
         else:
             return "./tests/"
 
-    def validate_naming(self, file_path: str, content: str) -> List[dict]:
+    def validate_naming(self, file_path: str, content: str) -> list[dict]:
         """
         Minimal naming validation.
 
@@ -65,7 +64,7 @@ class ConventionValidator:
         # Let Claude handle language-specific conventions naturally
         return []
 
-    def check_snake_case_violations(self, content: str) -> List[dict]:
+    def check_snake_case_violations(self, content: str) -> list[dict]:
         """
         Minimal check for obvious naming issues in Python.
         Let Claude handle detailed convention review naturally.
@@ -80,7 +79,7 @@ class ConventionValidator:
         # Claude will naturally enforce conventions when reviewing code
         return []
 
-    def check_camel_case_violations(self, content: str) -> List[dict]:
+    def check_camel_case_violations(self, content: str) -> list[dict]:
         """Check for camelCase violations - kept minimal."""
         return []
 
@@ -159,7 +158,7 @@ class ConventionValidator:
             print(f"Error moving file {source_path} to {target_path}: {e}")
             return False
 
-    def auto_fix_or_fail(self, violations: List[dict]) -> None:
+    def auto_fix_or_fail(self, violations: list[dict]) -> None:
         """
         Attempt to auto-fix violations or raise an error.
 
