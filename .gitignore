@@ -29,4 +29,4 @@ analysis/**/archive/
 
 # Claude settings
 .claude/settings.local.json
-DESIGN*.md
+analysis/0000/DESIGN*.md
