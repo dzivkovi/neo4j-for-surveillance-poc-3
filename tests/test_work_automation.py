@@ -8,7 +8,7 @@ All tests should FAIL initially, then implementation should make them pass.
 import os
 import sys
 import tempfile
-import unittest
+import pytest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -18,20 +18,19 @@ claude_path = Path(__file__).parent.parent / ".claude"
 sys.path.insert(0, str(claude_path))
 
 
-class TestWorkCommandAutomation(unittest.TestCase):
+@pytest.fixture
+def test_environment(tmp_path):
+    """Create a test environment with temporary directory."""
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    yield tmp_path
+    os.chdir(original_cwd)
+
+
+class TestWorkCommandAutomation:
     """Test suite for enhanced /work command automation."""
 
-    def setUp(self):
-        """Set up test environment."""
-        self.test_dir = tempfile.mkdtemp()
-        self.original_cwd = os.getcwd()
-        os.chdir(self.test_dir)
-
-    def tearDown(self):
-        """Clean up test environment."""
-        os.chdir(self.original_cwd)
-
-    def test_project_type_detection_python(self):
+    def test_project_type_detection_python(self, test_environment):
         """Test automatic detection of Python project type."""
         # Create Python project indicators
         Path("pyproject.toml").touch()
@@ -41,11 +40,11 @@ class TestWorkCommandAutomation(unittest.TestCase):
         validator = ConventionValidator()
         project_type = validator.detect_project_type()
 
-        self.assertEqual(project_type, "python")
-        self.assertEqual(validator.naming_convention, "snake_case")
-        self.assertEqual(validator.test_directory, "./tests/")
+        assert project_type == "python"
+        assert validator.naming_convention == "snake_case"
+        assert validator.test_directory == "./tests/"
 
-    def test_project_type_detection_javascript(self):
+    def test_project_type_detection_javascript(self, test_environment):
         """Test automatic detection of JavaScript project type."""
         # Create JavaScript project indicators
         Path("package.json").touch()
@@ -55,9 +54,9 @@ class TestWorkCommandAutomation(unittest.TestCase):
         validator = ConventionValidator()
         project_type = validator.detect_project_type()
 
-        self.assertEqual(project_type, "javascript")
-        self.assertEqual(validator.naming_convention, "camelCase")
-        self.assertEqual(validator.test_directory, "./__tests__/")
+        assert project_type == "javascript"
+        assert validator.naming_convention == "camelCase"
+        assert validator.test_directory == "./__tests__/"
 
     def test_snake_case_validation_python(self):
         """Test snake_case validation for Python projects."""
@@ -73,15 +72,15 @@ def process_data():
     return user_name
 """
         violations = validator.check_snake_case_violations(valid_code)
-        self.assertEqual(len(violations), 0)
+        assert len(violations) == 0
 
         # With minimal validator, we let Claude handle conventions naturally
         # So we expect no violations from the minimal validator
         test_code = "def computeValue(): return None"
         violations = validator.check_snake_case_violations(test_code)
-        self.assertEqual(len(violations), 0)  # Minimal validator returns empty list
+        assert len(violations) == 0  # Minimal validator returns empty list
 
-    def test_file_placement_validation(self):
+    def test_file_placement_validation(self, test_environment):
         """Test automatic file placement validation."""
         from workflow.convention_validator import ConventionValidator
 
@@ -93,12 +92,12 @@ def process_data():
         test_file.touch()
 
         should_move = validator.should_move_test_file(str(test_file))
-        self.assertTrue(should_move)
+        assert should_move
 
         expected_location = validator.get_correct_test_location(str(test_file))
-        self.assertEqual(expected_location, "tests/test_example.py")
+        assert expected_location == "tests/test_example.py"
 
-    def test_design_document_handoff(self):
+    def test_design_document_handoff(self, test_environment):
         """Test DESIGN.md handoff from analysis/0000/ to analysis/$ISSUE/."""
         from workflow.design_compliance import DesignCompliance
 
@@ -110,13 +109,13 @@ def process_data():
         compliance = DesignCompliance()
         result = compliance.handle_design_handoff(16)
 
-        self.assertTrue(result)
-        self.assertTrue(Path("analysis/16/DESIGN.md").exists())
-        self.assertFalse(Path("analysis/0000/DESIGN.md").exists())
+        assert result
+        assert Path("analysis/16/DESIGN.md").exists()
+        assert not Path("analysis/0000/DESIGN.md").exists()
 
         # Verify content preserved
         moved_content = Path("analysis/16/DESIGN.md").read_text()
-        self.assertEqual(moved_content, design_content)
+        assert moved_content == design_content
 
     def test_quality_gates_validation(self):
         """Test comprehensive quality gates validation."""
@@ -125,13 +124,13 @@ def process_data():
         gates = QualityGates()
 
         # Test individual gates
-        self.assertTrue(hasattr(gates, "validate_git_workflow"))
-        self.assertTrue(hasattr(gates, "validate_naming_conventions"))
-        self.assertTrue(hasattr(gates, "validate_file_structure"))
-        self.assertTrue(hasattr(gates, "validate_design_compliance"))
-        self.assertTrue(hasattr(gates, "validate_production_config"))
-        self.assertTrue(hasattr(gates, "validate_database_consistency"))
-        self.assertTrue(hasattr(gates, "validate_complete_coverage"))
+        assert hasattr(gates, "validate_git_workflow")
+        assert hasattr(gates, "validate_naming_conventions")
+        assert hasattr(gates, "validate_file_structure")
+        assert hasattr(gates, "validate_design_compliance")
+        assert hasattr(gates, "validate_production_config")
+        assert hasattr(gates, "validate_database_consistency")
+        assert hasattr(gates, "validate_complete_coverage")
 
     def test_definition_of_done_framework(self):
         """Test Definition of Done validation framework."""
@@ -151,7 +150,7 @@ def process_data():
 
         gate_names = [gate.__class__.__name__ for gate in validator.quality_gates]
         for expected_gate in expected_gates:
-            self.assertIn(expected_gate, gate_names)
+            assert expected_gate in gate_names
 
     def test_definition_of_done_validation_failure(self):
         """Test that Definition of Done validation fails when criteria not met."""
@@ -163,11 +162,11 @@ def process_data():
         with patch.object(validator.quality_gates[0], "validate", return_value=False):
             with patch.object(validator.quality_gates[0], "name", "TestGate"):
                 with patch.object(validator.quality_gates[0], "error", "Test failure"):
-                    with self.assertRaises(QualityGateFailure) as cm:
+                    with pytest.raises(QualityGateFailure) as cm:
                         validator.validate_completion()
 
-                    self.assertIn("TestGate", str(cm.exception))
-                    self.assertIn("Test failure", str(cm.exception))
+                    assert "TestGate" in str(cm.exception)
+                    assert "Test failure" in str(cm.exception)
 
     def test_definition_of_done_validation_success(self):
         """Test that Definition of Done validation passes when all criteria met."""
@@ -185,7 +184,7 @@ def process_data():
             patch.object(validator.quality_gates[5], "validate", return_value=True),
         ):
             result = validator.validate_completion()
-        self.assertIn("All Definition of Done criteria met", result)
+        assert "All Definition of Done criteria met" in result
 
     @patch("subprocess.run")
     def test_mcp_validation_integration(self, mock_subprocess):
@@ -199,7 +198,7 @@ def process_data():
         gates = QualityGates()
         result = gates.validate_database_consistency()
 
-        self.assertTrue(result)
+        assert result
 
     def test_production_readiness_validation(self):
         """Test production readiness validation prevents test-only code."""
@@ -213,7 +212,7 @@ def process_data():
 LIMIT 100
 """
         result = gates.validate_production_config(test_only_code)
-        self.assertFalse(result)
+        assert not result
 
         # Production-ready code (should pass)
         production_code = """
@@ -221,7 +220,7 @@ LIMIT 100
 MATCH (n:Session) RETURN n
 """
         result = gates.validate_production_config(production_code)
-        self.assertTrue(result)
+        assert result
 
     def test_git_workflow_validation(self):
         """Test git workflow validation ensures feature branch usage."""
@@ -236,13 +235,13 @@ MATCH (n:Session) RETURN n
             mock_run.return_value.returncode = 0
 
             result = gates.validate_git_workflow()
-            self.assertTrue(result)
+            assert result
 
             # Test main branch (should fail)
             mock_run.return_value.stdout = "main"
 
             result = gates.validate_git_workflow()
-            self.assertFalse(result)
+            assert not result
 
     def test_regression_testing_validation(self):
         """Test that regression testing validates existing functionality."""
@@ -256,14 +255,14 @@ MATCH (n:Session) RETURN n
             mock_run.return_value.stdout = "All tests passed"
 
             result = gate.validate()
-            self.assertTrue(result)
+            assert result
 
             # Mock failed test run
             mock_run.return_value.returncode = 1
             mock_run.return_value.stdout = "Tests failed"
 
             result = gate.validate()
-            self.assertFalse(result)
+            assert not result
 
     def test_performance_requirements_validation(self):
         """Test performance requirements validation."""
@@ -272,19 +271,19 @@ MATCH (n:Session) RETURN n
         gate = OperationalGate()
 
         # Test should validate response times under 5 seconds
-        self.assertTrue(hasattr(gate, "validate_performance"))
+        assert hasattr(gate, "validate_performance")
 
         # Mock performance test
         with patch.object(gate, "measure_query_performance", return_value=3.2):
             result = gate.validate_performance()
-            self.assertTrue(result)
+            assert result
 
         with patch.object(gate, "measure_query_performance", return_value=7.8):
             result = gate.validate_performance()
-            self.assertFalse(result)
+            assert not result
 
 
-class TestWorkCommandIntegration(unittest.TestCase):
+class TestWorkCommandIntegration:
     """Integration tests for the complete /work command automation."""
 
     def test_end_to_end_automation_workflow(self):
@@ -294,7 +293,7 @@ class TestWorkCommandIntegration(unittest.TestCase):
 
         # For now, this is a placeholder that ensures we think about
         # end-to-end testing when implementing the automation
-        self.assertTrue(True, "End-to-end test placeholder")
+        assert True, "End-to-end test placeholder"
 
     def test_automation_performance_target(self):
         """Test that automation achieves 1-hour implementation target."""
@@ -302,9 +301,9 @@ class TestWorkCommandIntegration(unittest.TestCase):
         # and ensure it meets the 5 hours → 1 hour target
 
         # For now, this is a placeholder for performance testing
-        self.assertTrue(True, "Performance target test placeholder")
+        assert True, "Performance target test placeholder"
 
 
 if __name__ == "__main__":
-    # Run tests with verbose output
-    unittest.main(verbosity=2)
+    # Run tests with pytest
+    pytest.main([__file__, "-v"])
