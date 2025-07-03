@@ -17,7 +17,23 @@ gh issue view $ARGUMENTS
 - Check if this relates to any of the 77 evaluation tests in `evals/evaluation_tests.md`
 - Identify Neo4j MCP validation needs
 
-### 2. Research Codebase
+### 2. Create Work Branch
+```bash
+# Determine work type based on issue (feat|fix|docs|chore)
+# Use issue number and brief description for branch name
+git checkout -b <TYPE>/$ARGUMENTS-brief-description
+
+# Examples:
+# git checkout -b feat/19-python-formatting-cleanup
+# git checkout -b fix/23-neo4j-connection-error
+# git checkout -b docs/15-api-documentation-update
+# git checkout -b chore/8-dependency-updates
+```
+- Follow project convention: `<TYPE>/$ISSUE_NUMBER-description`
+- Keep description brief but descriptive
+- Branch created before any implementation work begins
+
+### 3. Research Codebase
 - Read CLAUDE.md for project context and commands
 - **Check for design document**: Read `analysis/$ARGUMENTS/DESIGN.md` if it exists
 - **Check docs/entity-resolution.md** for entity-resolution context if applicable
@@ -25,20 +41,20 @@ gh issue view $ARGUMENTS
 - Understand existing patterns and conventions
 - Check current Neo4j schema and data structure using MCP tools
 
-### 3. Write Failing Tests First (Evaluation-First)
+### 4. Write Failing Tests First (Evaluation-First)
 **Critical:** Tests define success. Implementation serves tests.
 - Write tests that demonstrate the required capability
 - Ensure tests fail initially (proves they're testing the right thing)
 - Include edge cases and performance requirements
 - For AI features: Plan to run tests 5+ times to catch nondeterminism
 
-### 4. Implement Minimal Solution
+### 5. Implement Minimal Solution
 - Follow existing code patterns and conventions
 - Use project libraries and tools (ruff for linting, pytest for testing)
 - Implement only what's needed to pass the tests
 - Use Neo4j MCP server for live validation during development
 
-### 5. Validation
+### 6. Validation
 ```bash
 # Run tests multiple times (catch AI nondeterminism)
 pytest -v  # Run 5+ times for critical tests
@@ -53,7 +69,7 @@ ruff check . --fix
 # Verify evaluation test scenarios work
 ```
 
-### 6. Quality Gates Validation
+### 7. Quality Gates Validation
 **Critical:** Cannot proceed until ALL quality gates pass.
 ```bash
 python -c "
@@ -65,12 +81,12 @@ print(enforce_definition_of_done())
 "
 ```
 
-### 7. DESIGN.md Handoff
+### 8. DESIGN.md Handoff
 ```bash
 mkdir -p analysis/$ARGUMENTS && mv analysis/0000/DESIGN.md analysis/$ARGUMENTS/DESIGN.md
 ```
 
-### 8. Create Pull Request
+### 9. Create Pull Request
 ```bash
 # Use appropriate work type prefix: feat|fix|docs|chore
 # Descriptive commit following project patterns

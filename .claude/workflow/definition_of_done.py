@@ -10,7 +10,7 @@ import sys
 import time
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 # Configuration constants
 MOCK_QUERY_PERFORMANCE_TIME = 3.2  # Simulated query response time in seconds
@@ -436,7 +436,7 @@ class DefinitionOfDoneValidator:
             except Exception as e:
                 print("❌ ERROR")
                 self.validation_results[gate.name] = False
-                raise QualityGateFailure(f"Gate {gate.name} failed: {str(e)}")
+                raise QualityGateFailure(f"Gate {gate.name} failed: {e!s}")
 
         validation_time = time.time() - self.validation_start_time
 

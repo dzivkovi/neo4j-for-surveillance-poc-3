@@ -1,14 +1,13 @@
 """
 Minimal convention validator for basic code quality checks.
 
-This module provides simple, language-agnostic validation following the 
+This module provides simple, language-agnostic validation following the
 "less is more" principle. Let Claude handle language-specific conventions naturally.
 """
 
 import os
 import shutil
 from pathlib import Path
-from typing import List
 
 
 class ConventionValidator:
@@ -51,10 +50,10 @@ class ConventionValidator:
         else:
             return "./tests/"
 
-    def validate_naming(self, file_path: str, content: str) -> List[dict]:
+    def validate_naming(self, file_path: str, content: str) -> list[dict]:
         """
         Minimal naming validation.
-        
+
         Args:
             file_path: Path to the file being validated
             content: File content to validate
@@ -65,14 +64,14 @@ class ConventionValidator:
         # Let Claude handle language-specific conventions naturally
         return []
 
-    def check_snake_case_violations(self, content: str) -> List[dict]:
+    def check_snake_case_violations(self, content: str) -> list[dict]:
         """
         Minimal check for obvious naming issues in Python.
         Let Claude handle detailed convention review naturally.
-        
+
         Args:
             content: Code content to check
-            
+
         Returns:
             List of obvious violations only
         """
@@ -80,7 +79,7 @@ class ConventionValidator:
         # Claude will naturally enforce conventions when reviewing code
         return []
 
-    def check_camel_case_violations(self, content: str) -> List[dict]:
+    def check_camel_case_violations(self, content: str) -> list[dict]:
         """Check for camelCase violations - kept minimal."""
         return []
 
@@ -159,7 +158,7 @@ class ConventionValidator:
             print(f"Error moving file {source_path} to {target_path}: {e}")
             return False
 
-    def auto_fix_or_fail(self, violations: List[dict]) -> None:
+    def auto_fix_or_fail(self, violations: list[dict]) -> None:
         """
         Attempt to auto-fix violations or raise an error.
 
@@ -174,9 +173,10 @@ class ConventionValidator:
             for violation in violations:
                 violation_messages.append(f"Line {violation['line']}: {violation['issue']}. {violation['suggestion']}")
 
-            raise ConventionViolationError(f"Convention violations detected:\n" + "\n".join(violation_messages))
+            raise ConventionViolationError("Convention violations detected:\n" + "\n".join(violation_messages))
 
 
 class ConventionViolationError(Exception):
     """Exception raised when convention violations are detected."""
+
     pass

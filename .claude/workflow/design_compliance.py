@@ -5,10 +5,9 @@ This module handles DESIGN.md analysis, handoff automation, and implementation
 fidelity tracking to ensure work follows the designed technical approach.
 """
 
-import os
 import shutil
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 
 class DesignCompliance:
@@ -35,7 +34,7 @@ class DesignCompliance:
         target_path = target_dir / "DESIGN.md"
 
         if not source_path.exists():
-            print(f"⚠️  No DESIGN.md found in analysis/0000/")
+            print("⚠️  No DESIGN.md found in analysis/0000/")
             return False
 
         try:
@@ -257,7 +256,7 @@ class DesignDeviationAlert:
         Returns:
             True if user confirms deviation is acceptable
         """
-        print(f"\n⚠️  Design Deviation Detected:")
+        print("\n⚠️  Design Deviation Detected:")
         print(f"Type: {deviation['type']}")
         print(f"Description: {deviation['description']}")
         print(f"Suggestion: {deviation['suggestion']}")
