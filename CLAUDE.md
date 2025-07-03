@@ -140,3 +140,45 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - Always prefer editing existing files to creating new ones
 - NEVER write Cypher queries into files without first validating them using the MCP Neo4j server
 - ALWAYS test Cypher queries with mcp__neo4j__read_neo4j_cypher before documenting them
+
+## Defensive Programming Requirements
+**MANDATORY**: Follow these validation steps after EVERY code change:
+
+### After Each Edit:
+1. **Search for related occurrences**: Use `rg` to find ALL instances of what you're changing
+2. **Test the specific change**: Run focused tests on the modified functionality
+3. **Check for side effects**: Verify nothing else broke
+
+### Before ANY Commit:
+1. **Run comprehensive search**: `rg <pattern>` to verify all occurrences were updated
+2. **Run test suite**: `python -m pytest tests/ -v` (or relevant test command)
+3. **Test functionality**: Actually execute the code/queries you modified
+4. **List what you validated**: Tell the user exactly what you tested
+
+### Use TodoWrite for Complex Changes:
+- Create a checklist of ALL files to modify
+- Mark each as "in_progress" while working
+- Test after each completion
+- Only mark "completed" after validation passes
+
+### Example Validation Pattern:
+```bash
+# After editing Python files
+python -m pytest tests/test_affected_module.py -v
+rg "old_pattern" .  # Should return nothing
+
+# After editing Cypher queries
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < modified_query.cypher
+
+# After editing multiple files
+for file in $(git diff --name-only); do
+    echo "Validating $file..."
+    # Run appropriate validation
+done
+```
+
+### NEVER:
+- Declare success without testing
+- Commit without running validation
+- Say "all occurrences fixed" without using `rg` to verify
+- Assume one fix applies everywhere without checking

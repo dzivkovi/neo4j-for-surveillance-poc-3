@@ -98,6 +98,7 @@ gh pr create --title "<TYPE>: [Issue title]" --body-file .github/PULL_REQUEST_TE
 - **Tests are Immutable:** Never modify tests to make implementation easier
 - **Less is More:** Simplest solution that passes tests wins
 - **Quality Gates:** All automated validation must pass before completion
+- **Defensive Programming:** MANDATORY validation after every code change (see CLAUDE.md)
 
 ## Project-Specific Notes
 
