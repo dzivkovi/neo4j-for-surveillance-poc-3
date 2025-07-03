@@ -5,12 +5,11 @@ This module provides automated validation checkpoints to ensure implementation
 meets production readiness standards before deployment.
 """
 
-import os
 import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Tuple
 
 
 class QualityGates:
@@ -84,7 +83,7 @@ class QualityGates:
     def validate_naming_conventions(self) -> bool:
         """
         Validate naming conventions across the codebase.
-        
+
         With minimal validator, this always passes since we let Claude
         handle language-specific conventions naturally.
 

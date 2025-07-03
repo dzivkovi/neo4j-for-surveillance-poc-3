@@ -15,9 +15,9 @@ Unix philosophy: Transform NDJSON into focused, usable datasets.
 import argparse
 import json
 import sys
-from pathlib import Path
-from typing import Set, Dict, Any, Optional
 import textwrap
+from pathlib import Path
+from typing import Any, Dict, Optional, Set
 
 # Core fields needed for investigative work in Neo4j
 DEFAULT_FIELDS = {
@@ -71,7 +71,7 @@ def discover_fields(file_path: Path, sample_size: int = 100) -> Dict[str, int]:
     """
     field_counts = {}
 
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         for i, line in enumerate(f):
             if sample_size > 0 and i >= sample_size:
                 break
@@ -127,7 +127,7 @@ def extract_sessions(
     extracted_sessions = []
     current_size_mb = 0
 
-    with open(input_path, "r") as f:
+    with open(input_path) as f:
         for i, line in enumerate(f):
             stats["total_records"] += 1
 
@@ -319,7 +319,7 @@ def main():
         print("📋 Default Fields:", file=sys.stderr)
         for field in sorted(DEFAULT_FIELDS):
             print(f"   - {field}", file=sys.stderr)
-        print(f"\n📦 Large Fields (not included by default):", file=sys.stderr)
+        print("\n📦 Large Fields (not included by default):", file=sys.stderr)
         for field in sorted(LARGE_FIELDS):
             print(f"   - {field}", file=sys.stderr)
         sys.exit(0)
@@ -362,7 +362,7 @@ def main():
         sample_records = []
         session_type_samples = {}
 
-        with open(args.input, "r") as f:
+        with open(args.input) as f:
             for line in f:
                 try:
                     record = json.loads(line.strip())
@@ -404,7 +404,7 @@ def main():
                     field_by_type[record_type] = set()
                 field_by_type[record_type].update(record.keys())
 
-            print(f"\n📊 Field Coverage Analysis:", file=sys.stderr)
+            print("\n📊 Field Coverage Analysis:", file=sys.stderr)
             print(f"   Requested fields: {len(fields)}", file=sys.stderr)
             print(f"   Found in samples: {len(all_fields_found)}", file=sys.stderr)
             print(f"   Session types sampled: {', '.join(field_by_type.keys())}", file=sys.stderr)
@@ -413,7 +413,7 @@ def main():
             if missing_fields:
                 # Check if missing fields might exist in other session types
                 print(f"   📋 Missing from samples: {', '.join(sorted(missing_fields))}", file=sys.stderr)
-                print(f"   💡 Note: Fields may exist in other session types not sampled", file=sys.stderr)
+                print("   💡 Note: Fields may exist in other session types not sampled", file=sys.stderr)
 
             # Estimate output size
             sample_size = get_json_size_mb(sample_records)
@@ -423,7 +423,7 @@ def main():
         else:
             print("❌ No records found matching field criteria", file=sys.stderr)
 
-        print(f"\n✅ DRY RUN complete. Use without --dry-run to extract data.", file=sys.stderr)
+        print("\n✅ DRY RUN complete. Use without --dry-run to extract data.", file=sys.stderr)
         sys.exit(0)
 
     # Extract sessions
@@ -447,7 +447,7 @@ def main():
                 "with_personname": 0,
             },
         }
-        with open(args.input, "r") as f:
+        with open(args.input) as f:
             for line in f:
                 stats["total_records"] += 1
                 try:

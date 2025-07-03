@@ -1,7 +1,7 @@
 """
 Minimal convention validator for basic code quality checks.
 
-This module provides simple, language-agnostic validation following the 
+This module provides simple, language-agnostic validation following the
 "less is more" principle. Let Claude handle language-specific conventions naturally.
 """
 
@@ -54,7 +54,7 @@ class ConventionValidator:
     def validate_naming(self, file_path: str, content: str) -> List[dict]:
         """
         Minimal naming validation.
-        
+
         Args:
             file_path: Path to the file being validated
             content: File content to validate
@@ -69,10 +69,10 @@ class ConventionValidator:
         """
         Minimal check for obvious naming issues in Python.
         Let Claude handle detailed convention review naturally.
-        
+
         Args:
             content: Code content to check
-            
+
         Returns:
             List of obvious violations only
         """
@@ -174,9 +174,10 @@ class ConventionValidator:
             for violation in violations:
                 violation_messages.append(f"Line {violation['line']}: {violation['issue']}. {violation['suggestion']}")
 
-            raise ConventionViolationError(f"Convention violations detected:\n" + "\n".join(violation_messages))
+            raise ConventionViolationError("Convention violations detected:\n" + "\n".join(violation_messages))
 
 
 class ConventionViolationError(Exception):
     """Exception raised when convention violations are detected."""
+
     pass

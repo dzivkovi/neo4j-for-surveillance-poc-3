@@ -8,15 +8,15 @@ timestamps to ISO 8601 format and establishing proper session relationships.
 NEW: Supports OpenAI 1536-dimension embeddings and vector index migration.
 """
 
-import os
+import argparse
 import json
-import sys
+import os
+import time
 from datetime import datetime
 from pathlib import Path
-import argparse
-from neo4j import GraphDatabase
+
 import requests
-import time
+from neo4j import GraphDatabase
 
 # Configuration
 NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
@@ -39,7 +39,7 @@ def load_transcripts(transcript_file):
         return {}
 
     try:
-        with open(transcript_file, "r") as f:
+        with open(transcript_file) as f:
             data = json.load(f)
 
         print(f"✅ Loaded {len(data)} transcripts from {transcript_file}")
@@ -93,41 +93,38 @@ def check_session_exists(tx, session_id):
 def generate_openai_embedding(text, api_key=None):
     """
     Generate 1536-dimension embedding using OpenAI API.
-    
+
     Args:
         text: Text to embed
         api_key: OpenAI API key (optional, uses OPENAI_API_KEY env var)
-    
+
     Returns:
         List of 1536 floats or None if failed
     """
     if not api_key:
         api_key = os.environ.get("OPENAI_API_KEY")
-    
+
     if not api_key:
         return None
-        
+
     try:
         response = requests.post(
             "https://api.openai.com/v1/embeddings",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            },
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             json={
                 "input": text,
-                "model": "text-embedding-3-small"  # 1536 dimensions
+                "model": "text-embedding-3-small",  # 1536 dimensions
             },
-            timeout=30
+            timeout=30,
         )
-        
+
         if response.status_code == 200:
             data = response.json()
             return data["data"][0]["embedding"]
         else:
             print(f"OpenAI API error: {response.status_code} - {response.text}")
             return None
-            
+
     except Exception as e:
         print(f"Error generating embedding: {e}")
         return None
@@ -136,7 +133,7 @@ def generate_openai_embedding(text, api_key=None):
 def import_transcript_with_embedding(tx, session_id, transcript_data, generate_embeddings=False):
     """Create Content node with transcript data and optional embedding"""
     iso_timestamp = unix_to_iso(transcript_data["timestamp"])
-    
+
     # Generate embedding if requested and text is substantial
     embedding = None
     if generate_embeddings and len(transcript_data["text"]) > 50:
@@ -145,7 +142,7 @@ def import_transcript_with_embedding(tx, session_id, transcript_data, generate_e
             print(f"✅ Generated 1536-dim embedding for {session_id}")
         else:
             print(f"⚠️  Failed to generate embedding for {session_id}")
-    
+
     # Create Content node with optional embedding
     cypher_query = """
         MATCH (s:Session {sessionguid: $sid})
@@ -161,7 +158,7 @@ def import_transcript_with_embedding(tx, session_id, transcript_data, generate_e
             importedAt: datetime()
         })
     """
-    
+
     params = {
         "sid": session_id,
         "text": transcript_data["text"],
@@ -172,14 +169,14 @@ def import_transcript_with_embedding(tx, session_id, transcript_data, generate_e
         "target": transcript_data.get("target", ""),
         "timestamp": iso_timestamp,
     }
-    
+
     # Add embedding if generated
     if embedding:
         cypher_query += "\nSET c.embedding = $embedding"
         params["embedding"] = embedding
-    
+
     cypher_query += "\nCREATE (s)-[:HAS_CONTENT]->(c)\nRETURN c.sessionguid"
-    
+
     result = tx.run(cypher_query, **params)
     return result.single() is not None
 
@@ -190,35 +187,35 @@ def patch_vector_index(driver):
     Safe operation that preserves all data.
     """
     print("\n🔧 Applying vector index patch (384 → 1536 dimensions)...")
-    
+
     patch_script = Path("scripts/cypher/patch-vector-index-1536.cypher")
     if not patch_script.exists():
         print(f"❌ Patch script not found: {patch_script}")
         return False
-    
+
     try:
         with driver.session() as session:
-            with open(patch_script, 'r') as f:
+            with open(patch_script) as f:
                 # Split on semicolons and execute each statement
-                statements = f.read().split(';')
-                
+                statements = f.read().split(";")
+
                 for stmt in statements:
                     stmt = stmt.strip()
-                    if stmt and not stmt.startswith('//') and not stmt.startswith('/*'):
+                    if stmt and not stmt.startswith("//") and not stmt.startswith("/*"):
                         try:
                             result = session.run(stmt)
                             # Print results for verification queries
-                            if 'RETURN' in stmt.upper():
+                            if "RETURN" in stmt.upper():
                                 for record in result:
                                     print(f"   {dict(record)}")
                         except Exception as e:
                             # Some statements might fail (like DROP IF EXISTS), that's ok
                             if "not found" not in str(e).lower():
                                 print(f"   ⚠️  {e}")
-        
+
         print("✅ Vector index patch applied successfully")
         return True
-        
+
     except Exception as e:
         print(f"❌ Error applying patch: {e}")
         return False
@@ -233,7 +230,9 @@ def main():
     parser.add_argument("--sample", type=int, default=5, help="Number of sample records to show in dry-run")
     parser.add_argument("--patch-vector-index", action="store_true", help="Apply vector index patch (384→1536 dims)")
     parser.add_argument("--generate-embeddings", action="store_true", help="Generate 1536-dim OpenAI embeddings")
-    parser.add_argument("--embedding-delay", type=float, default=0.1, help="Delay between embedding API calls (seconds)")
+    parser.add_argument(
+        "--embedding-delay", type=float, default=0.1, help="Delay between embedding API calls (seconds)"
+    )
 
     args = parser.parse_args()
 
@@ -247,7 +246,7 @@ def main():
 
     # Dry run mode
     if args.dry_run:
-        print(f"\n🔍 DRY RUN - Preview of transcript import:")
+        print("\n🔍 DRY RUN - Preview of transcript import:")
         print(f"   Total transcripts: {len(transcripts)}")
 
         # Show sample records with timestamp conversion
@@ -265,7 +264,7 @@ def main():
             print(f"   Text preview: {data['text'][:100]}...")
             print(f"   Character count: {data.get('char_count', len(data['text']))}")
 
-        print(f"\n✅ DRY RUN complete. Use without --dry-run to import data.")
+        print("\n✅ DRY RUN complete. Use without --dry-run to import data.")
         return
 
     # Connect to Neo4j
@@ -291,14 +290,11 @@ def main():
                     if session.execute_read(check_session_exists, session_id):
                         # Import transcript with optional embedding generation
                         if session.execute_write(
-                            import_transcript_with_embedding, 
-                            session_id, 
-                            transcript_data, 
-                            args.generate_embeddings
+                            import_transcript_with_embedding, session_id, transcript_data, args.generate_embeddings
                         ):
                             imported += 1
                             linked_sessions += 1
-                            
+
                             # Count embeddings if generated
                             if args.generate_embeddings and len(transcript_data["text"]) > 50:
                                 embeddings_generated += 1
@@ -320,17 +316,17 @@ def main():
                     print(f"Error importing {session_id}: {e}")
 
             # Print statistics
-            print(f"\n📊 Transcript Import Statistics:")
+            print("\n📊 Transcript Import Statistics:")
             print(f"   Total transcripts processed: {len(transcripts):,}")
             print(f"   Content nodes created: {imported:,}")
             print(f"   Sessions linked: {linked_sessions:,}")
             print(f"   Sessions not found: {unlinked_sessions:,}")
-            
+
             if args.generate_embeddings:
                 print(f"   1536-dim embeddings generated: {embeddings_generated:,}")
 
             if session_types:
-                print(f"\n📞 Session Types in Transcripts:")
+                print("\n📞 Session Types in Transcripts:")
                 for stype, count in sorted(session_types.items()):
                     print(f"   {stype}: {count:,}")
 

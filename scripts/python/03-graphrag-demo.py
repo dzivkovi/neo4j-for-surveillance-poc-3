@@ -5,11 +5,10 @@ Query Neo4j vector index (via LangChain retriever) to answer:
   "Does Fred discuss travel plans?"
 """
 
-import os
 import asyncio
-from langchain_community.vectorstores import Neo4jVector
-from langchain.schema import Document
+import os
 
+from langchain_community.vectorstores import Neo4jVector
 
 NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")
@@ -20,6 +19,7 @@ async def graphrag_demo():
     """Demonstrate GraphRAG capabilities with Neo4j and LangChain."""
     # Initialize embeddings - use OpenAI for 1536 dimensions to match database
     from langchain_community.embeddings import OpenAIEmbeddings
+
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")  # 1536 dimensions
 
     # Create Neo4j vector store instance

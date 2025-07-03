@@ -6,14 +6,11 @@ All tests should FAIL initially, then implementation should make them pass.
 """
 
 import os
-import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, mock_open, patch
-
-import pytest
+from unittest.mock import patch
 
 # Add the project root and .claude directory to Python path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
