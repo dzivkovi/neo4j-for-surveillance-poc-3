@@ -12,7 +12,6 @@ Blocker: —
 
 **Status**: ✅ **IMPLEMENTED**  
 **Category**: Communications - Semantic Search (Entity + Content)  
-**Last Tested**: June 24, 2025
 
 ## Question
 "Does fred discuss travel plans?"

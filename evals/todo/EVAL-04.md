@@ -12,7 +12,6 @@ Blocker: —
 
 **Status**: ✅ **WORKING CORRECTLY**  
 **Category**: Communications - Semantic Search with Alias Enhancement  
-**Last Tested**: June 25, 2025
 
 ## Question
 "do freddy talk about traveling?" (informal query)

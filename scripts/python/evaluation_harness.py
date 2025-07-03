@@ -31,6 +31,11 @@ class TestResult:
 
     passed: bool
     duration_ms: int
+    confidence: Optional[float] = None
+    expected_count: Optional[int] = None
+    actual_count: Optional[int] = None
+    expected_score: Optional[float] = None
+    actual_score: Optional[float] = None
     error: Optional[str] = None
     output: Optional[str] = None
 
@@ -191,6 +196,31 @@ Blocker: —
 
         (self.evals_dir / "template.md").write_text(template_content)
 
+    def calculate_confidence(self, expected_count: int, actual_count: int, 
+                           expected_score: float, actual_score: float) -> float:
+        """Calculate confidence score for auto-promotion.
+        
+        Returns confidence percentage (0-100) based on:
+        - Count accuracy (70% weight): How well actual count matches expected
+        - Score similarity (30% weight): How close scores are to expected
+        
+        Auto-promotion threshold: 80%
+        """
+        if expected_count <= 0 or expected_score <= 0:
+            return 0.0
+            
+        # Count accuracy: how well actual matches expected
+        count_accuracy = min(actual_count, expected_count) / expected_count
+        
+        # Score similarity: inverse of relative difference
+        score_diff = abs(actual_score - expected_score) / expected_score
+        score_similarity = max(0, 1 - score_diff)
+        
+        # Weighted confidence calculation
+        confidence = (count_accuracy * 0.7) + (score_similarity * 0.3)
+        
+        return confidence * 100  # Return as percentage
+
     def transition_test(self, test_id: str, from_state: TestState, to_state: TestState):
         """Transition a test between states using git mv."""
         from_folder = from_state.value.lower()
@@ -233,20 +263,38 @@ Blocker: —
         start_time = time.time()
 
         try:
-            # Extract query from test file if present
-            query_match = re.search(r"```cypher\n(.*?)\n```", test_file.content, re.DOTALL)
-            if query_match:
-                query = query_match.group(1).strip()
-                # For now, just check if it's a simple test query
-                passed = "RETURN 1" in query or "test" in query.lower()
+            # Extract expected results from test file
+            expected_count = None
+            expected_score = None
+            actual_count = None
+            actual_score = None
+            confidence = None
+            
+            # Look for expected results in the confidence calculation section
+            expected_match = re.search(r"Expected:\s*\[count:\s*(\d+),\s*score:\s*([\d.]+)\]", test_file.content)
+            if expected_match:
+                expected_count = int(expected_match.group(1))
+                expected_score = float(expected_match.group(2))
+            
+            # Look for actual results in the confidence calculation section
+            actual_match = re.search(r"Actual:\s*\[count:\s*(\d+),\s*score:\s*([\d.]+)\]", test_file.content)
+            if actual_match:
+                actual_count = int(actual_match.group(1))
+                actual_score = float(actual_match.group(2))
+
+            # Calculate confidence if we have expected and actual values
+            if all(x is not None for x in [expected_count, expected_score, actual_count, actual_score]):
+                confidence = self.calculate_confidence(expected_count, actual_count, expected_score, actual_score)
+                passed = confidence >= 80.0  # Auto-promotion threshold
             else:
-                # Check for simple test patterns in content
-                content_lower = test_file.content.lower()
-                if "return 1 as test" in content_lower or "query: return 1" in content_lower:
-                    passed = True
+                # Fallback to simple test detection for backward compatibility
+                query_match = re.search(r"```cypher\n(.*?)\n```", test_file.content, re.DOTALL)
+                if query_match:
+                    query = query_match.group(1).strip()
+                    passed = "RETURN 1" in query or "test" in query.lower()
                 else:
-                    # If no clear test pattern, consider it a review case
-                    passed = False
+                    content_lower = test_file.content.lower()
+                    passed = "return 1 as test" in content_lower or "query: return 1" in content_lower
 
             duration_ms = int((time.time() - start_time) * 1000)
 
@@ -255,19 +303,25 @@ Blocker: —
             test_file.last_run = datetime.now().isoformat()
             test_file.duration_ms = duration_ms
 
-            # Determine new status
-            if passed:
-                new_status = TestState.PASSED
+            # Determine new status based on confidence and current state
+            if test_file.status == TestState.REVIEW and confidence is not None and confidence >= 80.0:
+                new_status = TestState.PASSED  # Auto-promotion
+            elif passed and test_file.status == TestState.TODO:
+                new_status = TestState.REVIEW  # Move to review for manual verification
+            elif not passed:
+                new_status = TestState.FAILED
             else:
-                new_status = TestState.REVIEW  # Needs human verification
+                new_status = test_file.status  # No change
 
             # Update file content and move if needed
             if test_file.status != new_status:
+                # Capture old status before updating
+                old_status = test_file.status
+                
                 # Update content with new status
                 updated_content = test_file.update_header(status=new_status)
 
                 # Move file to appropriate folder
-                old_status = test_file.status
                 self.transition_test(test_id, old_status, new_status)
 
                 # Write updated content to new location
@@ -278,7 +332,15 @@ Blocker: —
                 updated_content = test_file.update_header()
                 original_path.write_text(updated_content)
 
-            return TestResult(passed=passed, duration_ms=duration_ms)
+            return TestResult(
+                passed=passed, 
+                duration_ms=duration_ms, 
+                confidence=confidence,
+                expected_count=expected_count,
+                actual_count=actual_count,
+                expected_score=expected_score,
+                actual_score=actual_score
+            )
 
         except Exception as e:
             duration_ms = int((time.time() - start_time) * 1000)

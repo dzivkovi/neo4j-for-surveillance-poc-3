@@ -126,11 +126,37 @@ evals/
 Tests move between states based on:
 
 - **TODO → REVIEW**: When test is implemented (manual edit)
-- **REVIEW → PASSED**: When test execution matches expected results
+- **REVIEW → PASSED**: When test execution matches expected results with ≥80% confidence (automatic)
 - **REVIEW → FAILED**: When test execution doesn't match expectations
 - **ANY → BLOCKED**: When test can't be implemented (manual with blocker reason)
 
 All transitions use `git mv` to maintain version history.
+
+### Auto-Promotion Logic
+
+The harness automatically promotes tests from REVIEW → PASSED when **confidence ≥ 80%**.
+
+**Confidence Calculation**:
+
+```text
+Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
+
+Where:
+- count_accuracy = min(actual_count, expected_count) / expected_count  
+- score_similarity = 1 - abs(actual_score - expected_score) / expected_score
+```
+
+**Examples**:
+
+- EVAL-06: (14/14 × 0.7) + (2.84/2.82 × 0.3) = **98% confidence** → Auto-promote
+- EVAL-03: (12/12 × 0.7) + (5.37/5.37 × 0.3) = **100% confidence** → Auto-promote
+
+**Manual Review Required** when:
+
+- Confidence < 80%
+- Missing expected results data
+- Query execution errors
+- Business logic validation needed
 
 ## Integration with Git
 
@@ -178,15 +204,18 @@ The system is designed to be extended. Future enhancements could include:
 ## Troubleshooting
 
 ### "Test file not found"
+
 - Ensure test ID matches exactly (e.g., EVAL-03, not eval-03)
 - Check that file exists in one of the state folders
 
 ### Migration issues
+
 - Backup `evals/` folder before migration
 - Ensure no uncommitted changes in eval files
 - Run with `--dry-run` first (if implemented)
 
 ### Parse errors
+
 - Verify machine-readable header format is intact
 - Check for UTF-8 encoding issues
 - Ensure no manual edits broke the header structure

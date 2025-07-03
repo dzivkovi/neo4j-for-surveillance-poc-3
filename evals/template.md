@@ -29,10 +29,29 @@ Blocker: —
 ```
 
 ## Validation
+
 [Pass/fail status and notes]
 
+### Confidence Calculation
+
+**Auto-Promotion Threshold**: 80%
+
+```text
+Expected: [count: X, score: Y.YY]
+Actual:   [count: X, score: Y.YY]
+
+Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
+           = (X/X × 0.7) + (Y.YY/Y.YY × 0.3)
+           = (1.0 × 0.7) + (1.0 × 0.3)
+           = 100% → Auto-promote to PASSED
+```
+
+**Result**: [Manual review required | Auto-promoted to PASSED]
+
 ## Technical Implementation
+
 [Technical details about search categories, etc.]
 
 ## Business Value
+
 [Why this test matters for law enforcement use cases]
