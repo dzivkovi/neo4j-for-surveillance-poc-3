@@ -64,6 +64,9 @@ python scripts/python/evaluation_harness.py dashboard
 
 # Run comprehensive validation suite
 docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/validation-suite.cypher
+
+# Test graph visualization examples
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/graph-visualization-examples.cypher
 ```
 
 ## Neo4j GenAI Python Project
