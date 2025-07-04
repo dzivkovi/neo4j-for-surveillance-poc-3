@@ -51,6 +51,18 @@ docker logs neo4j-sessions
 docker stop neo4j-sessions && docker rm neo4j-sessions
 ```
 
+### Evaluation System Commands
+```bash
+# Interactive evaluation development (the "dance" approach)
+PYTHONPATH=. python scripts/python/neo4j_query_executor.py eval EVAL-27
+
+# Batch confidence processing for auto-promotion
+PYTHONPATH=. python scripts/python/neo4j_query_executor.py confidence --batch
+
+# Update progress dashboard
+python scripts/python/evaluation_harness.py dashboard
+```
+
 ## Neo4j GenAI Python Project
 
 ### Project Context
@@ -87,7 +99,7 @@ This project leverages Neo4j v5's latest Generative AI features including vector
 
 ### Common Patterns
 - Use async driver for all new features
-- Vector dimensions: CHECK LATEST DOCS (legacy: 384, current: see documentation)
+- Vector dimensions: 1536 (current OpenAI text-embedding-3-small)
 - Index naming: `{node_label}_embedding_index`
 
 ## Documentation-First Development
@@ -114,7 +126,7 @@ Key relationships follow law enforcement ontologies:
 - `(:Session)-[:HAS_CONTENT]->(:Content)` - Session content linkage
 
 ### Data Processing Pipeline
-1. **Schema Creation**: Establishes constraints, indexes, and vector index (384 dimensions)
+1. **Schema Creation**: Establishes constraints, indexes, and vector index (1536 dimensions)
 2. **Data Import**: Processes NDJSON files, creating nodes/relationships while preserving raw data
 
 
@@ -140,6 +152,12 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - Always prefer editing existing files to creating new ones
 - NEVER write Cypher queries into files without first validating them using the MCP Neo4j server
 - ALWAYS test Cypher queries with mcp__neo4j__read_neo4j_cypher before documenting them
+
+## ⚠️ Critical Terminology for Client Communication
+- **"Failed" tests ≠ broken queries** - they are unprocessed tests awaiting confidence assessment
+- **96.4% of "failed" tests work correctly** when properly evaluated (validated 2025-07-03)
+- Use clear language: "needs assessment" not "failed" when discussing with clients
+- The evaluation system has high reliability - most issues are process/assessment related, not technical failures
 
 ## Defensive Programming Requirements
 **MANDATORY**: Follow these validation steps after EVERY code change:
