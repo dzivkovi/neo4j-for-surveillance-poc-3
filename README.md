@@ -15,7 +15,7 @@ export NEO_NAME="neo4j-${DATASET}"
 ./run_neo4j.sh ${DATASET}  # Or just ./run_neo4j.sh for default
 
 # 2. Create complete schema (constraints + indexes)
-./01-create-schema.sh
+scripts/01-create-schema.sh
 
 # 3. Set up Python environment and import data
 python -m venv venv
@@ -120,7 +120,7 @@ docker stop ${NEO_NAME}
 docker rm ${NEO_NAME}
 
 # Data restoration after restart
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+scripts/01-create-schema.sh
 python scripts/python/01-import-data.py
 python scripts/python/02-import-transcripts.py
 

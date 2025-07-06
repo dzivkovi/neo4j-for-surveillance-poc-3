@@ -8,7 +8,7 @@
 //
 // Prerequisites:
 //   1. Neo4j container running with GenAI plugin enabled
-//   2. Schema created (01-create-schema.cypher)
+//   2. Schema created (scripts/01-create-schema.sh)
 //   3. Sessions imported (02-import-sessions.py)
 //   4. Transcripts imported (03-import-transcripts.py)
 //   5. OPENAI_API_KEY environment variable set

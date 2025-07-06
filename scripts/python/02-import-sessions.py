@@ -7,7 +7,7 @@ session nodes and all related entities (Person, Phone, Email, Device, Location).
 
 Prerequisites:
   1. Neo4j container running
-  2. Schema created (01-create-schema.cypher)
+  2. Schema created (scripts/01-create-schema.sh)
 
 Usage:
   python scripts/python/02-import-sessions.py

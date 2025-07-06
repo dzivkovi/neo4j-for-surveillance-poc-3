@@ -8,7 +8,7 @@ is working correctly.
 
 Prerequisites:
   1. Neo4j container running
-  2. Schema created (01-create-schema.cypher)
+  2. Schema created (scripts/01-create-schema.sh)
   3. Sessions imported (02-import-sessions.py)
   4. Transcripts imported (03-import-transcripts.py)
   5. Embeddings generated (04-generate-embeddings.cypher)

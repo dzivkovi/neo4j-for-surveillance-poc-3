@@ -9,7 +9,7 @@ cannot detect, such as:
 - Analyst investigation findings
 - Manual entity resolution corrections
 
-Run AFTER: 01-schema.cypher, 02-import-data.py
+Run AFTER: scripts/01-create-schema.sh, 02-import-sessions.py
 Purpose: Enhance automated entity resolution with human intelligence
 */
 

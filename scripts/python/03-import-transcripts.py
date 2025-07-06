@@ -8,7 +8,7 @@ Creates Content nodes linked to existing Session nodes.
 
 Prerequisites:
   1. Neo4j container running
-  2. Schema created (01-create-schema.cypher)
+  2. Schema created (scripts/01-create-schema.sh)
   3. Sessions imported (02-import-sessions.py)
 
 Usage:
