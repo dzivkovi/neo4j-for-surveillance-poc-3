@@ -17,6 +17,9 @@ export NEO_NAME="neo4j-${DATASET}"
 # 2. Create schema and indexes
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
 
+# 2b. Validate and fix any missing constraints/indexes
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/05-validate-and-fix-schema.cypher
+
 # 3. Set up Python environment and import data
 python -m venv venv
 source venv/bin/activate
@@ -25,13 +28,18 @@ pip install -r scripts/python/requirements.txt
 python scripts/python/01-import-data.py         # ~2 min for 200 sessions
 python scripts/python/02-import-transcripts.py  # imports LanceDB transcripts
 
-# 4. Verify installation
+# 4. Generate embeddings for semantic search (requires OpenAI API key)
+export OPENAI_API_KEY="sk-..."
+./generate-embeddings.sh  # Or: cat scripts/cypher/03-generate-embeddings.cypher | docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! --param "openai_api_key => '$OPENAI_API_KEY'"
+
+# 5. Verify installation
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 ## Documentation
 
 - **[Data Import](docs/import.md)** - Complete pipeline for data extraction and import
+- **[Embedding Generation](docs/embedding-generation-guide.md)** - OpenAI embeddings using Neo4j GenAI
 - **[Evaluation Framework](evals/README.md)** - 77-question validation suite with real-time progress
 - **[Natural Language Queries](docs/mcp.md)** - Plain English database access via MCP
 - **[Entity Resolution](docs/entity-resolution.md)** - Advanced identity linking
