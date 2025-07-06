@@ -203,6 +203,29 @@ The system supports extensive query types documented in `evals/evaluation_tests.
 - **Data format**: NDJSON with session/involvement/product structure
 - **Content extraction**: Handles data URIs for text content
 
+## ⚠️ **CRITICAL: GitHub Workflow Rules**
+
+### Branch Naming Convention (ENFORCED BY GITGUARD)
+- **Pattern**: `^(feat|fix|docs|chore)/[0-9]+-[description]`
+- **Rule**: Branch number MUST reference an existing GitHub issue
+- **Examples**: 
+  - ✅ `fix/27-post-merge-cleanup` (Issue #27 exists)
+  - ❌ `fix/28-new-feature` (if Issue #28 doesn't exist)
+
+### Issue-Branch-PR Workflow
+1. **Always check**: Does the issue exist before creating branch?
+2. **Continuation work**: Use original issue number (e.g., `fix/27-cleanup` for Issue #27 follow-up)
+3. **New features**: Create issue first, then branch with same number
+4. **NEVER assume**: Don't use "next number" without verifying issue exists
+
+### Before Creating Any Branch:
+```bash
+# Check if issue exists first
+gh issue view 28  # Verify issue exists before creating fix/28-*
+```
+
+**GitGuard Failure = Stop and Fix**: Never bypass security checks, always fix the root cause.
+
 ## Important Instructions
 - **NEVER sign commits or changes as Claude/AI** - use standard git authorship only
 - NEVER use emojis in any files or documentation unless explicitly requested by the User
