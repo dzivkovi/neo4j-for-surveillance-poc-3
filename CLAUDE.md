@@ -59,6 +59,34 @@ docker logs ${NEO_NAME}
 docker stop ${NEO_NAME} && docker rm ${NEO_NAME}
 ```
 
+### Complete Setup Validation
+```bash
+# Comprehensive setup verification
+python scripts/python/05-validate-setup.py
+
+# Expected output: ✅ All checks passed! Setup is complete.
+```
+
+### Clean Setup Sequence (Proven Working)
+```bash
+# 1. Start container
+./run_neo4j.sh default
+
+# 2. Create schema (constraints + indexes)  
+./01-create-schema.sh
+
+# 3. Import data
+python scripts/python/02-import-sessions.py
+python scripts/python/03-import-transcripts.py
+
+# 4. Generate embeddings
+export OPENAI_API_KEY="sk-..."
+./generate-embeddings.sh
+
+# 5. Validate complete setup
+python scripts/python/05-validate-setup.py
+```
+
 ### Evaluation System Commands
 ```bash
 # Interactive evaluation development (the "dance" approach)

@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 """
-Load `data/sessions.ndjson` into Neo4j using the session-centric
-schema.  Run AFTER 01-schema.cypher.
+Step 2: Import session data into Neo4j using the session-centric schema.
+
+Load `data/sessions.ndjson` into Neo4j graph database. This creates the core
+session nodes and all related entities (Person, Phone, Email, Device, Location).
+
+Prerequisites:
+  1. Neo4j container running
+  2. Schema created (01-create-schema.cypher)
+
+Usage:
+  python scripts/python/02-import-sessions.py
 """
 
 import json

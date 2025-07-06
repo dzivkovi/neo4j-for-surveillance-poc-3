@@ -14,25 +14,25 @@ export NEO_NAME="neo4j-${DATASET}"
 # 1. Start Neo4j container with required plugins
 ./run_neo4j.sh ${DATASET}  # Or just ./run_neo4j.sh for default
 
-# 2. Create schema and indexes
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
-
-# 2b. Validate and fix any missing constraints/indexes
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/05-validate-and-fix-schema.cypher
+# 2. Create complete schema (constraints + indexes)
+./01-create-schema.sh
 
 # 3. Set up Python environment and import data
 python -m venv venv
 source venv/bin/activate
 pip install -r scripts/python/requirements.txt
 
-python scripts/python/01-import-data.py         # ~2 min for 200 sessions
-python scripts/python/02-import-transcripts.py  # imports LanceDB transcripts
+python scripts/python/02-import-sessions.py     # ~2 min for 265 sessions
+python scripts/python/03-import-transcripts.py  # imports LanceDB transcripts
 
 # 4. Generate embeddings for semantic search (requires OpenAI API key)
 export OPENAI_API_KEY="sk-..."
-./generate-embeddings.sh  # Or: cat scripts/cypher/03-generate-embeddings.cypher | docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! --param "openai_api_key => '$OPENAI_API_KEY'"
+./generate-embeddings.sh
 
-# 5. Verify installation
+# 5. Verify complete installation
+python scripts/python/05-validate-setup.py
+
+# 6. Run evaluation suite
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 

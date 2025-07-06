@@ -1,11 +1,18 @@
 #!/usr/bin/env python
 """
-Import LanceDB transcript data into Neo4j with proper timestamp conversion.
+Step 3: Import transcript data into Neo4j with proper timestamp conversion.
 
 This script imports transcript text from LanceDB exports, converting Unix epoch
 timestamps to ISO 8601 format and establishing proper session relationships.
+Creates Content nodes linked to existing Session nodes.
 
-NEW: Supports OpenAI 1536-dimension embeddings and vector index migration.
+Prerequisites:
+  1. Neo4j container running
+  2. Schema created (01-create-schema.cypher)
+  3. Sessions imported (02-import-sessions.py)
+
+Usage:
+  python scripts/python/03-import-transcripts.py
 """
 
 import argparse
@@ -73,10 +80,10 @@ def import_transcript(tx, session_id, transcript_data):
     """,
         sid=session_id,
         text=transcript_data["text"],
-        contentType=transcript_data.get("content_type", "text/plain"),
-        chunkCount=transcript_data.get("chunk_count", 1),
-        charCount=transcript_data.get("char_count", len(transcript_data["text"])),
-        sessionType=transcript_data.get("session_type", "Unknown"),
+        content_type=transcript_data.get("content_type", "text/plain"),
+        chunk_count=transcript_data.get("chunk_count", 1),
+        char_count=transcript_data.get("char_count", len(transcript_data["text"])),
+        session_type=transcript_data.get("session_type", "Unknown"),
         target=transcript_data.get("target", ""),
         timestamp=iso_timestamp,
     )
@@ -162,10 +169,10 @@ def import_transcript_with_embedding(tx, session_id, transcript_data, generate_e
     params = {
         "sid": session_id,
         "text": transcript_data["text"],
-        "contentType": transcript_data.get("content_type", "text/plain"),
-        "chunkCount": transcript_data.get("chunk_count", 1),
-        "charCount": transcript_data.get("char_count", len(transcript_data["text"])),
-        "sessionType": transcript_data.get("session_type", "Unknown"),
+        "content_type": transcript_data.get("content_type", "text/plain"),
+        "chunk_count": transcript_data.get("chunk_count", 1),
+        "char_count": transcript_data.get("char_count", len(transcript_data["text"])),
+        "session_type": transcript_data.get("session_type", "Unknown"),
         "target": transcript_data.get("target", ""),
         "timestamp": iso_timestamp,
     }

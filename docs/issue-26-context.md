@@ -57,29 +57,32 @@ d.imei               vs   d.device_id
 - **docs/embedding-generation-guide.md**: Embedding process documentation
 - **Updated README.md**: Complete quick start process
 
-## CURRENT VALIDATED SETUP PROCESS
+## FINAL CLEAN SETUP PROCESS (VALIDATED)
 
 ```bash
 # 1. Start container
 ./run_neo4j.sh default
 
-# 2. Create base schema  
-docker exec -i neo4j-default cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+# 2. Create complete schema (constraints + indexes)
+./01-create-schema.sh
 
-# 3. CRITICAL: Validate and fix schema
-docker exec -i neo4j-default cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/05-validate-and-fix-schema.cypher
+# 3. Import data
+python scripts/python/02-import-sessions.py
+python scripts/python/03-import-transcripts.py
 
-# 4. Import data
-python scripts/python/01-import-data.py
-python scripts/python/02-import-transcripts.py
-
-# 5. Generate embeddings
+# 4. Generate embeddings
 export OPENAI_API_KEY="sk-..."
 ./generate-embeddings.sh
 
-# 6. VALIDATE everything
-python scripts/python/verify-setup.py
+# 5. Validate complete setup
+python scripts/python/05-validate-setup.py
 ```
+
+**Key Improvements:**
+- ✅ **Single schema creation script** that works reliably
+- ✅ **Sequential numbered scripts** (01, 02, 03, 04, 05)
+- ✅ **Individual command execution** for reliable constraint/index creation
+- ✅ **Proven working sequence** tested by complete database wipe and rebuild
 
 ## EXPECTED FINAL STATE (VALIDATED)
 
