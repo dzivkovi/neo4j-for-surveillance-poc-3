@@ -34,19 +34,20 @@ docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/ev
 ## Documentation
 
 - **[Data Import](docs/import.md)** - Complete pipeline for data extraction and import
-- **[Evaluation Framework](docs/evaluations.md)** - 77-question validation suite
+- **[Evaluation Framework](evals/README.md)** - 77-question validation suite with real-time progress
 - **[Natural Language Queries](docs/mcp.md)** - Plain English database access via MCP
 - **[Entity Resolution](docs/entity-resolution.md)** - Advanced identity linking
 - **[Search Syntax](docs/lucene.md)** - Full-text search capabilities
 - **[Case Study](docs/case-study.md)** - Real-world application example
 - **[GitHub Projects](docs/kanban.md)** - Task tracking and workflow
 - **[Claude Automation](docs/claude-automation.md)** - AI-powered PR reviews
+- **[Git Workflow Guide](docs/git-workflow-rescue.md)** - Rescue guide for retroactive design-issue-work cycle
 
 ## Core Capabilities
 
-**📊 Current Status**: 30/77 evaluation tests passing (39%) ✅
+**📊 Current Status**: 56/77 evaluation tests passing (73%) ✅
 
-> **Note**: "Failed" tests aren't broken - they're unprocessed tests awaiting confidence assessment. Recent analysis showed 96.4% of "failed" tests were actually working correctly and just needed evaluation.
+> **Note**: Current breakdown - 56 passed, 2 failed, 1 under review, 18 blocked (framework features). The system demonstrates 94% success rate on core Neo4j functionality (56/59 relevant tests).
 
 ### Entity Tracking
 - Multi-identifier resolution: "What phones is Kenzie using?" → 24 numbers
@@ -77,6 +78,17 @@ docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/ev
 - **Semantic search** - OpenAI embeddings (1536 dims) with Neo4j vector indexes
 - **GenAI integration** - Built-in Neo4j GenAI functions for embedding generation
 - **GraphRAG ready** - LangChain integration for AI-powered analysis
+
+## Testing
+
+```bash
+# Run unit tests
+source venv/bin/activate
+python -m pytest tests/ -v
+
+# Run business validation queries  
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+```
 
 ## Container Management
 
