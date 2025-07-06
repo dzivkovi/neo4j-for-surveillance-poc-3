@@ -31,7 +31,8 @@ Academic and industry resources in `references/` subfolder:
 - **claude-automation.md** - AI-assisted development patterns and workflows
 - **kanban.md** - Project management and task tracking (consider archiving)
 - **lucene.md** - Search functionality documentation
-- **work-command-evolution.md** - Development history and command evolution (consider archiving)
+- **neo4j-export-comparison.md** - Database export and validation tools
+- **work-command-evolution.md** - Development history and command evolution
 
 ## Usage
 

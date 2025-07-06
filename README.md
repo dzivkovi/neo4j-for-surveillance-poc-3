@@ -33,7 +33,11 @@ export OPENAI_API_KEY="sk-..."
 # 5. Verify complete installation
 python scripts/python/05-validate-setup.py
 
-# 6. Run evaluation suite
+# 6. Apply analyst knowledge aliases (MANUAL - when needed)
+# Customize scripts/cypher/06-analyst-aliases-template.cypher first
+./scripts/06-apply-analyst-aliases.sh
+
+# 7. Run evaluation suite
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
