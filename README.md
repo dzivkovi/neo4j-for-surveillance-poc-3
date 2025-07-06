@@ -78,6 +78,17 @@ docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/ev
 - **GenAI integration** - Built-in Neo4j GenAI functions for embedding generation
 - **GraphRAG ready** - LangChain integration for AI-powered analysis
 
+## Testing
+
+```bash
+# Run unit tests
+source venv/bin/activate
+python -m pytest tests/ -v
+
+# Run business validation queries  
+docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+```
+
 ## Container Management
 
 ```bash

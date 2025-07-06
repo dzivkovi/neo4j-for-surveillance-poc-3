@@ -1,26 +1,38 @@
 # Documentation and References
 
-This directory contains supporting documentation for the surveillance analytics POC.
+This directory contains supporting documentation for the Neo4j surveillance analytics POC.
+
+## Core Documentation
+
+- **case-study.md** - Practical implementation examples and use cases
+- **entity-resolution.md** - Data processing and entity matching techniques
+- **evaluation-harness-usage.md** - Testing framework and validation procedures
+- **graph-analytics-visualization-guide.md** - Comprehensive visualization patterns and techniques
+- **import.md** - Data ingestion pipelines and format specifications
+- **mcp.md** - MCP server integration and query execution
 
 ## Reference Materials
 
-Academic and industry resources that inform our graph analytics approach:
+Academic and industry resources in `references/` subfolder:
 
-- **POLE Data Standards Dictionary** - UK National Police Chiefs Council standard for Person, Object, Location, Event data modeling
-- **Intelligence-Led Policing** - OSCE guidebook on data-driven investigation methodologies  
-- **Social Network Analysis: Methods and Applications** - Wasserman & Faust's foundational work on network analysis
-- **Graph-Powered Fraud Detection** - Neo4j whitepaper on applying graph analytics to security use cases
-
-These references support the methodologies demonstrated in our [Graph Analytics Case Study](case-study.md).
+- **National Police Chiefs Council - POLE Data Standards Dictionary.pdf** - UK standard for Person, Object, Location, Event data modeling
+- **OSCE Guidebook - Intelligence-Led Policing.pdf** - Data-driven investigation methodologies
+- **Social Network Analysis - Methods and Applications.pdf** - Foundational network analysis theory (Wasserman & Faust)
+- **Neo4j_WP-Fraud-Detection-with-Graph-Databases.pdf** - Graph analytics for security applications
 
 ## Visualizations
 
-- `ai-docs/network-graph.html` - Interactive D3.js visualization demonstrating communication network relationships
+- **ai-docs/network-graph.html** - Interactive D3.js communication network visualization
+- **ai-docs/kenzie-eagles-network.html** - Specific case study network visualization
+- **graph.png** - Static graph visualization reference
+
+## Development Documentation
+
+- **claude-automation.md** - AI-assisted development patterns and workflows
+- **kanban.md** - Project management and task tracking (consider archiving)
+- **lucene.md** - Search functionality documentation
+- **work-command-evolution.md** - Development history and command evolution (consider archiving)
 
 ## Usage
 
-The PDF references provide theoretical background for:
-- POLE schema design decisions
-- Network analysis techniques used in queries
-- Intelligence-led policing concepts
-- Graph database advantages for security applications
+The reference materials provide theoretical foundation for POLE schema design, network analysis techniques, intelligence-led policing concepts, and graph database security applications.
