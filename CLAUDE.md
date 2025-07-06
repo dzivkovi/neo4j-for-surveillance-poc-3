@@ -14,6 +14,7 @@ This is a Neo4j-based surveillance analytics POC that ingests communication sess
 - **Evals are tests for prompts**: Just as tests verify code, evals verify AI behavior. Write tests first, let them fail, then implement until they pass consistently (5+ runs for nondeterministic systems).
 - **Tests are immutable**: Once written, tests define success. Implementation serves tests, not vice versa.
 - **Use `rg` first**: ALWAYS use `rg` (ripgrep) for searching before trying `grep` or `find` combinations. It's faster and better.
+- **cypher-shell NEVER supports `-c` flag**: ALWAYS use `echo "QUERY" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3!` pattern.
 
 ## Essential Commands
 
@@ -36,6 +37,21 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cyphe
 
 # Test vector search capability
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/vector-search-verification.cypher
+```
+
+### ⚠️ **CRITICAL: cypher-shell Command Patterns**
+```bash
+# ✅ CORRECT: Single query via echo pipe
+echo "MATCH (n) RETURN count(n);" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3!
+
+# ✅ CORRECT: Script file input
+docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < script.cypher
+
+# ✅ CORRECT: With parameters
+echo "RETURN \$param;" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! --param "param => 'value'"
+
+# ❌ WRONG: cypher-shell does NOT support -c flag
+# docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! -c "MATCH (n) RETURN count(n);"
 ```
 
 ### Development Validation

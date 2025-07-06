@@ -26,6 +26,7 @@ python scripts/python/02-import-sessions.py     # ~2 min for 265 sessions
 python scripts/python/03-import-transcripts.py  # imports LanceDB transcripts
 
 # 4. Generate embeddings for semantic search (requires OpenAI API key)
+export NEO_NAME="neo4j-${DATASET}"
 export OPENAI_API_KEY="sk-..."
 ./generate-embeddings.sh
 
