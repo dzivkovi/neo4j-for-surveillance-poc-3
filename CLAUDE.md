@@ -13,6 +13,7 @@ This is a Neo4j-based surveillance analytics POC that ingests communication sess
 - **Documentation-First**: Always check latest official docs before implementing. Technology changes faster than training data or existing code.
 - **Evals are tests for prompts**: Just as tests verify code, evals verify AI behavior. Write tests first, let them fail, then implement until they pass consistently (5+ runs for nondeterministic systems).
 - **Tests are immutable**: Once written, tests define success. Implementation serves tests, not vice versa.
+- **Use `rg` first**: ALWAYS use `rg` (ripgrep) for searching before trying `grep` or `find` combinations. It's faster and better.
 
 ## Essential Commands
 
