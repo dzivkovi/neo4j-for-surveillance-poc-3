@@ -176,4 +176,4 @@ The key insight: **Automate the systematic, let humans handle the creative**.
 
 ---
 
-*For technical implementation details, see [implementation PR](https://github.com/dzivkovi/neo4j-for-surveillance-poc-3/pull/17) and the current quality gates in [.claude/workflow/definition_of_done.py](./.claude/workflow/definition_of_done.py).*
+*For technical implementation details, see [implementation PR](https://github.com/dzivkovi/neo4j-for-surveillance-poc-3/pull/17) and the current quality gates in [.claude/workflow/definition_of_done.py](../.claude/workflow/definition_of_done.py).*
