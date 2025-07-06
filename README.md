@@ -7,17 +7,15 @@ End-to-end sandbox that ingests *sessions.ndjson* (law-enforcement communication
 ## Quick Start
 
 ```bash
+# Set dataset name (defaults to "default" if not specified)
+export DATASET=${DATASET:-default}
+export NEO_NAME="neo4j-${DATASET}"
+
 # 1. Start Neo4j container with required plugins
-docker run --name neo4j-sessions \
-  -p 7474:7474 -p 7687:7687 \
-  -e NEO4J_AUTH=neo4j/Sup3rSecur3! \
-  -e NEO4J_PLUGINS='["apoc","graph-data-science","genai"]' \
-  -e NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*,db.*,genai.* \
-  -e NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*,db.*,genai.* \
-  -d neo4j:5.26.7-community
+./run_neo4j.sh ${DATASET}  # Or just ./run_neo4j.sh for default
 
 # 2. Create schema and indexes
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
 
 # 3. Set up Python environment and import data
 python -m venv venv
@@ -28,7 +26,7 @@ python scripts/python/01-import-data.py         # ~2 min for 200 sessions
 python scripts/python/02-import-transcripts.py  # imports LanceDB transcripts
 
 # 4. Verify installation
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 ## Documentation
@@ -87,23 +85,42 @@ source venv/bin/activate
 python -m pytest tests/ -v
 
 # Run business validation queries  
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 ## Container Management
 
+### Dataset Switching
 ```bash
-# Stop and restart (data loss warning - no volumes used for simplicity)
-docker stop neo4j-sessions && docker rm neo4j-sessions
-# Then re-run Quick Start steps
+# Quick dataset switching (< 10 seconds)
+./run_neo4j.sh default    # Switch to default dataset
+./run_neo4j.sh bigdata    # Switch to bigdata dataset
+./run_neo4j.sh clientA    # Switch to clientA dataset
+```
+
+### Container Operations
+```bash
+# Stop current container
+docker stop ${NEO_NAME}
+
+# Remove container (warning: data loss)
+docker rm ${NEO_NAME}
 
 # Data restoration after restart
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
 python scripts/python/01-import-data.py
 python scripts/python/02-import-transcripts.py
 
 # Test GenAI plugin installation
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW FUNCTIONS YIELD name WHERE name CONTAINS 'genai' RETURN name"
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW FUNCTIONS YIELD name WHERE name CONTAINS 'genai' RETURN name"
+```
+
+### Dataset Snapshots (Optional)
+```bash
+# Create snapshot of current dataset
+docker stop ${NEO_NAME}
+docker commit ${NEO_NAME} ${NEO_NAME}:snap-$(date +%Y-%m-%d)
+docker start ${NEO_NAME}
 ```
 
 ## For AI Assistants

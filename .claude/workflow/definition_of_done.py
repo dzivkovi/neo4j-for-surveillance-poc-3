@@ -5,10 +5,10 @@ This module provides systematic validation to prevent premature success declarat
 by ensuring ALL quality criteria are met before declaring work complete.
 """
 
+import re
 import subprocess
 import sys
 import time
-import re
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Dict, Optional
@@ -419,14 +419,14 @@ class DocumentationIntegrityGate(QualityGate):
     def _check_internal_links(self) -> list:
         """Check all internal markdown links work."""
         broken_links = []
-        
+
         # Get gitignore patterns
         gitignore_patterns = self._get_gitignore_patterns()
-        
+
         for md_file in Path(".").rglob("*.md"):
             if "venv" in str(md_file) or ".git" in str(md_file):
                 continue
-                
+
             # Skip files matching gitignore patterns
             if self._is_gitignored(md_file, gitignore_patterns):
                 continue
@@ -434,18 +434,18 @@ class DocumentationIntegrityGate(QualityGate):
             try:
                 content = md_file.read_text()
                 # Remove code blocks (backtick-quoted text) to avoid false positives
-                content_no_code = re.sub(r'`[^`]*`', '', content)
+                content_no_code = re.sub(r"`[^`]*`", "", content)
                 # Find markdown links: [text](path)
-                links = re.findall(r'\[([^\]]+)\]\(([^)]+)\)', content_no_code)
-                
+                links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content_no_code)
+
                 for link_text, link_path in links:
                     # Skip external links (http/https), anchors (#), and email (mailto:)
-                    if link_path.startswith(('http://', 'https://', '#', 'mailto:')):
+                    if link_path.startswith(("http://", "https://", "#", "mailto:")):
                         continue
-                    
+
                     # Resolve relative path from markdown file location
                     resolved_path = (md_file.parent / link_path).resolve()
-                    
+
                     if not resolved_path.exists():
                         broken_links.append(f"{md_file}:{link_path}")
 
@@ -453,42 +453,42 @@ class DocumentationIntegrityGate(QualityGate):
                 continue
 
         return broken_links
-    
+
     def _get_gitignore_patterns(self) -> list:
         """Get patterns from .gitignore file."""
         gitignore_file = Path(".gitignore")
         patterns = []
-        
+
         if gitignore_file.exists():
             try:
                 content = gitignore_file.read_text()
                 for line in content.splitlines():
                     line = line.strip()
-                    if line and not line.startswith('#'):
+                    if line and not line.startswith("#"):
                         patterns.append(line)
             except Exception:
                 pass
-        
+
         return patterns
-    
+
     def _is_gitignored(self, file_path: Path, patterns: list) -> bool:
         """Check if file matches any gitignore pattern."""
         file_str = str(file_path)
-        
+
         for pattern in patterns:
             # Simple pattern matching - handle common gitignore patterns
-            if pattern.endswith('/'):
+            if pattern.endswith("/"):
                 # Directory pattern
-                if pattern.rstrip('/') in file_str:
+                if pattern.rstrip("/") in file_str:
                     return True
-            elif '*' in pattern:
+            elif "*" in pattern:
                 # Wildcard pattern - basic support
-                if pattern.replace('*', '') in file_str:
+                if pattern.replace("*", "") in file_str:
                     return True
             elif pattern in file_str:
                 # Direct match
                 return True
-        
+
         return False
 
     def _check_readme_completeness(self) -> list:
@@ -545,26 +545,26 @@ class MetricsConsistencyGate(QualityGate):
 
         try:
             content = evals_readme.read_text()
-            
+
             # Look for status summary patterns
             metrics = {}
-            
+
             # Parse patterns like "✅ **PASSED**: 56"
-            passed_match = re.search(r'✅.*?PASSED.*?(\d+)', content)
+            passed_match = re.search(r"✅.*?PASSED.*?(\d+)", content)
             if passed_match:
-                metrics['passed'] = int(passed_match.group(1))
+                metrics["passed"] = int(passed_match.group(1))
 
-            failed_match = re.search(r'❌.*?FAILED.*?(\d+)', content)
+            failed_match = re.search(r"❌.*?FAILED.*?(\d+)", content)
             if failed_match:
-                metrics['failed'] = int(failed_match.group(1))
+                metrics["failed"] = int(failed_match.group(1))
 
-            review_match = re.search(r'🟠.*?REVIEW.*?(\d+)', content)
+            review_match = re.search(r"🟠.*?REVIEW.*?(\d+)", content)
             if review_match:
-                metrics['review'] = int(review_match.group(1))
+                metrics["review"] = int(review_match.group(1))
 
-            blocked_match = re.search(r'⏸.*?BLOCKED.*?(\d+)', content)
+            blocked_match = re.search(r"⏸.*?BLOCKED.*?(\d+)", content)
             if blocked_match:
-                metrics['blocked'] = int(blocked_match.group(1))
+                metrics["blocked"] = int(blocked_match.group(1))
 
             return metrics
 
@@ -579,15 +579,15 @@ class MetricsConsistencyGate(QualityGate):
 
         try:
             content = main_readme.read_text()
-            
+
             # Look for status pattern like "56/77 evaluation tests passing"
-            status_match = re.search(r'(\d+)/77 evaluation tests passing', content)
+            status_match = re.search(r"(\d+)/77 evaluation tests passing", content)
             if not status_match:
                 # No status found - skip validation
                 return True
 
             main_passed = int(status_match.group(1))
-            evals_passed = evals_metrics.get('passed', 0)
+            evals_passed = evals_metrics.get("passed", 0)
 
             if main_passed != evals_passed:
                 self.error = f"Status mismatch: README shows {main_passed} passed, evals shows {evals_passed} passed"
@@ -602,21 +602,21 @@ class MetricsConsistencyGate(QualityGate):
         """Validate percentage calculations are correct."""
         try:
             total_tests = 77  # Known total from evaluation framework
-            passed = evals_metrics.get('passed', 0)
-            
+            passed = evals_metrics.get("passed", 0)
+
             if passed > 0:
                 expected_percentage = round((passed / total_tests) * 100)
-                
+
                 # Check if main README has correct percentage
                 main_readme = Path("README.md")
                 if main_readme.exists():
                     content = main_readme.read_text()
-                    
+
                     # Look for percentage pattern like "(73%)"
-                    percentage_match = re.search(r'\((\d+)%\)', content)
+                    percentage_match = re.search(r"\((\d+)%\)", content)
                     if percentage_match:
                         actual_percentage = int(percentage_match.group(1))
-                        
+
                         # Allow 1% variance for rounding
                         if abs(actual_percentage - expected_percentage) > 1:
                             self.error = f"Percentage calculation error: shows {actual_percentage}%, should be ~{expected_percentage}%"

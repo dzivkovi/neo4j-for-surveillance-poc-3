@@ -21,14 +21,21 @@ This is a Neo4j-based surveillance analytics POC that ingests communication sess
 
 ### Neo4j Operations
 ```bash
+# Set dataset environment variable (defaults to "default" if not set)
+export DATASET=${DATASET:-default}
+export NEO_NAME="neo4j-${DATASET}"
+
+# Launch dataset-specific container
+./run_neo4j.sh ${DATASET}  # Or ./run_neo4j.sh bigdata, ./run_neo4j.sh clientA, etc.
+
 # Quick connection test for development
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3!
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3!
 
 # Run schema validation
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
 
 # Test vector search capability
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/vector-search-verification.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/vector-search-verification.cypher
 ```
 
 ### Development Validation
@@ -37,19 +44,19 @@ docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/ve
 source venv/bin/activate && python scripts/python/03-graphrag-demo.py
 
 # Run comprehensive business requirements test
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 ### Debugging Commands
 ```bash
 # Check container status
-docker ps | grep neo4j-sessions
+docker ps | grep ${NEO_NAME}
 
 # View Neo4j logs for troubleshooting
-docker logs neo4j-sessions
+docker logs ${NEO_NAME}
 
 # Container restart (data loss - use for fresh start only)
-docker stop neo4j-sessions && docker rm neo4j-sessions
+docker stop ${NEO_NAME} && docker rm ${NEO_NAME}
 ```
 
 ### Evaluation System Commands
@@ -64,10 +71,10 @@ PYTHONPATH=. python scripts/python/neo4j_query_executor.py confidence --batch
 python scripts/python/evaluation_harness.py dashboard
 
 # Run comprehensive validation suite
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/validation-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/validation-suite.cypher
 
 # Test graph visualization examples
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/graph-visualization-examples.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/graph-visualization-examples.cypher
 ```
 
 ## Neo4j GenAI Python Project
@@ -193,7 +200,7 @@ python -m pytest tests/test_affected_module.py -v
 rg "old_pattern" .  # Should return nothing
 
 # After editing Cypher queries
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < modified_query.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < modified_query.cypher
 
 # After editing multiple files
 for file in $(git diff --name-only); do

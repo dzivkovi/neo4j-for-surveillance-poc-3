@@ -107,7 +107,7 @@ In Neo4j, it's instant and visual.
 ### Essential Commands
 ```bash
 # Test your visualization queries
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/shortest-path-examples.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/shortest-path-examples.cypher
 ```
 
 ### Export Tips

@@ -328,7 +328,7 @@ class ConfidenceProcessor:
 
             # Determine current folder from file path
             current_folder = test_file.parent.name.upper()
-            
+
             # Apply auto-promotion rules
             if percentage >= 80:
                 # Auto-promote to PASSED
@@ -336,7 +336,7 @@ class ConfidenceProcessor:
                 promoted_count += 1
                 print(f"Auto-promoted {file_test_id} with {percentage}% confidence")
             elif percentage <= 30:
-                # Auto-fail to FAILED  
+                # Auto-fail to FAILED
                 self.transition_test(file_test_id, current_folder, "FAILED")
                 failed_count += 1
                 print(f"Auto-failed {file_test_id} with {percentage}% confidence")
@@ -360,38 +360,38 @@ class ConfidenceProcessor:
             True if transition successful
         """
         # Import and use the real evaluation harness
-        from scripts.python.evaluation_harness import EvaluationHarness, TestState, TestFile
-        
+        from scripts.python.evaluation_harness import EvaluationHarness, TestFile, TestState
+
         # Map string states to TestState enum
         state_map = {
             "TODO": TestState.TODO,
-            "REVIEW": TestState.REVIEW, 
+            "REVIEW": TestState.REVIEW,
             "PASSED": TestState.PASSED,
             "FAILED": TestState.FAILED,
-            "BLOCKED": TestState.BLOCKED
+            "BLOCKED": TestState.BLOCKED,
         }
-        
+
         from_enum = state_map.get(from_state.upper())
         to_enum = state_map.get(to_state.upper())
-        
+
         if not from_enum or not to_enum:
             print(f"Invalid state: {from_state} → {to_state}")
             return False
-            
+
         # Use real harness for actual file movement
         harness = EvaluationHarness(self.evals_dir)
-        
+
         try:
             # Move the file
             harness.transition_test(test_id, from_enum, to_enum)
-            
+
             # Update the metadata header in the moved file
             new_file_path = self.evals_dir / to_state.lower() / f"{test_id}.md"
             if new_file_path.exists():
                 test_file = TestFile.from_path(new_file_path)
                 updated_content = test_file.update_header(status=to_enum)
                 new_file_path.write_text(updated_content)
-                
+
             print(f"✅ Moved {test_id}: {from_state} → {to_state}")
             return True
         except Exception as e:
