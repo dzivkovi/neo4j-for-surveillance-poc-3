@@ -18,7 +18,7 @@
 **THE PROBLEM**: Original neo4j-sessions had 5 constraints that were missing in neo4j-default
 
 **THE DISCOVERY**: 
-- Constraints WERE added to `scripts/cypher/01-schema.cypher` as part of issue #7 (June 23-25, 2025)
+- Constraints WERE added to `scripts/01-create-schema.sh` as part of issue #7 (June 23-25, 2025)
 - Design document at `analysis/7/DESIGN.md` shows the implementation plan
 - BUT: Property names in schema were CORRECT for current data, different from original export
 
@@ -64,7 +64,7 @@ d.imei               vs   d.device_id
 ./run_neo4j.sh default
 
 # 2. Create complete schema (constraints + indexes)
-./01-create-schema.sh
+scripts/01-create-schema.sh
 
 # 3. Import data
 python scripts/python/02-import-sessions.py
@@ -164,7 +164,7 @@ docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW CONSTRAI
 4. **Silent failures**: Always run verify-setup.py after setup
 
 ### File Dependencies:
-- `01-schema.cypher` → `05-validate-and-fix-schema.cypher` → `verify-setup.py`
+- `scripts/01-create-schema.sh` → `05-validate-and-fix-schema.cypher` → `verify-setup.py`
 - All import scripts depend on container being started with GenAI plugin
 - Embedding generation requires API key and Content nodes with text
 

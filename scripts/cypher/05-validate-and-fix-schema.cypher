@@ -69,7 +69,7 @@ CREATE POINT INDEX locationGeo IF NOT EXISTS
 FOR (l:Location) ON (l.geo);
 
 // ========================================
-// PART 6: Vector index (already correct in 01-schema.cypher)
+// PART 6: Vector index (already correct in scripts/01-create-schema.sh)
 // ========================================
 
 CREATE VECTOR INDEX ContentVectorIndex IF NOT EXISTS

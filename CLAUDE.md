@@ -89,7 +89,7 @@ python scripts/python/05-validate-setup.py
 ./run_neo4j.sh default
 
 # 2. Create schema (constraints + indexes)  
-./01-create-schema.sh
+scripts/01-create-schema.sh
 
 # 3. Import data
 python scripts/python/02-import-sessions.py

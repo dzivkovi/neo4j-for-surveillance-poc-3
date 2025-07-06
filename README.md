@@ -15,7 +15,7 @@ export NEO_NAME="neo4j-${DATASET}"
 ./run_neo4j.sh ${DATASET}  # Or just ./run_neo4j.sh for default
 
 # 2. Create complete schema (constraints + indexes)
-./01-create-schema.sh
+scripts/01-create-schema.sh
 
 # 3. Set up Python environment and import data
 python -m venv venv
@@ -34,8 +34,8 @@ export OPENAI_API_KEY="sk-..."
 python scripts/python/05-validate-setup.py
 
 # 6. Apply analyst knowledge aliases (MANUAL - when needed)
-# Customize scripts/cypher/06-analyst-aliases-template.cypher first
-./scripts/06-apply-analyst-aliases.sh
+# Use existing approach in scripts/cypher/03-analyst-knowledge-aliases.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/03-analyst-knowledge-aliases.cypher
 
 # 7. Run evaluation suite
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
@@ -120,7 +120,7 @@ docker stop ${NEO_NAME}
 docker rm ${NEO_NAME}
 
 # Data restoration after restart
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+scripts/01-create-schema.sh
 python scripts/python/01-import-data.py
 python scripts/python/02-import-transcripts.py
 

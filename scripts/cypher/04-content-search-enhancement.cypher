@@ -12,7 +12,7 @@ DEFENSIVE PROGRAMMING APPROACH:
 - Uses safe content modification patterns
 - Includes rollback capability
 
-Run AFTER: 01-schema.cypher, 02-import-data.py, 03-analyst-knowledge-aliases.cypher
+Run AFTER: scripts/01-create-schema.sh, 02-import-sessions.py, 03-analyst-knowledge-aliases.cypher
 Purpose: Enable intuitive searches without complex alias expansion queries
 
 Business Value: Investigators can search "Freddy" and find all Fred's content

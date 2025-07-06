@@ -4,7 +4,7 @@
 # This script creates all constraints and indexes needed for the surveillance
 # analytics POC. Uses individual commands for reliable execution.
 #
-# Usage: ./01-create-schema.sh
+# Usage: scripts/01-create-schema.sh
 
 set -e
 

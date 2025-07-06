@@ -24,7 +24,7 @@ This creates a container named `neo4j-${DATASET}` with GenAI plugin enabled.
 
 ```bash
 export NEO_NAME="neo4j-${DATASET}"
-docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+scripts/01-create-schema.sh
 ```
 
 This creates the base constraints and indexes.
