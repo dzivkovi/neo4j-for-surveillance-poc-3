@@ -294,23 +294,23 @@ The extraction tool provides the foundation for flexible, secure data preparatio
 
 ```bash
 # Basic syntax
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3!
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3!
 
 # Run a single query
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! "MATCH (n) RETURN count(n);"
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! "MATCH (n) RETURN count(n);"
 
 # Run a query file
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/investigative.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/investigative.cypher
 
 # Run with formatted output
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! --format plain "MATCH (s:Session) RETURN keys(s) LIMIT 1;"
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! --format plain "MATCH (s:Session) RETURN keys(s) LIMIT 1;"
 ```
 
 ## Method 2: Interactive shell session
 
 ```bash
 # Start an interactive cypher-shell session
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3!
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3!
 
 # Once inside, you can run queries:
 neo4j@neo4j> MATCH (n) RETURN count(n);
@@ -320,7 +320,7 @@ neo4j@neo4j> :exit
 ## Method 3: Using bash heredoc for multi-line queries
 
 ```bash
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! --format plain <<'EOF'
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! --format plain <<'EOF'
 MATCH (s:Session)
 RETURN keys(s) as properties
 LIMIT 1;
@@ -331,10 +331,10 @@ EOF
 
 ```bash
 # Copy a query file into the container first
-docker cp queries/practical-investigation-queries.cypher neo4j-sessions:/tmp/
+docker cp queries/practical-investigation-queries.cypher ${NEO_NAME}:/tmp/
 
 # Then execute it
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f /tmp/practical-investigation-queries.cypher
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! -f /tmp/practical-investigation-queries.cypher
 ```
 
 ## Useful Options
@@ -349,5 +349,5 @@ docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -f /tmp/pra
 
 ```bash
 # Let's check what properties Session nodes actually have
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! --format plain "MATCH (s:Session) RETURN DISTINCT keys(s) as properties LIMIT 5;"
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! --format plain "MATCH (s:Session) RETURN DISTINCT keys(s) as properties LIMIT 5;"
 ```

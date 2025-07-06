@@ -7,33 +7,44 @@ End-to-end sandbox that ingests *sessions.ndjson* (law-enforcement communication
 ## Quick Start
 
 ```bash
-# 1. Start Neo4j container with required plugins
-docker run --name neo4j-sessions \
-  -p 7474:7474 -p 7687:7687 \
-  -e NEO4J_AUTH=neo4j/Sup3rSecur3! \
-  -e NEO4J_PLUGINS='["apoc","graph-data-science","genai"]' \
-  -e NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*,db.*,genai.* \
-  -e NEO4J_dbms_security_procedures_allowlist=apoc.*,gds.*,db.*,genai.* \
-  -d neo4j:5.26.7-community
+# Set dataset name (defaults to "default" if not specified)
+export DATASET=${DATASET:-default}
+export NEO_NAME="neo4j-${DATASET}"
 
-# 2. Create schema and indexes
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+# 1. Start Neo4j container with required plugins
+./run_neo4j.sh ${DATASET}  # Or just ./run_neo4j.sh for default
+
+# 2. Create complete schema (constraints + indexes)
+./01-create-schema.sh
 
 # 3. Set up Python environment and import data
 python -m venv venv
 source venv/bin/activate
 pip install -r scripts/python/requirements.txt
 
-python scripts/python/01-import-data.py         # ~2 min for 200 sessions
-python scripts/python/02-import-transcripts.py  # imports LanceDB transcripts
+python scripts/python/02-import-sessions.py     # ~2 min for 265 sessions
+python scripts/python/03-import-transcripts.py  # imports LanceDB transcripts
 
-# 4. Verify installation
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+# 4. Generate embeddings for semantic search (requires OpenAI API key)
+export NEO_NAME="neo4j-${DATASET}"
+export OPENAI_API_KEY="sk-..."
+./generate-embeddings.sh
+
+# 5. Verify complete installation
+python scripts/python/05-validate-setup.py
+
+# 6. Apply analyst knowledge aliases (MANUAL - when needed)
+# Customize scripts/cypher/06-analyst-aliases-template.cypher first
+./scripts/06-apply-analyst-aliases.sh
+
+# 7. Run evaluation suite
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 ## Documentation
 
 - **[Data Import](docs/import.md)** - Complete pipeline for data extraction and import
+- **[Embedding Generation](docs/embedding-generation-guide.md)** - OpenAI embeddings using Neo4j GenAI
 - **[Evaluation Framework](evals/README.md)** - 77-question validation suite with real-time progress
 - **[Natural Language Queries](docs/mcp.md)** - Plain English database access via MCP
 - **[Entity Resolution](docs/entity-resolution.md)** - Advanced identity linking
@@ -87,23 +98,42 @@ source venv/bin/activate
 python -m pytest tests/ -v
 
 # Run business validation queries  
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 ## Container Management
 
+### Dataset Switching
 ```bash
-# Stop and restart (data loss warning - no volumes used for simplicity)
-docker stop neo4j-sessions && docker rm neo4j-sessions
-# Then re-run Quick Start steps
+# Quick dataset switching (< 10 seconds)
+./run_neo4j.sh default    # Switch to default dataset
+./run_neo4j.sh bigdata    # Switch to bigdata dataset
+./run_neo4j.sh clientA    # Switch to clientA dataset
+```
+
+### Container Operations
+```bash
+# Stop current container
+docker stop ${NEO_NAME}
+
+# Remove container (warning: data loss)
+docker rm ${NEO_NAME}
 
 # Data restoration after restart
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/01-schema.cypher
 python scripts/python/01-import-data.py
 python scripts/python/02-import-transcripts.py
 
 # Test GenAI plugin installation
-docker exec -it neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW FUNCTIONS YIELD name WHERE name CONTAINS 'genai' RETURN name"
+docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW FUNCTIONS YIELD name WHERE name CONTAINS 'genai' RETURN name"
+```
+
+### Dataset Snapshots (Optional)
+```bash
+# Create snapshot of current dataset
+docker stop ${NEO_NAME}
+docker commit ${NEO_NAME} ${NEO_NAME}:snap-$(date +%Y-%m-%d)
+docker start ${NEO_NAME}
 ```
 
 ## For AI Assistants

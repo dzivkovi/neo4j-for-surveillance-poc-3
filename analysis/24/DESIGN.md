@@ -75,7 +75,7 @@ touch queries/README.md
 ```bash
 # Test documentation accuracy
 python -m pytest tests/ -v
-docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
 ## Expected Outcomes

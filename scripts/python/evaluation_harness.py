@@ -196,29 +196,30 @@ Blocker: —
 
         (self.evals_dir / "template.md").write_text(template_content)
 
-    def calculate_confidence(self, expected_count: int, actual_count: int, 
-                           expected_score: float, actual_score: float) -> float:
+    def calculate_confidence(
+        self, expected_count: int, actual_count: int, expected_score: float, actual_score: float
+    ) -> float:
         """Calculate confidence score for auto-promotion.
-        
+
         Returns confidence percentage (0-100) based on:
         - Count accuracy (70% weight): How well actual count matches expected
         - Score similarity (30% weight): How close scores are to expected
-        
+
         Auto-promotion threshold: 80%
         """
         if expected_count <= 0 or expected_score <= 0:
             return 0.0
-            
+
         # Count accuracy: how well actual matches expected
         count_accuracy = min(actual_count, expected_count) / expected_count
-        
+
         # Score similarity: inverse of relative difference
         score_diff = abs(actual_score - expected_score) / expected_score
         score_similarity = max(0, 1 - score_diff)
-        
+
         # Weighted confidence calculation
         confidence = (count_accuracy * 0.7) + (score_similarity * 0.3)
-        
+
         return confidence * 100  # Return as percentage
 
     def transition_test(self, test_id: str, from_state: TestState, to_state: TestState):
@@ -269,13 +270,13 @@ Blocker: —
             actual_count = None
             actual_score = None
             confidence = None
-            
+
             # Look for expected results in the confidence calculation section
             expected_match = re.search(r"Expected:\s*\[count:\s*(\d+),\s*score:\s*([\d.]+)\]", test_file.content)
             if expected_match:
                 expected_count = int(expected_match.group(1))
                 expected_score = float(expected_match.group(2))
-            
+
             # Look for actual results in the confidence calculation section
             actual_match = re.search(r"Actual:\s*\[count:\s*(\d+),\s*score:\s*([\d.]+)\]", test_file.content)
             if actual_match:
@@ -317,7 +318,7 @@ Blocker: —
             if test_file.status != new_status:
                 # Capture old status before updating
                 old_status = test_file.status
-                
+
                 # Update content with new status
                 updated_content = test_file.update_header(status=new_status)
 
@@ -333,13 +334,13 @@ Blocker: —
                 original_path.write_text(updated_content)
 
             return TestResult(
-                passed=passed, 
-                duration_ms=duration_ms, 
+                passed=passed,
+                duration_ms=duration_ms,
                 confidence=confidence,
                 expected_count=expected_count,
                 actual_count=actual_count,
                 expected_score=expected_score,
-                actual_score=actual_score
+                actual_score=actual_score,
             )
 
         except Exception as e:
