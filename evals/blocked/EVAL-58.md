@@ -5,7 +5,6 @@ Category: Knowledge
 Added: 2025-07-03
 Last-Run: —
 Duration-ms: —
-Run-Count: 0
 Blocker: Framework feature - not core Neo4j functionality
 
 # EVAL-58: Miscellaneous

@@ -48,19 +48,50 @@ pytest-benchmark compare --html=report.html
 
 Simply add new `EVAL-NN.md` files to `evals/passed/`. They will be discovered automatically.
 
-## Keeping Documentation Updated
+## Evaluation-Driven Development Workflow
 
-After adding/moving tests, run this complete update sequence:
+This project uses a unique **evaluation-driven development workflow** that combines business requirements validation with automated performance testing:
+
+### The Complete Loop
 
 ```bash
-# 1. Update all count references in documentation
+# Single command handles the entire workflow
 python scripts/python/update_counts.py
+```
 
-# 2. Regenerate performance histogram for GitHub Pages
+**What happens:**
+1. **Benchmark Execution**: Runs pytest performance tests against all passed evaluations
+2. **Source File Updates**: Updates individual `evals/*/EVAL-*.md` files with real timestamps and performance data
+3. **Dashboard Generation**: Reads from EVAL files to generate consistent `evals/README.md` dashboard
+4. **Documentation Sync**: Updates all count references across documentation
+
+### Business Value
+
+This workflow provides **traceability from business requirements to performance metrics**:
+
+- ✅ **Requirements**: Each EVAL-XX corresponds to real law enforcement scenarios
+- ✅ **Implementation**: Cypher queries that solve the business problems  
+- ✅ **Validation**: Automated tests verify queries work correctly
+- ✅ **Performance**: Benchmarks ensure queries meet <5s response requirements
+- ✅ **Reporting**: Dashboard shows stakeholders exactly what's validated and how fast
+
+### Key Benefits
+
+- **Single Source of Truth**: EVAL files contain authoritative timestamps and performance data
+- **No Data Inconsistencies**: Dashboard always reflects what's actually in the files
+- **Business-Technical Bridge**: Links evaluation scenarios directly to performance metrics
+- **Client Confidence**: Shows exactly which surveillance scenarios are validated and tested
+
+### For GitHub Pages Demo
+
+After workflow updates, regenerate public-facing reports:
+
+```bash
+# Regenerate performance histogram for GitHub Pages
 pytest tests/test_eval_queries.py::test_eval_performance \
     --benchmark-only --benchmark-histogram=docs/benchmark-histogram
 
-# 3. Regenerate HTML test results for GitHub Pages
+# Regenerate HTML test results for GitHub Pages
 pytest tests/test_eval_queries.py::test_eval_functional \
     --html=docs/test-results.html --self-contained-html
 ```

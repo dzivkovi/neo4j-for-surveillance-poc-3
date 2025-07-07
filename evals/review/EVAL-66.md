@@ -5,7 +5,6 @@ Category: Search
 Added: 2025-07-03
 Last-Run: 2025-07-03T09:27:41.718801
 Duration-ms: —
-Run-Count: 1
 Blocker: —
 
 # EVAL-66: Tell me where Kenzie was most recently located?

@@ -4,8 +4,7 @@ ID: EVAL-01
 Category: Search
 Added: 2025-07-03
 Last-Run: 2025-07-04
-Duration-ms: 156
-Run-Count: 1
+Duration-ms: —
 Blocker: Requires text2cypher/GraphRAG redesign
 
 # EVAL-01: Does fred discuss travel plans?

@@ -5,7 +5,6 @@ Category: Search
 Added: 2025-07-03
 Last-Run: —
 Duration-ms: —
-Run-Count: 0
 Blocker: Vector similarity approach has circular reasoning - requires text2cypher/GraphRAG redesign
 
 # EVAL-04: do freddy talk about traveling?

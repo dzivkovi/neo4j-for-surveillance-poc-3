@@ -107,6 +107,14 @@ export OPENAI_API_KEY="sk-..."
 python scripts/python/05-validate-setup.py
 ```
 
+### Before Committing Changes
+```bash
+# Update dashboard and documentation counts
+python scripts/python/update_counts.py
+
+# Ensures consistent dashboard and documentation before commits
+```
+
 ### Evaluation System Commands
 ```bash
 # Interactive evaluation development (the "dance" approach)

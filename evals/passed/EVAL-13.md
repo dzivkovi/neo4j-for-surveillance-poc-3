@@ -3,9 +3,8 @@ Status: PASSED
 ID: EVAL-13
 Category: Search
 Added: 2025-07-03
-Last-Run: —
-Duration-ms: —
-Run-Count: 0
+Last-Run: 2025-07-07T18:40:59.777496+00:00
+Duration-ms: 17.0ms
 Blocker: —
 
 # EVAL-13: Communications
