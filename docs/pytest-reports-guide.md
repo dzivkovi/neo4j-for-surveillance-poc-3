@@ -1,6 +1,6 @@
 # Pytest HTML Reports Guide
 
-All test reports are stored in `evals/test-results/` for easy access.
+All test reports are stored in `docs/` for easy access and web publishing.
 
 ## Files Generated
 
@@ -15,13 +15,16 @@ All test reports are stored in `evals/test-results/` for easy access.
 Open in your browser:
 ```bash
 # On Linux/WSL
-xdg-open evals/test-results/test-results.html
+xdg-open docs/test-results.html
 
 # On macOS
-open evals/test-results/test-results.html
+open docs/test-results.html
 
 # Or simply copy the path and open in browser
-echo "file://$PWD/evals/test-results/test-results.html"
+echo "file://$PWD/docs/test-results.html"
+
+# Or view live on GitHub Pages
+echo "https://dzivkovi.github.io/neo4j-for-surveillance-poc-3/test-results.html"
 ```
 
 **Features:**
@@ -38,10 +41,13 @@ echo "file://$PWD/evals/test-results/test-results.html"
 View the SVG file:
 ```bash
 # Open in default image viewer
-xdg-open evals/test-results/benchmark-histogram-eval-queries.svg
+xdg-open docs/benchmark-histogram-eval-queries.svg
 
 # Or in browser
-echo "file://$PWD/evals/test-results/benchmark-histogram-eval-queries.svg"
+echo "file://$PWD/docs/benchmark-histogram-eval-queries.svg"
+
+# Or view live on GitHub Pages
+echo "https://dzivkovi.github.io/neo4j-for-surveillance-poc-3/benchmark-histogram-eval-queries.svg"
 ```
 
 **Shows:**
@@ -56,12 +62,12 @@ Generate fresh reports:
 # Set correct environment
 export DATASET=bigdata
 
-# Generate test report and benchmark histogram
+# Generate test report and benchmark histogram (web-ready)
 pytest tests/test_eval_queries.py::test_eval_functional \
-    --html=evals/test-results/test-results.html --self-contained-html
+    --html=docs/test-results.html --self-contained-html
 
 pytest tests/test_eval_queries.py::test_eval_performance \
-    --benchmark-only --benchmark-histogram=evals/test-results/benchmark-histogram
+    --benchmark-only --benchmark-histogram=docs/benchmark-histogram
 ```
 
 ## Generating Different Report Types

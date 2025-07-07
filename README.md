@@ -41,6 +41,12 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cyphe
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
 ```
 
+## Test Results & Demo
+
+🌐 **[Live Demo Site](https://dzivkovi.github.io/neo4j-for-surveillance-poc-3/)** - Professional test results dashboard
+
+📋 **[Automated Test Suite](tests/README.md)** - 53 EVAL queries with 100% success rate
+
 ## Documentation
 
 - **[Data Import](docs/import.md)** - Complete pipeline for data extraction and import
@@ -48,6 +54,7 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-
 - **[Evaluation Framework](evals/README.md)** - 77-question validation suite with real-time progress
 - **[Natural Language Queries](docs/mcp.md)** - Plain English database access via MCP
 - **[Entity Resolution](docs/entity-resolution.md)** - Advanced identity linking
+- **[Test Reports Guide](docs/pytest-reports-guide.md)** - HTML report generation and viewing
 - **[Search Syntax](docs/lucene.md)** - Full-text search capabilities
 - **[Case Study](docs/case-study.md)** - Real-world application example
 - **[GitHub Projects](docs/kanban.md)** - Task tracking and workflow

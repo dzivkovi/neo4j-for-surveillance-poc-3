@@ -14,11 +14,13 @@ pytest tests/test_eval_queries.py -v
 # Run specific test
 pytest tests/test_eval_queries.py::test_eval_functional[EVAL-02] -v
 
-# Run benchmarks only
-pytest tests/test_eval_queries.py::test_eval_performance -v --benchmark-only
+# Generate web-ready reports
+export DATASET=bigdata
+pytest tests/test_eval_queries.py::test_eval_functional \
+    --html=docs/test-results.html --self-contained-html
 
-# Export benchmark data
-pytest tests/test_eval_queries.py::test_eval_performance --benchmark-json=benchmark.json
+pytest tests/test_eval_queries.py::test_eval_performance \
+    --benchmark-only --benchmark-histogram=docs/benchmark-histogram
 
 # Skip slow tests
 pytest tests/test_eval_queries.py -v -m "not slow"
