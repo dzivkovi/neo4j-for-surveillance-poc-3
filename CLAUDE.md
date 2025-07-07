@@ -125,6 +125,21 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cyphe
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/graph-visualization-examples.cypher
 ```
 
+### Test Documentation Update Sequence
+```bash
+# ⚠️ CRITICAL: Run after ANY test changes (add/remove/move tests)
+# 1. Update all documentation counts
+python scripts/python/update_counts.py
+
+# 2. Regenerate performance histogram for GitHub Pages
+pytest tests/test_eval_queries.py::test_eval_performance \
+    --benchmark-only --benchmark-histogram=docs/benchmark-histogram
+
+# 3. Regenerate HTML test results for GitHub Pages  
+pytest tests/test_eval_queries.py::test_eval_functional \
+    --html=docs/test-results.html --self-contained-html
+```
+
 ## Neo4j GenAI Python Project
 
 ### Project Context

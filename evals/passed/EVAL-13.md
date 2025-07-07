@@ -50,6 +50,12 @@ There are no conversations that reference murder or related violent content.
 - **Text Search**: Case-insensitive CONTAINS searches for literal murder-related terms
 - **Hybrid Search**: Multiple search terms combined with OR clauses for comprehensive coverage
 
+### Implementation Notes
+**TODO**: This query is overfitted with hardcoded keyword lists. Consider implementing:
+- Semantic search using vector embeddings for violence-related concepts
+- LLM-powered content classification instead of exact keyword matching
+- Dynamic term expansion based on domain-specific violence taxonomy
+
 ## Confidence Assessment
 
 **Query Results**: Found 0 instances of murder-related content across all 717 content nodes in the database. The comprehensive search covered multiple variations including "murder", "killed", "killing", "homicide", "assassin", "slain", "murdered", and "deadly".

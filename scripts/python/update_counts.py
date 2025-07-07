@@ -30,13 +30,8 @@ def get_current_counts() -> TestCounts:
     """Get actual current test counts from filesystem."""
     root = Path(__file__).parent.parent.parent
     
-    # Count total eval files
-    total_evals = len(list((root / "evals").glob("**/*.md")))
-    # Subtract non-test files
-    if (root / "evals" / "README.md").exists():
-        total_evals -= 1
-    if (root / "evals" / "progress.md").exists():
-        total_evals -= 1
+    # Count total eval files (only EVAL-NN.md pattern)
+    total_evals = len(list((root / "evals").glob("**/EVAL-*.md")))
     
     # Count passed evals
     passed_dir = root / "evals" / "passed"

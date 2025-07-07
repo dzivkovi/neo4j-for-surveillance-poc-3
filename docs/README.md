@@ -6,7 +6,7 @@
 ## Test Results & Demo Materials
 
 - [📊 **Interactive Dashboard**](index.html) - Professional demo site with performance visualization
-- [📋 **Detailed Test Results**](test-results.html) - All 56 EVAL queries with pass/fail analysis  
+- [📋 **Detailed Test Results**](test-results.html) - All 55 EVAL queries with pass/fail analysis  
 - [📈 **Performance Chart**](benchmark-histogram-eval-queries.svg) - Query execution time comparison
 
 ## Technical Documentation
@@ -19,7 +19,7 @@
 
 ## Performance Highlights
 
-- ✅ **100% Test Success Rate** - All 56 surveillance queries pass
+- ✅ **100% Test Success Rate** - All 55 surveillance queries pass
 - ⚡ **Sub-2ms Performance** - Lightning-fast query execution
 - 🔍 **Advanced Search** - Multi-language semantic capabilities
 - 🕸️ **Graph Traversals** - Complex relationship analysis in single queries

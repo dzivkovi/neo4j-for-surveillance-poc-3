@@ -164,12 +164,36 @@ pytest-benchmark list
 pytest-benchmark compare
 ```
 
+## Keeping Reports Updated
+
+**⚠️ Critical**: After any test changes (adding, removing, or moving tests), update all report files:
+
+```bash
+# 1. Update documentation counts
+python scripts/python/update_counts.py
+
+# 2. Regenerate test results HTML 
+pytest tests/test_eval_queries.py::test_eval_functional \
+    --html=docs/test-results.html --self-contained-html
+
+# 3. Regenerate performance histogram (REQUIRED for GitHub Pages)
+pytest tests/test_eval_queries.py::test_eval_performance \
+    --benchmark-only --benchmark-histogram=docs/benchmark-histogram
+```
+
+**Why This Matters:**
+- GitHub Pages demo site relies on these files
+- Outdated SVG shows wrong performance data
+- Documentation counts become inaccurate
+- Client presentations show stale results
+
 ## Tips
 
 1. **For CI/CD**: Use `--json-report` for machine-readable output
 2. **For debugging**: Use `--html` with `--tb=short` for concise tracebacks
 3. **For performance tracking**: Use `--benchmark-autosave` to automatically save results
 4. **For presentations**: Use `--benchmark-histogram` for visual performance graphs
+5. **After test changes**: Always run the complete update sequence above
 
 ## Example Dashboard Script
 

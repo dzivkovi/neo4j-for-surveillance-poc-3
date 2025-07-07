@@ -50,6 +50,7 @@ Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
 
 ## Technical Implementation
 
+
 [Technical details about search categories, etc.]
 
 ## Business Value

@@ -23,7 +23,7 @@ Owen Frasier had multiple communications with Kenzie Hawk and Fiona Finch betwee
 
 ## Implementation
 
-### Primary Query - Communication Partners
+### Query
 ```cypher
 MATCH (owen:Person {name: '@Frasier, Owen'})-[:USES]->()-[:PARTICIPATED_IN]->(s:Session)<-[:PARTICIPATED_IN]-()<-[:USES]-(other:Person)
 WHERE other.name <> '@Frasier, Owen'
@@ -35,7 +35,7 @@ ORDER BY sessions DESC
 
 ### Critical Verification Query
 ```cypher
-MATCH (owen:Person {name: '@Frasier, Owen'})-[:USES]->()-[:PARTICIPATED_IN]->(s:Session)<-[:PARTICIPATED_IN]-()-[).-[:USES]-(forbidden:Person)
+MATCH (owen:Person {name: '@Frasier, Owen'})-[:USES]->()-[:PARTICIPATED_IN]->(s:Session)<-[:PARTICIPATED_IN]-()<-[:USES]-(forbidden:Person)
 WHERE forbidden.name IN ['@Eagle, William', '@Eagle, Richard', '@TBI-A'] 
 RETURN forbidden.name as forbidden_contact, count(*) as violation_count
 ```
@@ -50,8 +50,15 @@ Person: "@Finch, Fiona", Sessions: 15, Types: ["Messaging"]
 
 ### Critical Verification ✅
 ```
-ZERO communications with William, Richard, or TBI-A
-(Empty result set confirms compliance)
+forbidden_contact | violation_count
+(no results)
+
+ZERO communications found with forbidden contacts:
+- @Eagle, William: 0 sessions
+- @Eagle, Richard: 0 sessions  
+- @TBI-A: 0 sessions
+
+✅ PASSED: Owen does not communicate with forbidden entities
 ```
 
 ### Content Analysis by Date

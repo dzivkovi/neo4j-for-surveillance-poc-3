@@ -65,6 +65,12 @@ Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
 - **Content Filtering**: Travel-related content identification
 - **Exact Entity Notation**: Handles @-prefixed entity names
 
+### Implementation Notes
+**TODO**: This query is overfitted with hardcoded search terms and exact result expectations. Consider implementing:
+- Semantic travel concept detection using vector embeddings instead of keyword lists
+- Dynamic entity resolution that handles name variations and aliases
+- Flexible result validation that adapts to data changes rather than exact count/score matching
+
 ## Business Value
 
 - **Precise Entity Targeting**: Search specific person's communications
