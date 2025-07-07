@@ -1,14 +1,14 @@
 # Evaluation Progress Dashboard
 
-**Last Updated**: 2025-07-04 00:30:22
+**Last Updated**: 2025-07-07 16:30:00
 **Total Tests**: 77
 
 ## Status Summary
 
 - ⬜ **TODO**: 0
 - 🟠 **REVIEW**: 1
-- ✅ **PASSED**: 56
-- ❌ **FAILED**: 2
+- ✅ **PASSED**: 55
+- ❌ **FAILED**: 3
 - ⏸ **BLOCKED**: 18
 
 ## Test Details
@@ -61,7 +61,7 @@
 | EVAL-44 | Communications | ✅ | — | — | — |
 | EVAL-45 | Communications | ✅ | — | — | — |
 | EVAL-46 | Communications | ✅ | — | — | — |
-| EVAL-47 | Provide a summary of all major topics discussed | ✅ | 2025-07-03 | — | — |
+| EVAL-47 | Provide a summary of all major topics discussed | ❌ | 2025-07-07 | — | Overfitted implementation - requires native GenAI features |
 | EVAL-48 | Miscellaneous | ⏸ | — | — | Framework feature - not core Neo4j functionality |
 | EVAL-49 | Miscellaneous | ✅ | — | — | Framework feature - not core Neo4j functionality |
 | EVAL-50 | Miscellaneous | ⏸ | — | — | Framework feature - not core Neo4j functionality |

@@ -120,6 +120,7 @@ def main():
         root / "tests" / "README.md",
         root / "CLAUDE.md",
         root / "docs" / "index.html",
+        root / "evals" / "README.md",
     ]
     
     print("📝 Updating documentation files...")
