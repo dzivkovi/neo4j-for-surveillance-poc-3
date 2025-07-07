@@ -5,6 +5,10 @@ __pycache__/
 .venv/
 venv/
 
+# Test results
+*.coverage
+.benchmarks/
+
 # work folders
 work/
 data/

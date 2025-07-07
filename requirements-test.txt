@@ -1,0 +1,12 @@
+# Testing framework
+pytest>=7.0.0
+pytest-benchmark>=4.0.0
+
+# Neo4j driver (reuse existing version)
+neo4j>=5.0.0
+
+# Markdown parsing
+mistune>=3.0.0
+
+# Text similarity
+rapidfuzz>=3.0.0
