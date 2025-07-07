@@ -16,6 +16,10 @@ This is a Neo4j-based surveillance analytics POC that ingests communication sess
 - **Use `rg` first**: ALWAYS use `rg` (ripgrep) for searching before trying `grep` or `find` combinations. It's faster and better.
 - **cypher-shell NEVER supports `-c` flag**: ALWAYS use `echo "QUERY" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3!` pattern.
 
+## Task Planning
+- **Complex tasks (3+ steps)**: Use TodoWrite to track progress
+- **Simple tasks**: Execute directly without todo overhead
+
 ## Essential Commands
 
 *For initial setup, see README.md. These are operational commands for development work.*
@@ -213,7 +217,7 @@ The system supports extensive query types documented in `evals/evaluation_tests.
   - ❌ `fix/28-new-feature` (if Issue #28 doesn't exist)
 
 ### Issue-Branch-PR Workflow
-1. **Always check**: Does the issue exist before creating branch?
+1. **MUST verify**: Does the issue exist before creating branch?
 2. **Continuation work**: Use original issue number (e.g., `fix/27-cleanup` for Issue #27 follow-up)
 3. **New features**: Create issue first, then branch with same number
 4. **NEVER assume**: Don't use "next number" without verifying issue exists
@@ -241,43 +245,11 @@ gh issue view 28  # Verify issue exists before creating fix/28-*
 - The evaluation system has high reliability - most issues are process/assessment related, not technical failures
 
 ## Defensive Programming Requirements
-**MANDATORY**: Follow these validation steps after EVERY code change:
+**MANDATORY validation for EVERY code change**:
 
-### After Each Edit:
-1. **Search for related occurrences**: Use `rg` to find ALL instances of what you're changing
-2. **Test the specific change**: Run focused tests on the modified functionality
-3. **Check for side effects**: Verify nothing else broke
+1. **Before editing**: Search for ALL occurrences (use `rg`, not grep/find)
+2. **After editing**: Test what you modified (run scripts, execute queries, etc.)
+3. **Before committing**: Verify all changes work and nothing broke
+4. **Always report**: Tell user exactly what you validated
 
-### Before ANY Commit:
-1. **Run comprehensive search**: `rg <pattern>` to verify all occurrences were updated
-2. **Run test suite**: `python -m pytest tests/ -v` (or relevant test command)
-3. **Test functionality**: Actually execute the code/queries you modified
-4. **List what you validated**: Tell the user exactly what you tested
-
-### Use TodoWrite for Complex Changes:
-- Create a checklist of ALL files to modify
-- Mark each as "in_progress" while working
-- Test after each completion
-- Only mark "completed" after validation passes
-
-### Example Validation Pattern:
-```bash
-# After editing Python files
-python -m pytest tests/test_affected_module.py -v
-rg "old_pattern" .  # Should return nothing
-
-# After editing Cypher queries
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < modified_query.cypher
-
-# After editing multiple files
-for file in $(git diff --name-only); do
-    echo "Validating $file..."
-    # Run appropriate validation
-done
-```
-
-### NEVER:
-- Declare success without testing
-- Commit without running validation
-- Say "all occurrences fixed" without using `rg` to verify
-- Assume one fix applies everywhere without checking
+**NEVER claim success without proving it**
