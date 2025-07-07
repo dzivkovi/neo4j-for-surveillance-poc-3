@@ -45,13 +45,13 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-
 
 🌐 **[Live Demo Site](https://dzivkovi.github.io/neo4j-for-surveillance-poc-3/)** - Professional test results dashboard
 
-📋 **[Automated Test Suite](tests/README.md)** - 53 EVAL queries with 100% success rate
+📋 **[Automated Test Suite](tests/README.md)** - 56 EVAL queries with 71% success rate
 
 ## Documentation
 
 - **[Data Import](docs/import.md)** - Complete pipeline for data extraction and import
 - **[Embedding Generation](docs/embedding-generation-guide.md)** - OpenAI embeddings using Neo4j GenAI
-- **[Evaluation Framework](evals/README.md)** - 77-question validation suite with real-time progress
+- **[Evaluation Framework](evals/README.md)** - 79-question validation suite with real-time progress
 - **[Natural Language Queries](docs/mcp.md)** - Plain English database access via MCP
 - **[Entity Resolution](docs/entity-resolution.md)** - Advanced identity linking
 - **[Test Reports Guide](docs/pytest-reports-guide.md)** - HTML report generation and viewing
@@ -63,7 +63,7 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-
 
 ## Core Capabilities
 
-**📊 Current Status**: 56/77 evaluation tests passing (73%) ✅
+**📊 Current Status**: 56/79 evaluation tests passing (73%) ✅
 
 > **Note**: Current breakdown - 56 passed, 2 failed, 1 under review, 18 blocked (framework features). The system demonstrates 94% success rate on core Neo4j functionality (56/59 relevant tests).
 

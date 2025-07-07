@@ -47,3 +47,10 @@ pytest-benchmark compare --html=report.html
 ## Adding New Tests
 
 Simply add new `EVAL-NN.md` files to `evals/passed/`. They will be discovered automatically.
+
+## Keeping Documentation Updated
+
+After adding/moving tests, update all count references:
+```bash
+python scripts/python/update_counts.py
+```

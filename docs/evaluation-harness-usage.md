@@ -4,7 +4,7 @@ This guide explains how to use the Evaluation Test Harness v2 system for managin
 
 ## Overview
 
-The Evaluation Test Harness provides a git-native workflow for managing 77 evaluation tests through a 5-state system:
+The Evaluation Test Harness provides a git-native workflow for managing 79 evaluation tests through a 5-state system:
 
 - **TODO**: Tests not yet implemented
 - **REVIEW**: Tests implemented but need verification
@@ -52,7 +52,7 @@ python scripts/python/evaluation_harness.py dashboard --evals-dir evals
 
 This creates/updates `evals/progress.md` with:
 - Status summary (counts by state)
-- Detailed table of all 77 tests
+- Detailed table of All 56 tests
 - Visual indicators (⬜ TODO, 🟠 REVIEW, ✅ PASSED, ❌ FAILED, ⏸ BLOCKED)
 
 ### 4. Export to CSV
