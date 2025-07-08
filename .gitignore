@@ -38,3 +38,5 @@ analysis/0000/DESIGN*.md
 # Claude settings
 .claude/settings.local.json
 
+# GenAI Research (keep local only)
+research/
