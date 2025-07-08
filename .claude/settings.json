@@ -3,6 +3,7 @@
     "allow": [
       "mcp__neo4j__get_neo4j_schema",
       "mcp__neo4j__read_neo4j_cypher",
+      "mcp__neo4j__write_neo4j_cypher",
       "WebFetch(domain:neo4j.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.anthropic.com)",
@@ -23,7 +24,6 @@
       "Bash(git add:*)"
     ],
     "deny": [
-      "mcp__neo4j__write_neo4j_cypher"
     ]
   },
   "enableAllProjectMcpServers": true,

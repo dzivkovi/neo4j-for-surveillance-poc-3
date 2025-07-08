@@ -259,7 +259,7 @@ gh issue view 28  # Verify issue exists before creating fix/28-*
 - Only create documentation files when explicitly requested
 - Always prefer editing existing files to creating new ones
 - NEVER write Cypher queries into files without first validating them using the MCP Neo4j server
-- ALWAYS test Cypher queries with mcp__neo4j__read_neo4j_cypher before documenting them
+- ALWAYS test Cypher queries with MCP Neo4j server before documenting them
 
 ## ⚠️ Critical Terminology for Client Communication
 - **"Failed" tests ≠ broken queries** - they are unprocessed tests awaiting confidence assessment
