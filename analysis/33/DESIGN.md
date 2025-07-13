@@ -39,16 +39,14 @@ Consolidate ALL operational scripts into a single flat `scripts/` directory, eli
 
 ### Current State Analysis
 **Root Directory Scripts:**
-- `generate-embeddings.sh` - Working wrapper for cypher script
-- `04-generate-embeddings.sh` - Duplicate of above with different path
+- `04-generate-embeddings.sh` ✅ RENAMED IN PR #35 (was generate-embeddings.sh)
 - `run_neo4j.sh` - Container management script
 
 **Scripts Directory Structure:**
 ```
 scripts/
 ├── cypher/
-│   ├── 03-generate-embeddings.cypher ✅ WORKING VERSION (1536 dims)
-│   ├── 04-generate-embeddings.cypher ❌ DUPLICATE
+│   ├── 04-generate-embeddings.cypher ✅ RENAMED IN PR #35 (was 03-generate-embeddings.cypher)
 │   └── [other cypher files]
 ├── python/
 │   ├── 02-embed-text.py ❌ WRONG DIMENSIONS (384)
@@ -57,6 +55,12 @@ scripts/
 └── 01-create-schema.sh ✅ WORKING
 ```
 
+**Documentation with outdated references (found via grep):**
+- `README.md` - references old `generate-embeddings.sh`
+- `docs/embedding-generation-guide.md` - references old script name
+- `docs/complete-setup-guide.md` - references old script name
+- `docs/issue-26-context.md` - multiple references to old script names
+
 ### Target Architecture
 **Single Flat Scripts Directory:**
 ```
@@ -64,10 +68,10 @@ scripts/
 ├── 01-create-schema.sh (moved from scripts/01-create-schema.sh)
 ├── 02-import-sessions.py (moved from scripts/python/02-import-sessions.py)
 ├── 03-import-transcripts.py (moved from scripts/python/03-import-transcripts.py)
-├── 04-generate-embeddings.sh (consolidated from root, remove duplicate)
+├── 04-generate-embeddings.sh (already in root from PR #35)
+├── 04-generate-embeddings.cypher (moved from scripts/cypher/)
 ├── 05-validate-setup.py (moved from scripts/python/05-validate-setup.py)
 ├── run-neo4j.sh (moved from root)
-├── generate-embeddings.cypher (keep 03-*, remove 04-duplicate)
 ├── validation-suite.cypher (moved from scripts/cypher/)
 ├── neo4j-query-executor.py (moved from scripts/python/)
 ├── evaluation-harness.py (moved from scripts/python/)
@@ -85,7 +89,7 @@ scripts/
    ```bash
    # Move root scripts
    mv run_neo4j.sh scripts/
-   mv generate-embeddings.sh scripts/04-generate-embeddings.sh  # Rename to numbered sequence
+   # Note: 04-generate-embeddings.sh already renamed in PR #35
    
    # Move from scripts/python/ to scripts/ (flat)
    mv scripts/python/02-import-sessions.py scripts/
@@ -97,7 +101,8 @@ scripts/
    mv scripts/python/update_counts.py scripts/
    
    # Move from scripts/cypher/ to scripts/ (flat)  
-   mv scripts/cypher/03-generate-embeddings.cypher scripts/generate-embeddings.cypher
+   # Note: 04-generate-embeddings.cypher already renamed in PR #35
+   mv scripts/cypher/04-generate-embeddings.cypher scripts/
    mv scripts/cypher/validation-suite.cypher scripts/
    mv scripts/cypher/02-sanity.cypher scripts/
    ```
@@ -110,8 +115,6 @@ scripts/
 3. **Remove duplicate/incompatible files**
    ```bash
    # Embedding generation duplicates
-   rm 04-generate-embeddings.sh  # Keep generate-embeddings.sh as 04-generate-embeddings.sh
-   rm scripts/cypher/04-generate-embeddings.cypher  # Keep 03-generate-embeddings.cypher
    rm scripts/python/02-embed-text.py  # Wrong dimensions (384 vs 1536)
    rm scripts/python/02-embed-text-openai.py  # Legacy version
    
@@ -128,6 +131,11 @@ scripts/
    - Update `README.md` references from scripts/python/ → scripts/
    - Update any scripts that call other scripts (relative paths)
    - Verify container volume mounts work with flat structure
+   - Fix outdated references from PR #35 script renaming:
+     - `README.md`: generate-embeddings.sh → 04-generate-embeddings.sh
+     - `docs/embedding-generation-guide.md`: generate-embeddings.sh → 04-generate-embeddings.sh
+     - `docs/complete-setup-guide.md`: generate-embeddings.sh → 04-generate-embeddings.sh
+     - `docs/issue-26-context.md`: update all old script references
 
 5. **Update script headers and documentation**
    - Ensure each script has clear usage comments
@@ -151,12 +159,12 @@ python scripts/python/05-validate-setup.py
 ### Post-Migration Validation  
 ```bash
 # Test consolidated scripts
-./scripts/setup/run-neo4j.sh default
-./scripts/setup/create-schema.sh
-python scripts/data/import-sessions.py
-python scripts/data/import-transcripts.py
-./scripts/data/generate-embeddings.sh
-python scripts/setup/validate-setup.py
+./scripts/run-neo4j.sh default
+./scripts/01-create-schema.sh
+python scripts/02-import-sessions.py
+python scripts/03-import-transcripts.py
+./scripts/04-generate-embeddings.sh
+python scripts/05-validate-setup.py
 ```
 
 ### Documentation Validation
