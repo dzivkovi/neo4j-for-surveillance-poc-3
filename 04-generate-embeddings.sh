@@ -17,4 +17,4 @@ echo "Using OpenAI API key: ${OPENAI_API_KEY:0:7}..."
 # Run the cypher script with proper parameter passing
 docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! \
     --param "openai_api_key => '$OPENAI_API_KEY'" \
-    < scripts/cypher/03-generate-embeddings.cypher
+    < scripts/cypher/04-generate-embeddings.cypher
