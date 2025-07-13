@@ -161,6 +161,9 @@ This project leverages Neo4j v5's latest Generative AI features including vector
 
 ### Documentation References
 
+#### Project Documentation
+- [Data Mapping Guide](docs/data-mapping-guide.md) - **IMPORTANT**: Field naming conventions and data flow from source to Neo4j
+
 #### Core Libraries
 - [Python Driver](https://neo4j.com/docs/python-manual/current/)
 - [Python Driver GitHub](https://github.com/neo4j/neo4j-python-driver)
