@@ -16,6 +16,7 @@ Usage:
 import json
 import pathlib
 import urllib.parse
+from datetime import datetime
 
 from neo4j import GraphDatabase
 from tqdm import tqdm
@@ -106,7 +107,23 @@ def ingest(tx, rec):
     # Handle datetime conversions
     session_props["createddate"] = dt(session_props.get("createddate"))
     session_props["starttime"] = dt(session_props.get("starttime"))
-    session_props["endtime"] = dt(session_props.get("endtime"))
+    session_props["stoptime"] = dt(session_props.get("stoptime"))
+    
+    # Compute duration if missing but we have start and stop times
+    if (session_props.get("starttime") and session_props.get("stoptime") and 
+        not session_props.get("durationinseconds")):
+        try:
+            start = datetime.fromisoformat(session_props["starttime"])
+            stop = datetime.fromisoformat(session_props["stoptime"])
+            duration = int((stop - start).total_seconds())
+            session_props["durationinseconds"] = duration
+        except (ValueError, TypeError):
+            pass  # Skip if parsing fails
+    
+    # Compute sessiondate from starttime for temporal queries
+    if session_props.get("starttime"):
+        # Store as ISO date string for Neo4j date() function
+        session_props["sessiondate"] = session_props["starttime"].split("T")[0]
 
     tx.run(
         """
@@ -118,9 +135,12 @@ def ingest(tx, rec):
              s.starttime   = CASE WHEN $props.starttime IS NULL
                                   THEN NULL
                                   ELSE datetime($props.starttime) END,
-             s.endtime     = CASE WHEN $props.endtime IS NULL
+             s.stoptime    = CASE WHEN $props.stoptime IS NULL
                                   THEN NULL
-                                  ELSE datetime($props.endtime) END
+                                  ELSE datetime($props.stoptime) END,
+             s.sessiondate = CASE WHEN $props.sessiondate IS NULL
+                                  THEN NULL
+                                  ELSE date($props.sessiondate) END
         """,
         guid=guid,
         props=session_props,

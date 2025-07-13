@@ -101,11 +101,10 @@ python scripts/python/03-import-transcripts.py
 
 # 4. Generate embeddings
 export OPENAI_API_KEY="sk-..."
-./generate-embeddings.sh
+./04-generate-embeddings.sh
 
-# 5. Validate complete setup
+# 5. Validate complete setup (only run after steps 1-4 complete)
 python scripts/python/05-validate-setup.py
-```
 
 ### Before Committing Changes
 ```bash

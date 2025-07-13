@@ -6,7 +6,7 @@
 //     --param "openai_api_key => $OPENAI_API_KEY" \
 //     < scripts/cypher/03-generate-embeddings.cypher
 //
-// Or use the convenience script: ./generate-embeddings.sh
+// Or use the convenience script: ./04-generate-embeddings.sh
 
 // Check current embedding status
 MATCH (c:Content)
