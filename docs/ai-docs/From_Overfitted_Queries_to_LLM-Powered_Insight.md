@@ -29,6 +29,11 @@ You're absolutely right about the overfitting problem! Looking at your investiga
 Instead of searching for "dealership" or "BMW X5", let the LLM discover what's important:
 
 ```python
+# WARNING: PRODUCTION RISK
+# THE FOLLOWING DYNAMIC SCHEMA EXTRACTION IS EXCELLENT FOR EXPLORATION.
+# HOWEVER, FOR A PRODUCTION SYSTEM, RELYING ON A DYNAMICALLY GENERATED SCHEMA
+# CAN LEAD TO INCONSISTENCIES. A STABLE, PRE-DEFINED CORE SCHEMA (LIKE POLE)
+# IS RECOMMENDED TO ENSURE QUERIES AND INTEGRATIONS DO NOT BREAK.
 from neo4j_graphrag.experimental.pipeline.kg_builder import SimpleKGPipeline
 from neo4j_graphrag.llm import OpenAILLM
 
@@ -55,7 +60,7 @@ kg_builder = SimpleKGPipeline(
 
 Discover natural groupings and summarize at multiple levels:
 
-```python
+```cypher
 # GraphRAG community detection finds:
 # - Level 0: Individual actors
 # - Level 1: Small operational cells (3-5 people)
@@ -140,7 +145,13 @@ CALL apoc.ml.extractEntities(c.text, {
 // Build financial flow graph
 MERGE (actor:Person {name: entities.actor})
 MERGE (recipient:Person {name: entities.recipient})
-MERGE (actor)-[t:TRANSFERS {amount: entities.amount}]->(recipient)
+// MODIFIED FOR AUDITABILITY: Added ON CREATE SET to capture source and certainty
+MERGE (actor)-[t:TRANSFERS]->(recipient)
+ON CREATE SET
+    t.amount = entities.amount,
+    t.certaintyScore = entities.certainty, // Capture LLM confidence
+    t.source_document = id(c),          // Link back to the source
+    t.evidence_text = entities.evidence // Store the text snippet
 
 // Discover financial hubs
 CALL gds.pageRank.stream('financial-network', {
@@ -239,6 +250,10 @@ RETURN p.name as person_with_anomalous_behavior
 ### **Step 1: Initial Knowledge Graph Construction**
 
 ```python
+# WARNING: PRODUCTION RISK
+# THE FOLLOWING WORKFLOW USES A DYNAMICALLY DISCOVERED SCHEMA AT RUNTIME.
+# FOR A REPEATABLE PRODUCTION PIPELINE, IT IS SAFER TO PASS A PRE-DEFINED,
+# VALIDATED SCHEMA OBJECT TO THE `kg_builder.run_async` METHOD.
 # Let GraphRAG discover the schema from a sample
 sample_sessions = neo4j.run("""
     MATCH (s:Session)-[:HAS_CONTENT]->(c:Content)
@@ -293,14 +308,17 @@ Replace your specific questions with discovery queries:
 ## 🚨 Critical Success Factors
 
 1. **Vector Indexes**: Create for semantic search
-   ```cypher
-   CREATE VECTOR INDEX content_embeddings IF NOT EXISTS
-   FOR (c:Content) ON c.embedding
-   OPTIONS {indexConfig: {`vector.dimensions`: 1536}}
-   ```
+
+    ```cypher
+    CREATE VECTOR INDEX content_embeddings IF NOT EXISTS
+    FOR (c:Content) ON c.embedding
+    OPTIONS {indexConfig: {`vector.dimensions`: 1536}}
+    ```
 
 2. **GraphRAG Integration**: Combine Neo4j and Microsoft approaches
+
 3. **LLM Chain-of-Thought**: Let AI explain its discoveries
+
 4. **Human-in-the-Loop**: Investigators validate AI findings
 
 This approach transforms your system from "searching for needles" to "understanding the entire haystack" - exactly what modern investigations need!
