@@ -87,6 +87,10 @@ mkdir -p analysis/$ARGUMENTS && mv analysis/0000/DESIGN.md analysis/$ARGUMENTS/D
 ```
 
 ### 9. Create Pull Request
+9.1 Show the proposed commit message
+9.2 ⚠️ STOP: Ask user for review before committing
+9.3 Wait for explicit approval: "Ready to commit and create PR?"
+
 ```bash
 # Use appropriate work type prefix: feat|fix|docs|chore
 # Descriptive commit following project patterns
