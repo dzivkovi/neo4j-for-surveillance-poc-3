@@ -13,6 +13,11 @@ venv/
 work/
 data/
 
+# Backup files (NEVER commit client data!)
+backups/
+*.dump
+*.tar.gz
+
 # temporary conversation files
 analysis/*/conversations/
 analysis/**/2025-*/
