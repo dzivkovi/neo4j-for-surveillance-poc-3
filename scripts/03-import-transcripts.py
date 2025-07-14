@@ -12,7 +12,9 @@ Prerequisites:
   3. Sessions imported (02-import-sessions.py)
 
 Usage:
-  python scripts/python/03-import-transcripts.py
+  python scripts/03-import-transcripts.py                        # Uses data/default/transcripts.json
+  python scripts/03-import-transcripts.py --dataset whiskey-jack # Uses data/whiskey-jack/transcripts.json
+  python scripts/03-import-transcripts.py --file /path/to/file   # Uses specific file
 """
 
 import argparse
@@ -195,7 +197,7 @@ def patch_vector_index(driver):
     """
     print("\n🔧 Applying vector index patch (384 → 1536 dimensions)...")
 
-    patch_script = Path("scripts/cypher/patch-vector-index-1536.cypher")
+    patch_script = Path("scripts/patch-vector-index-1536.cypher")
     if not patch_script.exists():
         print(f"❌ Patch script not found: {patch_script}")
         return False
@@ -231,7 +233,13 @@ def patch_vector_index(driver):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "transcript_file", nargs="?", default="data/whiskey-jack/transcripts.json", help="JSON file with transcript data"
+        "--dataset", 
+        default="default",
+        help="Dataset/case name (subdirectory under data/). Default: default"
+    )
+    parser.add_argument(
+        "--file",
+        help="Optional: Direct path to transcripts.json file (overrides --dataset)"
     )
     parser.add_argument("--dry-run", action="store_true", help="Show what would be imported without making changes")
     parser.add_argument("--sample", type=int, default=5, help="Number of sample records to show in dry-run")
@@ -242,11 +250,22 @@ def main():
     )
 
     args = parser.parse_args()
+    
+    # Determine the input file path
+    if args.file:
+        transcript_path = Path(args.file)
+    else:
+        transcript_path = Path(__file__).parent.parent / "data" / args.dataset / "transcripts.json"
+    
+    if not transcript_path.exists():
+        print(f"Error: File not found: {transcript_path}")
+        return 1
 
-    print(f"Starting transcript import from {args.transcript_file}...")
+    print(f"Starting transcript import from {transcript_path}...")
+    print(f"Dataset: {args.dataset if not args.file else 'custom file'}")
 
     # Load transcripts from JSON export
-    transcripts = load_transcripts(args.transcript_file)
+    transcripts = load_transcripts(str(transcript_path))
     if not transcripts:
         print("No transcripts found. Exiting.")
         return

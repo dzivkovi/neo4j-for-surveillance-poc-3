@@ -1,7 +1,7 @@
 // Comprehensive schema validation and fix script
 // Ensures all indexes and constraints match the original neo4j-sessions setup
 //
-// Run with: docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/05-validate-and-fix-schema.cypher
+// Run with: docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/05-validate-and-fix-schema.cypher
 
 // ========================================
 // PART 1: Show current state

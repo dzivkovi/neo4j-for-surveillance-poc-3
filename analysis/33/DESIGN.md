@@ -144,7 +144,7 @@ scripts/
 ### Pre-Migration Validation
 ```bash
 # Document current working state
-docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/validation-suite.cypher
+docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/validation-suite.cypher
 python scripts/python/05-validate-setup.py
 ```
 

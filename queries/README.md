@@ -32,7 +32,7 @@ Unlike operational scripts that maintain the system, these queries are designed 
 ## Distinction from Scripts
 
 **`queries/`** = **Investigative/Analytical** - What analysts run to solve cases
-**`scripts/cypher/`** = **Operational/Infrastructure** - What developers run to maintain the system
+**`scripts/`** = **Operational/Infrastructure** - What developers run to maintain the system
 
 This separation ensures investigators can focus on case work without being overwhelmed by technical maintenance queries.
 
@@ -40,7 +40,7 @@ This separation ensures investigators can focus on case work without being overw
 
 These queries are designed to be executed against live surveillance data for active investigations. They assume the Neo4j database is populated with communication sessions, content, and relationship data following the POLE (Person, Object, Location, Event) schema.
 
-**For system setup and maintenance**, see `scripts/cypher/` directory instead.
+**For system setup and maintenance**, see `scripts/` directory instead.
 
 ## Proven Investigative Capabilities
 

@@ -154,7 +154,7 @@ def verify_setup(driver):
         for issue in issues:
             print(f"   - {issue}")
         print("\nTo fix:")
-        print("1. Run: docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/05-validate-and-fix-schema.cypher")
+        print("1. Run: docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/05-validate-and-fix-schema.cypher")
         print("2. If embeddings are missing, run: ./generate-embeddings.sh")
     
     return len(issues) == 0

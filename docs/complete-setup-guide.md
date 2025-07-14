@@ -32,7 +32,7 @@ This creates the base constraints and indexes.
 ### 3. Validate and Fix Schema
 
 ```bash
-docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/05-validate-and-fix-schema.cypher
+docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/05-validate-and-fix-schema.cypher
 ```
 
 This ensures all constraints and indexes are properly created, fixing any issues from step 2.

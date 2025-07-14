@@ -37,12 +37,12 @@ d.imei               vs   d.device_id
 
 #### A. Embedding Generation (Neo4j GenAI)
 - **generate-embeddings.sh**: Wrapper script with proper API key handling
-- **scripts/cypher/03-generate-embeddings.cypher**: Core Neo4j GenAI batch processing
+- **scripts/03-generate-embeddings.cypher**: Core Neo4j GenAI batch processing
 - **VALIDATED**: Generates 1536-dim OpenAI embeddings for all Content nodes
 - **USAGE**: `export OPENAI_API_KEY="sk-..." && ./scripts/04-generate-embeddings.sh`
 
 #### B. Schema Management
-- **scripts/cypher/05-validate-and-fix-schema.cypher**: Complete schema validation/fix
+- **scripts/05-validate-and-fix-schema.cypher**: Complete schema validation/fix
 - **scripts/python/verify-setup.py**: Automated setup verification
 - **CRITICAL**: These ensure ALL constraints and indexes are created properly
 

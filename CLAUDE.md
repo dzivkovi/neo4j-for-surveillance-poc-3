@@ -37,7 +37,7 @@ export NEO_NAME="neo4j-${DATASET}"
 docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3!
 
 # Run schema validation
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/02-sanity.cypher
 
 # Test vector search capability
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/vector-search-verification.cypher
@@ -96,8 +96,8 @@ python scripts/05-validate-setup.py
 scripts/01-create-schema.sh
 
 # 3. Import data
-python scripts/02-import-sessions.py
-python scripts/03-import-transcripts.py
+python scripts/02-import-sessions.py --dataset default
+python scripts/03-import-transcripts.py --dataset default
 
 # 4. Generate embeddings
 export OPENAI_API_KEY="sk-..."
@@ -126,7 +126,7 @@ PYTHONPATH=. python scripts/neo4j_query_executor.py confidence --batch
 python scripts/evaluation_harness.py dashboard
 
 # Run comprehensive validation suite
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/validation-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/validation-suite.cypher
 
 # Test graph visualization examples
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/graph-visualization-examples.cypher

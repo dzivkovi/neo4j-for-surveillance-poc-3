@@ -2,7 +2,7 @@
 """
 Step 2: Import session data into Neo4j using the session-centric schema.
 
-Load `data/whiskey-jack/sessions.ndjson` into Neo4j graph database. This creates the core
+Load sessions.ndjson from a specified dataset into Neo4j graph database. This creates the core
 session nodes and all related entities (Person, Phone, Email, Device, Location).
 
 Prerequisites:
@@ -10,22 +10,23 @@ Prerequisites:
   2. Schema created (scripts/01-create-schema.sh)
 
 Usage:
-  python scripts/python/02-import-sessions.py
+  python scripts/02-import-sessions.py                        # Uses data/default/sessions.ndjson
+  python scripts/02-import-sessions.py --dataset whiskey-jack # Uses data/whiskey-jack/sessions.ndjson
+  python scripts/02-import-sessions.py --file /path/to/file   # Uses specific file
 """
 
+import argparse
 import json
 import pathlib
+import sys
 import urllib.parse
 from datetime import datetime
 
 from neo4j import GraphDatabase
 from tqdm import tqdm
 
-RAW_PATH = pathlib.Path(__file__).parent.parent.parent / "data" / "sessions.ndjson"
 BOLT_URI = "bolt://localhost:7687"
 AUTH = ("neo4j", "Sup3rSecur3!")
-
-driver = GraphDatabase.driver(BOLT_URI, auth=AUTH)
 
 
 def dt(val: str):
@@ -284,7 +285,46 @@ def ingest(tx, rec):
         link_location(tx, guid, rec["location"])
 
 
-with driver.session() as sess, open(RAW_PATH) as fh:
-    for line in tqdm(fh, desc="Importing sessions"):
-        sess.execute_write(ingest, json.loads(line))
-print("✔ Import complete")
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--dataset", 
+        default="default",
+        help="Dataset/case name (subdirectory under data/). Default: default"
+    )
+    parser.add_argument(
+        "--file",
+        help="Optional: Direct path to sessions.ndjson file (overrides --dataset)"
+    )
+    
+    args = parser.parse_args()
+    
+    # Determine the input file path
+    if args.file:
+        sessions_path = pathlib.Path(args.file)
+    else:
+        sessions_path = pathlib.Path(__file__).parent.parent / "data" / args.dataset / "sessions.ndjson"
+    
+    if not sessions_path.exists():
+        print(f"Error: File not found: {sessions_path}")
+        return 1
+    
+    print(f"Importing sessions from: {sessions_path}")
+    print(f"Dataset: {args.dataset if not args.file else 'custom file'}")
+    
+    # Create driver
+    driver = GraphDatabase.driver(BOLT_URI, auth=AUTH)
+    
+    try:
+        with driver.session() as sess, open(sessions_path) as fh:
+            for line in tqdm(fh, desc="Importing sessions"):
+                sess.execute_write(ingest, json.loads(line))
+        print("✔ Import complete")
+    finally:
+        driver.close()
+    
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
