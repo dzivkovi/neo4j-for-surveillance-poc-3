@@ -29,13 +29,13 @@ scripts/01-create-schema.sh
 
 This creates the base constraints and indexes.
 
-### 3. Validate and Fix Schema
+### 3. Import Session Data
 
 ```bash
-docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/05-validate-and-fix-schema.cypher
+python scripts/02-import-sessions.py
 ```
 
-This ensures all constraints and indexes are properly created, fixing any issues from step 2.
+This imports session data from the NDJSON files into Neo4j.
 
 ### 4. Set Up Python Environment
 

@@ -42,8 +42,8 @@ d.imei               vs   d.device_id
 - **USAGE**: `export OPENAI_API_KEY="sk-..." && ./scripts/04-generate-embeddings.sh`
 
 #### B. Schema Management
-- **scripts/05-validate-and-fix-schema.cypher**: Complete schema validation/fix
-- **scripts/python/verify-setup.py**: Automated setup verification
+- **scripts/05-validate-setup.py**: Automated setup verification
+- **scripts/01-create-schema.sh**: Complete schema creation
 - **CRITICAL**: These ensure ALL constraints and indexes are created properly
 
 #### C. Database Analysis Tools  
@@ -158,13 +158,13 @@ docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW CONSTRAI
 ## TROUBLESHOOTING KNOWLEDGE
 
 ### Common Issues:
-1. **Constraints not created**: Run 05-validate-and-fix-schema.cypher
+1. **Constraints not created**: Run scripts/01-create-schema.sh
 2. **Wrong property names**: Schema is correct, exports may show outdated names
 3. **Embeddings missing**: Check OPENAI_API_KEY and GenAI plugin enabled
 4. **Silent failures**: Always run verify-setup.py after setup
 
 ### File Dependencies:
-- `scripts/01-create-schema.sh` → `05-validate-and-fix-schema.cypher` → `verify-setup.py`
+- `scripts/01-create-schema.sh` → `import scripts` → `05-validate-setup.py`
 - All import scripts depend on container being started with GenAI plugin
 - Embedding generation requires API key and Content nodes with text
 
