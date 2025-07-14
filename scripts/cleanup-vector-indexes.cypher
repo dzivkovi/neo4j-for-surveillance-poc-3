@@ -4,7 +4,7 @@
   Purpose: Remove old vector indexes and ensure correct PascalCase index
            exists for OpenAI embeddings (following Neo4j conventions)
   
-  Usage: docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/cleanup-vector-indexes.cypher
+  Usage: docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cleanup-vector-indexes.cypher
 ***************************************************************************/
 
 // Drop old incorrectly named indexes if they exist

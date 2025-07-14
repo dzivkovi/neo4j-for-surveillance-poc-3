@@ -360,7 +360,7 @@ class ConfidenceProcessor:
             True if transition successful
         """
         # Import and use the real evaluation harness
-        from scripts.python.evaluation_harness import EvaluationHarness, TestFile, TestState
+        from scripts.evaluation_harness import EvaluationHarness, TestFile, TestState
 
         # Map string states to TestState enum
         state_map = {

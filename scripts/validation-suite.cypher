@@ -1,7 +1,7 @@
 // Core Functionality Validation Suite
 // Tests database integrity, schema correctness, and basic query patterns
 // Updated: 2025-07-04
-// Usage: docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/validation-suite.cypher
+// Usage: docker exec -i neo4j-sessions cypher-shell -u neo4j -p Sup3rSecur3! < scripts/validation-suite.cypher
 
 // EVAL-06: Has Kenzie referenced a shed?
 CALL db.index.fulltext.queryNodes('ContentFullText', 'shed') YIELD node, score

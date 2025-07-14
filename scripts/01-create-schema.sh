@@ -32,6 +32,14 @@ echo "CREATE INDEX session_createddate IF NOT EXISTS FOR (s:Session) ON (s.creat
 echo "CREATE INDEX session_sessiontype IF NOT EXISTS FOR (s:Session) ON (s.sessiontype);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
 echo "CREATE RANGE INDEX sessionDuration IF NOT EXISTS FOR (s:Session) ON (s.durationinseconds);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
 
+echo "Creating investigative performance indexes..."
+echo "CREATE INDEX content_sessionType IF NOT EXISTS FOR (c:Content) ON (c.sessionType);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX content_contentType IF NOT EXISTS FOR (c:Content) ON (c.contentType);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX content_target IF NOT EXISTS FOR (c:Content) ON (c.target);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX content_timestamp IF NOT EXISTS FOR (c:Content) ON (c.timestamp);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX session_casename IF NOT EXISTS FOR (s:Session) ON (s.casename);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX session_targetname IF NOT EXISTS FOR (s:Session) ON (s.targetname);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+
 echo "Creating full-text indexes..."
 echo "CREATE FULLTEXT INDEX ContentFullText IF NOT EXISTS FOR (c:Content) ON EACH [c.text];" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
 echo "CREATE FULLTEXT INDEX AliasText IF NOT EXISTS FOR (a:Alias) ON EACH [a.rawValue];" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!

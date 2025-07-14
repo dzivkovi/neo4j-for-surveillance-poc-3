@@ -33,7 +33,7 @@ ORDER BY count DESC;
 
 **Automatic Resolution**: The `01-import-data.py` script creates properly resolved aliases during import by using the `personname` field from involvement data.
 
-**Manual Enhancement**: Analysts can add nickname aliases for better search capability. Example script in `scripts/cypher/03-analyst-knowledge-aliases.cypher` adds "Freddy", "Freddie", "Merlin" aliases for Fred:
+**Manual Enhancement**: Analysts can add nickname aliases for better search capability. Example script in `scripts/03-analyst-knowledge-aliases.cypher` adds "Freddy", "Freddie", "Merlin" aliases for Fred:
 
 ```cypher
 // Example: Add nickname variations for search
@@ -48,20 +48,20 @@ MERGE (alias_freddie)-[:ALIAS_OF]->(p);
 ### 1. Schema and Data Import
 ```bash
 scripts/01-create-schema.sh
-python scripts/python/01-import-data.py  # Creates resolved aliases automatically
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher  # Verify import
+python scripts/01-import-data.py  # Creates resolved aliases automatically
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/02-sanity.cypher  # Verify import
 ```
 
 ### 2. Add Analyst Knowledge (Optional)
 ```bash
 # Add manual nickname aliases for enhanced search
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/03-analyst-knowledge-aliases.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/03-analyst-knowledge-aliases.cypher
 ```
 
 ### 3. Enable Enhanced Search
 ```bash
 # Enhance content with participant aliases - includes built-in validation
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/04-content-search-enhancement.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/04-content-search-enhancement.cypher
 ```
 
 ## Content Search Enhancement
@@ -95,7 +95,7 @@ Instead of complex runtime alias expansion, we enhance content during processing
 
 ```bash
 # Apply content search enhancement
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/04-content-search-enhancement.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/04-content-search-enhancement.cypher
 ```
 
 **What this accomplishes**:
@@ -127,17 +127,17 @@ RETURN count(s) as search_results;
 1. **Schema and Data Import**:
    ```bash
    scripts/01-create-schema.sh
-   python scripts/python/01-import-data.py  # Creates resolved aliases automatically
+   python scripts/01-import-data.py  # Creates resolved aliases automatically
    ```
 
 2. **Analyst Knowledge Enhancement**:
    ```bash
-   docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/03-analyst-knowledge-aliases.cypher
+   docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/03-analyst-knowledge-aliases.cypher
    ```
 
 3. **Content Search Enhancement** (includes built-in validation):
    ```bash
-   docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/04-content-search-enhancement.cypher
+   docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/04-content-search-enhancement.cypher
    ```
 
 ### Key Achievements

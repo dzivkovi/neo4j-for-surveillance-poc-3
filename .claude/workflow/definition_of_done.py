@@ -367,26 +367,49 @@ class RegressionGate(QualityGate):
             return False
 
     def _check_database_state(self) -> bool:
-        """Check that database state is consistent."""
-        # This would validate database integrity in a real implementation
-        # For now, just check that schema files exist and are valid
-
-        schema_file = Path("scripts/cypher/01-schema.cypher")
-        if not schema_file.exists():
-            # If no schema file, that's okay for some projects
-            return True
-
+        """Check that database state is consistent using live Neo4j connection."""
         try:
-            # Basic validation - schema file should contain valid Cypher
-            content = schema_file.read_text()
-            if "CREATE" not in content.upper() and "CONSTRAINT" not in content.upper():
-                self.error = "Schema file appears invalid"
-                return False
-        except Exception:
-            # Can't read schema file
+            # Check if this is a Neo4j project
+            if not Path("CLAUDE.md").exists():
+                return True
+                
+            content = Path("CLAUDE.md").read_text()
+            if "neo4j" not in content.lower():
+                return True
+            
+            # Validate live Neo4j database
+            from neo4j import GraphDatabase
+            
+            NEO4J_URI = "bolt://localhost:7687"
+            NEO4J_USER = "neo4j"
+            NEO4J_PASSWORD = "Sup3rSecur3!"
+            
+            driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+            
+            with driver.session() as session:
+                # Basic connectivity test
+                result = session.run("RETURN 1 as test")
+                if not result.single():
+                    self.error = "Cannot connect to Neo4j database"
+                    return False
+                
+                # Check essential schema exists
+                result = session.run("SHOW CONSTRAINTS")
+                constraints = [r["name"] for r in result]
+                
+                if not constraints:
+                    self.error = "No constraints found - schema not deployed"
+                    return False
+                    
+            driver.close()
             return True
-
-        return True
+            
+        except ImportError:
+            # neo4j driver not available - skip validation
+            return True
+        except Exception as e:
+            self.error = f"Database validation failed: {str(e)}"
+            return False
 
 
 class DocumentationIntegrityGate(QualityGate):

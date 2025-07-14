@@ -12,7 +12,7 @@ export DATASET=${DATASET:-default}
 export NEO_NAME="neo4j-${DATASET}"
 
 # 1. Start Neo4j container with required plugins
-./run_neo4j.sh ${DATASET}  # Or just ./run_neo4j.sh for default
+./scripts/run-neo4j.sh ${DATASET}  # Or just ./scripts/run-neo4j.sh for default
 
 # 2. Create complete schema (constraints + indexes)
 scripts/01-create-schema.sh
@@ -20,22 +20,22 @@ scripts/01-create-schema.sh
 # 3. Set up Python environment and import data
 python -m venv venv
 source venv/bin/activate
-pip install -r scripts/python/requirements.txt
+pip install -r scripts/requirements.txt
 
-python scripts/python/02-import-sessions.py     # ~2 min for 265 sessions
-python scripts/python/03-import-transcripts.py  # imports LanceDB transcripts
+python scripts/02-import-sessions.py --dataset default     # ~2 min for 265 sessions
+python scripts/03-import-transcripts.py --dataset default  # imports LanceDB transcripts
 
 # 4. Generate embeddings for semantic search (requires OpenAI API key)
 export NEO_NAME="neo4j-${DATASET}"
 export OPENAI_API_KEY="sk-..."
-./generate-embeddings.sh
+./scripts/04-generate-embeddings.sh
 
 # 5. Verify complete installation
-python scripts/python/05-validate-setup.py
+python scripts/05-validate-setup.py
 
 # 6. Apply analyst knowledge aliases (MANUAL - when needed)
-# Use existing approach in scripts/cypher/03-analyst-knowledge-aliases.cypher
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/03-analyst-knowledge-aliases.cypher
+# Use existing approach in scripts/03-analyst-knowledge-aliases.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/03-analyst-knowledge-aliases.cypher
 
 # 7. Run evaluation suite
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
@@ -113,9 +113,9 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-
 ### Dataset Switching
 ```bash
 # Quick dataset switching (< 10 seconds)
-./run_neo4j.sh default    # Switch to default dataset
-./run_neo4j.sh bigdata    # Switch to bigdata dataset
-./run_neo4j.sh clientA    # Switch to clientA dataset
+./scripts/run-neo4j.sh default          # Switch to default dataset
+./scripts/run-neo4j.sh whiskey-jack     # Switch to whiskey-jack dataset
+./scripts/run-neo4j.sh bigdata          # Switch to bigdata dataset
 ```
 
 ### Container Operations
@@ -128,8 +128,8 @@ docker rm ${NEO_NAME}
 
 # Data restoration after restart
 scripts/01-create-schema.sh
-python scripts/python/01-import-data.py
-python scripts/python/02-import-transcripts.py
+python scripts/02-import-sessions.py --dataset default
+python scripts/03-import-transcripts.py --dataset default
 
 # Test GenAI plugin installation
 docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW FUNCTIONS YIELD name WHERE name CONTAINS 'genai' RETURN name"

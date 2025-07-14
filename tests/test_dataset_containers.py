@@ -59,8 +59,8 @@ class TestDatasetContainers:
         code, stdout, _ = run_command("docker ps --filter publish=7474 --format '{{.Names}}'")
         assert stdout.strip() == "", "Port 7474 should be free"
 
-        # When: Run ./run_neo4j.sh default
-        code, stdout, stderr = run_command("./run_neo4j.sh default")
+        # When: Run ./scripts/run-neo4j.sh default
+        code, stdout, stderr = run_command("./scripts/run-neo4j.sh default")
         assert code == 0, f"Script failed: {stderr}"
 
         # Then: Container neo4j-default starts on 7474/7687
@@ -71,7 +71,7 @@ class TestDatasetContainers:
         """AC2/AC4: Data survives docker stop/start."""
         # Ensure container is running
         if not container_running("neo4j-default"):
-            run_command("./run_neo4j.sh default")
+            run_command("./scripts/run-neo4j.sh default")
             wait_for_neo4j("neo4j-default")
 
         # Create test data
@@ -101,11 +101,11 @@ class TestDatasetContainers:
         """AC3: Running container -> run_neo4j.sh bigdata -> auto-stops and starts new."""
         # Given: neo4j-default is running
         if not container_running("neo4j-default"):
-            run_command("./run_neo4j.sh default")
+            run_command("./scripts/run-neo4j.sh default")
             wait_for_neo4j("neo4j-default")
 
-        # When: Run ./run_neo4j.sh bigdata
-        code, stdout, stderr = run_command("./run_neo4j.sh bigdata")
+        # When: Run ./scripts/run-neo4j.sh bigdata
+        code, stdout, stderr = run_command("./scripts/run-neo4j.sh bigdata")
         assert code == 0, f"Script failed: {stderr}"
 
         # Then: neo4j-default stopped, neo4j-bigdata running
@@ -117,12 +117,12 @@ class TestDatasetContainers:
         """AC5: Existing container -> rerun script -> starts existing (not error)."""
         # Ensure neo4j-test exists but is stopped
         if not container_exists("neo4j-test"):
-            run_command("./run_neo4j.sh test")
+            run_command("./scripts/run-neo4j.sh test")
             wait_for_neo4j("neo4j-test")
         run_command("docker stop neo4j-test")
 
-        # When: Rerun ./run_neo4j.sh test
-        code, stdout, stderr = run_command("./run_neo4j.sh test")
+        # When: Rerun ./scripts/run-neo4j.sh test
+        code, stdout, stderr = run_command("./scripts/run-neo4j.sh test")
         assert code == 0, f"Script should handle existing container: {stderr}"
         assert "Starting existing container" in stdout, "Should restart existing container"
 

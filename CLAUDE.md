@@ -31,13 +31,13 @@ export DATASET=${DATASET:-default}
 export NEO_NAME="neo4j-${DATASET}"
 
 # Launch dataset-specific container
-./run_neo4j.sh ${DATASET}  # Or ./run_neo4j.sh bigdata, ./run_neo4j.sh clientA, etc.
+./scripts/run-neo4j.sh ${DATASET}  # Or ./scripts/run-neo4j.sh bigdata, ./scripts/run-neo4j.sh clientA, etc.
 
 # Quick connection test for development
 docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3!
 
 # Run schema validation
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/02-sanity.cypher
 
 # Test vector search capability
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/vector-search-verification.cypher
@@ -61,7 +61,7 @@ echo "RETURN \$param;" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3r
 ### Development Validation
 ```bash
 # Test GraphRAG queries after environment setup
-source venv/bin/activate && python scripts/python/03-graphrag-demo.py
+source venv/bin/activate && python scripts/06-graphrag-demo.py
 
 # Run comprehensive business requirements test
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
@@ -82,7 +82,7 @@ docker stop ${NEO_NAME} && docker rm ${NEO_NAME}
 ### Complete Setup Validation
 ```bash
 # Comprehensive setup verification
-python scripts/python/05-validate-setup.py
+python scripts/05-validate-setup.py
 
 # Expected output: ✅ All checks passed! Setup is complete.
 ```
@@ -90,26 +90,26 @@ python scripts/python/05-validate-setup.py
 ### Clean Setup Sequence (Proven Working)
 ```bash
 # 1. Start container
-./run_neo4j.sh default
+./scripts/run-neo4j.sh default
 
 # 2. Create schema (constraints + indexes)  
 scripts/01-create-schema.sh
 
 # 3. Import data
-python scripts/python/02-import-sessions.py
-python scripts/python/03-import-transcripts.py
+python scripts/02-import-sessions.py --dataset default
+python scripts/03-import-transcripts.py --dataset default
 
 # 4. Generate embeddings
 export OPENAI_API_KEY="sk-..."
-./04-generate-embeddings.sh
+./scripts/04-generate-embeddings.sh
 
 # 5. Validate complete setup (only run after steps 1-4 complete)
-python scripts/python/05-validate-setup.py
+python scripts/05-validate-setup.py
 
 ### Before Committing Changes
 ```bash
 # Update dashboard and documentation counts
-python scripts/python/update_counts.py
+python scripts/update_counts.py
 
 # Ensures consistent dashboard and documentation before commits
 ```
@@ -117,16 +117,16 @@ python scripts/python/update_counts.py
 ### Evaluation System Commands
 ```bash
 # Interactive evaluation development (the "dance" approach)
-PYTHONPATH=. python scripts/python/neo4j_query_executor.py eval EVAL-27
+PYTHONPATH=. python scripts/neo4j_query_executor.py eval EVAL-27
 
 # Batch confidence processing for auto-promotion
-PYTHONPATH=. python scripts/python/neo4j_query_executor.py confidence --batch
+PYTHONPATH=. python scripts/neo4j_query_executor.py confidence --batch
 
 # Update progress dashboard
-python scripts/python/evaluation_harness.py dashboard
+python scripts/evaluation_harness.py dashboard
 
 # Run comprehensive validation suite
-docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/validation-suite.cypher
+docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/validation-suite.cypher
 
 # Test graph visualization examples
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/graph-visualization-examples.cypher
@@ -136,7 +136,7 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/graph
 ```bash
 # ⚠️ CRITICAL: Run after ANY test changes (add/remove/move tests)
 # 1. Update all documentation counts
-python scripts/python/update_counts.py
+python scripts/update_counts.py
 
 # 2. Regenerate performance histogram for GitHub Pages
 pytest tests/test_eval_queries.py::test_eval_performance \

@@ -9,7 +9,7 @@
   need to be regenerated with the new 1536-dimension model.
   
   Usage: 
-    docker exec ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/patch-vector-index-1536.cypher
+    docker exec ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/patch-vector-index-1536.cypher
 ***************************************************************************/
 
 // Check current vector index status

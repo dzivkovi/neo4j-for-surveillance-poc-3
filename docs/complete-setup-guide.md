@@ -15,7 +15,7 @@ This guide ensures you can recreate the exact Neo4j configuration from scratch, 
 ```bash
 # Set your dataset name (or use default)
 export DATASET="default"
-./run_neo4j.sh $DATASET
+./scripts/run-neo4j.sh $DATASET
 ```
 
 This creates a container named `neo4j-${DATASET}` with GenAI plugin enabled.
@@ -29,37 +29,37 @@ scripts/01-create-schema.sh
 
 This creates the base constraints and indexes.
 
-### 3. Validate and Fix Schema
+### 3. Import Session Data
 
 ```bash
-docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/05-validate-and-fix-schema.cypher
+python scripts/02-import-sessions.py
 ```
 
-This ensures all constraints and indexes are properly created, fixing any issues from step 2.
+This imports session data from the NDJSON files into Neo4j.
 
 ### 4. Set Up Python Environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r scripts/python/requirements.txt
+pip install -r scripts/requirements.txt
 ```
 
 ### 5. Import Data
 
 ```bash
 # Import session data
-python scripts/python/01-import-data.py
+python scripts/01-import-data.py
 
 # Import transcripts from LanceDB
-python scripts/python/02-import-transcripts.py
+python scripts/02-import-transcripts.py
 ```
 
 ### 6. Generate Embeddings
 
 ```bash
 export OPENAI_API_KEY="sk-..."
-./generate-embeddings.sh
+./scripts/04-generate-embeddings.sh
 ```
 
 This generates 1536-dimensional OpenAI embeddings for all Content nodes.
@@ -67,7 +67,7 @@ This generates 1536-dimensional OpenAI embeddings for all Content nodes.
 ### 7. Verify Setup
 
 ```bash
-python scripts/python/verify-setup.py
+python scripts/verify-setup.py
 ```
 
 This checks that all constraints, indexes, and embeddings are properly configured.

@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.python.evaluation_harness import (
+from scripts.evaluation_harness import (
     EvaluationHarness,
     ProgressDashboard,
     TestFile,

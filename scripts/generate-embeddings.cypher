@@ -4,7 +4,7 @@
 //   export OPENAI_API_KEY="sk-..."
 //   docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! \
 //     --param "openai_api_key => $OPENAI_API_KEY" \
-//     < scripts/cypher/04-generate-embeddings.cypher
+//     < scripts/04-generate-embeddings.cypher
 //
 // Or use the convenience script: ./04-generate-embeddings.sh
 

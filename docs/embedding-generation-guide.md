@@ -6,7 +6,7 @@ Simple guide for generating OpenAI embeddings using Neo4j GenAI.
 
 ```bash
 export OPENAI_API_KEY="sk-..."
-./generate-embeddings.sh
+./scripts/04-generate-embeddings.sh
 ```
 
 ## Manual Cypher Approach
