@@ -8,10 +8,10 @@ Tools for exporting and comparing Neo4j database states across different contain
 # Export from any container
 export CASE_NAME=sessions  # or default, whiskey, etc.
 ./scripts/export-schema.sh ${CASE_NAME}
-python scripts/python/export-neo4j-state.py --case ${CASE_NAME}
+python scripts/export-neo4j-state.py --case ${CASE_NAME}
 
 # Compare any two exports
-python scripts/python/compare-neo4j-exports.py \
+python scripts/compare-neo4j-exports.py \
     data/case1/neo4j-export-*.json \
     data/case2/neo4j-export-*.json
 ```
@@ -44,15 +44,15 @@ Automated diff between two JSON exports showing:
 ```bash
 # 1. Export from original container
 docker start neo4j-sessions
-python scripts/python/export-neo4j-state.py --case sessions
+python scripts/export-neo4j-state.py --case sessions
 
 # 2. Export from new container
-./run_neo4j.sh default
+./scripts/run-neo4j.sh default
 # After loading data...
-python scripts/python/export-neo4j-state.py --case default
+python scripts/export-neo4j-state.py --case default
 
 # 3. Compare results
-python scripts/python/compare-neo4j-exports.py \
+python scripts/compare-neo4j-exports.py \
     data/sessions/neo4j-export-*.json \
     data/default/neo4j-export-*.json
 ```

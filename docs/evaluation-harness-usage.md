@@ -19,7 +19,7 @@ The Evaluation Test Harness provides a git-native workflow for managing 77 evalu
 If you have existing `evals/implemented/` and `evals/pending/` folders:
 
 ```bash
-python scripts/python/evaluation_harness.py migrate --evals-dir evals
+python scripts/evaluation_harness.py migrate --evals-dir evals
 ```
 
 This will:
@@ -34,7 +34,7 @@ This will:
 To run a specific evaluation test:
 
 ```bash
-python scripts/python/evaluation_harness.py run --test-id EVAL-03
+python scripts/evaluation_harness.py run --test-id EVAL-03
 ```
 
 The harness will:
@@ -47,7 +47,7 @@ The harness will:
 To see current status of all tests:
 
 ```bash
-python scripts/python/evaluation_harness.py dashboard --evals-dir evals
+python scripts/evaluation_harness.py dashboard --evals-dir evals
 ```
 
 This creates/updates `evals/progress.md` with:
@@ -60,7 +60,7 @@ This creates/updates `evals/progress.md` with:
 For business users who prefer spreadsheets:
 
 ```bash
-python scripts/python/evaluation_harness.py csv --evals-dir evals
+python scripts/evaluation_harness.py csv --evals-dir evals
 ```
 
 Creates `evals/progress.csv` with test status for Excel/Google Sheets.
@@ -104,7 +104,7 @@ evals/
 
 1. Find test in `todo/` folder
 2. Add Cypher query and expected results
-3. Run the test: `python scripts/python/evaluation_harness.py run --test-id EVAL-XX`
+3. Run the test: `python scripts/evaluation_harness.py run --test-id EVAL-XX`
 4. Test automatically moves to `review/` or `passed/` based on results
 
 ### 2. Debugging a Failed Test
@@ -116,8 +116,8 @@ evals/
 
 ### 3. Business User Review
 
-1. Generate dashboard: `python scripts/python/evaluation_harness.py dashboard`
-2. Export to CSV: `python scripts/python/evaluation_harness.py csv`
+1. Generate dashboard: `python scripts/evaluation_harness.py dashboard`
+2. Export to CSV: `python scripts/evaluation_harness.py csv`
 3. Review in Excel/Google Sheets
 4. Add comments or blockers to specific tests
 
@@ -247,10 +247,10 @@ For tests with existing Cypher queries:
 
 ```bash
 # Generate confidence for single test
-python scripts/python/evaluation_harness.py generate-confidence --test-id EVAL-03
+python scripts/evaluation_harness.py generate-confidence --test-id EVAL-03
 
 # Process all eligible tests
-python scripts/python/evaluation_harness.py generate-confidence --batch
+python scripts/evaluation_harness.py generate-confidence --batch
 ```
 
 The script will:
@@ -269,7 +269,7 @@ The script will:
 
 1. **Identify tests needing queries**:
    ```bash
-   python scripts/python/evaluation_harness.py generate-confidence --batch
+   python scripts/evaluation_harness.py generate-confidence --batch
    # Output: "Skipped EVAL-05 - needs /eval command"
    ```
 
@@ -281,7 +281,7 @@ The script will:
 
 3. **Re-run confidence generation**:
    ```bash
-   python scripts/python/evaluation_harness.py generate-confidence --test-id EVAL-05
+   python scripts/evaluation_harness.py generate-confidence --test-id EVAL-05
    # Now generates confidence for the newly created query
    ```
 

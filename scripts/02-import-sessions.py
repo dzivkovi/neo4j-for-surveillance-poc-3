@@ -2,7 +2,7 @@
 """
 Step 2: Import session data into Neo4j using the session-centric schema.
 
-Load `data/sessions.ndjson` into Neo4j graph database. This creates the core
+Load `data/whiskey-jack/sessions.ndjson` into Neo4j graph database. This creates the core
 session nodes and all related entities (Person, Phone, Email, Device, Location).
 
 Prerequisites:

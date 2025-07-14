@@ -64,7 +64,7 @@ class TestEvalCommandInfrastructure(unittest.TestCase):
         test_file_2.write_text("# EVAL-42: Another test")
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import find_evaluation_test
+        from scripts.neo4j_query_executor import find_evaluation_test
 
         # Should find exact matches
         found_05 = find_evaluation_test("05", self.evals_dir)
@@ -87,7 +87,7 @@ class TestEvalCommandInfrastructure(unittest.TestCase):
         test_file_2.write_text("# EVAL-05: Duplicate test")
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import find_evaluation_test
+        from scripts.neo4j_query_executor import find_evaluation_test
 
         with self.assertRaises(ValueError) as context:
             find_evaluation_test("05", self.evals_dir)
@@ -107,7 +107,7 @@ class TestEvalCommandInfrastructure(unittest.TestCase):
         (self.evals_dir / "evaluation_tests.md").write_text(eval_tests_content)
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import load_business_context
+        from scripts.neo4j_query_executor import load_business_context
 
         context_05 = load_business_context("05", self.evals_dir)
         self.assertEqual(context_05["theme"], "Identity")
@@ -164,7 +164,7 @@ MATCH (p:Person) WHERE p.name = "John" RETURN p
         test_file.write_text(test_content)
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import ConfidenceProcessor
+        from scripts.neo4j_query_executor import ConfidenceProcessor
 
         processor = ConfidenceProcessor(self.evals_dir)
         confidence_data = processor.parse_confidence_section(test_file)
@@ -192,7 +192,7 @@ Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
         test_file.write_text(test_content)
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import ConfidenceProcessor
+        from scripts.neo4j_query_executor import ConfidenceProcessor
 
         processor = ConfidenceProcessor(self.evals_dir)
         confidence_data = processor.parse_confidence_section(test_file)
@@ -212,7 +212,7 @@ Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
         test_file.write_text(test_content)
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import ConfidenceProcessor
+        from scripts.neo4j_query_executor import ConfidenceProcessor
 
         processor = ConfidenceProcessor(self.evals_dir)
 
@@ -241,7 +241,7 @@ Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
         test_file.write_text(test_content)
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import ConfidenceProcessor
+        from scripts.neo4j_query_executor import ConfidenceProcessor
 
         processor = ConfidenceProcessor(self.evals_dir)
 
@@ -270,7 +270,7 @@ Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
         test_file.write_text(test_content)
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import ConfidenceProcessor
+        from scripts.neo4j_query_executor import ConfidenceProcessor
 
         processor = ConfidenceProcessor(self.evals_dir)
 
@@ -300,7 +300,7 @@ Confidence = (count_accuracy × 0.7) + (score_similarity × 0.3)
             test_file.write_text(f"# {filename.replace('.md', '')}\n\n{content}")
 
         # This will FAIL initially - implementation needed
-        from scripts.python.neo4j_query_executor import ConfidenceProcessor
+        from scripts.neo4j_query_executor import ConfidenceProcessor
 
         processor = ConfidenceProcessor(self.evals_dir)
 
@@ -362,7 +362,7 @@ class TestIntegration(unittest.TestCase):
         test_file.write_text(test_content)
 
         # Step 2: Simulate /eval command workflow
-        from scripts.python.neo4j_query_executor import EvalCommand
+        from scripts.neo4j_query_executor import EvalCommand
 
         eval_command = EvalCommand(self.project_dir)
 
@@ -383,7 +383,7 @@ class TestIntegration(unittest.TestCase):
             self.assertIn("**Confidence**: 80% → Auto-promote to PASSED", updated_content)
 
         # Step 3: Run confidence processor
-        from scripts.python.neo4j_query_executor import ConfidenceProcessor
+        from scripts.neo4j_query_executor import ConfidenceProcessor
 
         processor = ConfidenceProcessor(self.evals_dir)
 

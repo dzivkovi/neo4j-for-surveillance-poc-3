@@ -17,7 +17,6 @@ The import process is designed around Unix principles of composable tools:
 | `extract-sessions.py` | Transform NDJSON surveillance data | `sessions.ndjson` | Focused JSON |
 | `01-import-data.py` | Create base graph structure | Extracted JSON | Neo4j nodes/relationships |
 | `02-import-transcripts.py` | Add call transcripts | LanceDB export | Content nodes |
-| `enrich-metadata.py` | Add session properties | Original NDJSON | Enhanced Session nodes |
 
 ## 1. Session Data Extraction
 
@@ -27,16 +26,16 @@ The `extract-sessions.py` utility is your Swiss Army knife for preparing surveil
 
 ```bash
 # Preview what would be extracted (dry run)
-./scripts/python/extract-sessions.py data/sessions.ndjson --dry-run
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson --dry-run
 
 # Extract default investigative fields
-./scripts/python/extract-sessions.py data/sessions.ndjson -o sessions-core.json
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson -o sessions-core.json
 
 # Discover available fields
-./scripts/python/extract-sessions.py data/sessions.ndjson --list-fields
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson --list-fields
 
 # Show current default fields
-./scripts/python/extract-sessions.py data/sessions.ndjson --show-defaults
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson --show-defaults
 ```
 
 ### Default Field Set
@@ -52,27 +51,27 @@ Core investigative fields extracted by default:
 
 ```bash
 # Preview extraction with custom fields (dry run)
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   --add fulltext --dry-run --sample 3
 
 # Add large content fields
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   --add fulltext,previewcontent -o sessions-with-content.json
 
 # Create minimal dataset for development
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   --remove targetname,sourceid -o sessions-minimal.json
 
 # Size-limited export for AI analysis
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   --add fulltext --max-size 10 -o ai-analysis.json
 
 # Extract only specific fields
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   --only sessionguid,sessiontype,durationinseconds -o telephony-analysis.json
 
 # Pipe to downstream tools
-./scripts/python/extract-sessions.py data/sessions.ndjson | \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson | \
   ./scripts/python/01-import-data.py --stdin
 ```
 
@@ -94,7 +93,7 @@ Core investigative fields extracted by default:
 The tool provides detailed statistics about your dataset:
 
 ```bash
-./scripts/python/extract-sessions.py data/sessions.ndjson --stats-only
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson --stats-only
 ```
 
 Example output:
@@ -121,10 +120,10 @@ Import the core graph structure with nodes and relationships:
 
 ```bash
 # Import extracted session data
-python scripts/python/01-import-data.py sessions-core.json
+python scripts/01-import-data.py sessions-core.json
 
 # Import with progress monitoring
-python scripts/python/01-import-data.py sessions-core.json --verbose
+python scripts/01-import-data.py sessions-core.json --verbose
 ```
 
 This creates:
@@ -144,7 +143,7 @@ python export_for_neo4j.py -o transcripts.json
 
 # Import transcripts into Neo4j
 cd /path/to/neo4j-project  
-python scripts/python/02-import-transcripts.py transcripts.json
+python scripts/02-import-transcripts.py transcripts.json
 ```
 
 This creates:
@@ -152,18 +151,6 @@ This creates:
 - **HAS_CONTENT relationships** linking sessions to transcripts
 - **Full-text indexes** for content search
 
-## 4. Metadata Enrichment
-
-> **Note**: This tool will be created to add missing session metadata to existing graphs.
-
-```bash
-# Enrich existing sessions with metadata
-python scripts/python/enrich-metadata.py data/sessions.ndjson
-
-# Selective enrichment
-python scripts/python/enrich-metadata.py data/sessions.ndjson \
-  --only sessionType,durationInSeconds,classification
-```
 
 ## Complete Workflow Examples
 
@@ -171,33 +158,32 @@ python scripts/python/enrich-metadata.py data/sessions.ndjson \
 
 ```bash
 # Create minimal dataset
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   --remove products,involvements,fulltext \
   --max-size 5 -o dev-sessions.json
 
 # Quick import
-python scripts/python/01-import-data.py dev-sessions.json
-python scripts/python/02-import-transcripts.py transcripts.json
+python scripts/01-import-data.py dev-sessions.json
+python scripts/02-import-transcripts.py transcripts.json
 ```
 
 ### Production Setup (Complete)
 
 ```bash
 # Full extraction with metadata
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   -o sessions-full.json
 
 # Complete import pipeline
-python scripts/python/01-import-data.py sessions-full.json
-python scripts/python/02-import-transcripts.py transcripts.json
-python scripts/python/enrich-metadata.py data/sessions.ndjson
+python scripts/01-import-data.py sessions-full.json
+python scripts/02-import-transcripts.py transcripts.json
 ```
 
 ### Analysis Export (AI-Friendly)
 
 ```bash
 # Create lightweight dataset for analysis
-./scripts/python/extract-sessions.py data/sessions.ndjson \
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson \
   --add fulltext \
   --remove products,involvements,previewcontent \
   --max-size 25 -o analysis-export.json
@@ -241,19 +227,19 @@ python scripts/python/enrich-metadata.py data/sessions.ndjson
 **"Field not found" errors**:
 ```bash
 # Check available fields first
-./scripts/python/extract-sessions.py data/sessions.ndjson --list-fields
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson --list-fields
 ```
 
 **Large file processing**:
 ```bash
 # Use size limits for testing
-./scripts/python/extract-sessions.py data/sessions.ndjson --max-size 1 -o test.json
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson --max-size 1 -o test.json
 ```
 
 **Memory issues**:
 ```bash
 # Process in compact mode
-./scripts/python/extract-sessions.py data/sessions.ndjson --compact -o output.json
+./scripts/extract-sessions.py data/whiskey-jack/sessions.ndjson --compact -o output.json
 ```
 
 ### Validation

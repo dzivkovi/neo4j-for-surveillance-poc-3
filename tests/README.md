@@ -56,7 +56,7 @@ This project uses a unique **evaluation-driven development workflow** that combi
 
 ```bash
 # Single command handles the entire workflow
-python scripts/python/update_counts.py
+python scripts/update_counts.py
 ```
 
 **What happens:**

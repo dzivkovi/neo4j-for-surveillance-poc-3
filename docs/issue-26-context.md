@@ -39,7 +39,7 @@ d.imei               vs   d.device_id
 - **generate-embeddings.sh**: Wrapper script with proper API key handling
 - **scripts/cypher/03-generate-embeddings.cypher**: Core Neo4j GenAI batch processing
 - **VALIDATED**: Generates 1536-dim OpenAI embeddings for all Content nodes
-- **USAGE**: `export OPENAI_API_KEY="sk-..." && ./generate-embeddings.sh`
+- **USAGE**: `export OPENAI_API_KEY="sk-..." && ./scripts/04-generate-embeddings.sh`
 
 #### B. Schema Management
 - **scripts/cypher/05-validate-and-fix-schema.cypher**: Complete schema validation/fix
@@ -61,21 +61,21 @@ d.imei               vs   d.device_id
 
 ```bash
 # 1. Start container
-./run_neo4j.sh default
+./scripts/run-neo4j.sh default
 
 # 2. Create complete schema (constraints + indexes)
 scripts/01-create-schema.sh
 
 # 3. Import data
-python scripts/python/02-import-sessions.py
-python scripts/python/03-import-transcripts.py
+python scripts/02-import-sessions.py
+python scripts/03-import-transcripts.py
 
 # 4. Generate embeddings
 export OPENAI_API_KEY="sk-..."
-./generate-embeddings.sh
+./scripts/04-generate-embeddings.sh
 
 # 5. Validate complete setup
-python scripts/python/05-validate-setup.py
+python scripts/05-validate-setup.py
 ```
 
 **Key Improvements:**
@@ -147,7 +147,7 @@ NEO4J_PLUGINS='["genai"]'      # Required for embedding generation
 
 ```bash
 # Check setup is complete
-python scripts/python/verify-setup.py
+python scripts/verify-setup.py
 
 # Should show: ✅ All checks passed! Setup is complete.
 
@@ -183,6 +183,6 @@ docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW CONSTRAI
 
 **NEXT SESSION INSTRUCTIONS**:
 1. Read this document FIRST
-2. Run `python scripts/python/verify-setup.py` to confirm current state
+2. Run `python scripts/verify-setup.py` to confirm current state
 3. Continue with Phase 3: Multi-case support
 4. All tools are ready and validated - build on this foundation

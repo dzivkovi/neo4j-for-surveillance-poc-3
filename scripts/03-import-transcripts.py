@@ -231,7 +231,7 @@ def patch_vector_index(driver):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "transcript_file", nargs="?", default="data/transcripts.json", help="JSON file with transcript data"
+        "transcript_file", nargs="?", default="data/whiskey-jack/transcripts.json", help="JSON file with transcript data"
     )
     parser.add_argument("--dry-run", action="store_true", help="Show what would be imported without making changes")
     parser.add_argument("--sample", type=int, default=5, help="Number of sample records to show in dry-run")

@@ -48,7 +48,7 @@ MERGE (alias_freddie)-[:ALIAS_OF]->(p);
 ### 1. Schema and Data Import
 ```bash
 scripts/01-create-schema.sh
-python scripts/python/01-import-data.py  # Creates resolved aliases automatically
+python scripts/01-import-data.py  # Creates resolved aliases automatically
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < scripts/cypher/02-sanity.cypher  # Verify import
 ```
 
@@ -127,7 +127,7 @@ RETURN count(s) as search_results;
 1. **Schema and Data Import**:
    ```bash
    scripts/01-create-schema.sh
-   python scripts/python/01-import-data.py  # Creates resolved aliases automatically
+   python scripts/01-import-data.py  # Creates resolved aliases automatically
    ```
 
 2. **Analyst Knowledge Enhancement**:

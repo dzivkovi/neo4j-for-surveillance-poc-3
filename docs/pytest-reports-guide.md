@@ -170,7 +170,7 @@ pytest-benchmark compare
 
 ```bash
 # 1. Update documentation counts
-python scripts/python/update_counts.py
+python scripts/update_counts.py
 
 # 2. Regenerate test results HTML 
 pytest tests/test_eval_queries.py::test_eval_functional \
