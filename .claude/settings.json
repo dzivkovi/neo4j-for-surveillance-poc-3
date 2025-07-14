@@ -20,8 +20,7 @@
       "Bash(mkdir:*)",
       "Bash(source:*)",
       "Bash(pip install:*)",
-      "Bash(python:*)",
-      "Bash(git add:*)"
+      "Bash(python:*)"
     ],
     "deny": [
     ]
