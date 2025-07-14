@@ -1,13 +1,19 @@
 # Embedding Generation Guide
 
-Simple guide for generating OpenAI embeddings using Neo4j GenAI.
+Robust guide for generating OpenAI embeddings using Python script with resume capability.
 
-## Quick Start
+## Quick Start (Recommended)
 
 ```bash
 export OPENAI_API_KEY="sk-..."
 ./scripts/04-generate-embeddings.sh
 ```
+
+**Features:**
+- Resume capability if process stops
+- Progress monitoring with logs
+- Robust error handling
+- Batch processing optimized for OpenAI API limits
 
 ## Manual Cypher Approach
 
