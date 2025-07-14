@@ -11,9 +11,10 @@ $ARGUMENTS
 ```bash
 # If ARGUMENTS is issue number: gh issue view $ARGUMENTS
 # If ARGUMENTS is description: search for related issue first
-gh issue view $ARGUMENTS
+gh issue view $ARGUMENTS --comments
 ```
 - Understand the problem and requirements
+- Read all comments for important updates/corrections
 - Check if this relates to any of the 77 evaluation tests in `evals/evaluation_tests.md`
 - Identify Neo4j MCP validation needs
 
