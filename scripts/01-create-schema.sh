@@ -40,6 +40,19 @@ echo "CREATE INDEX content_timestamp IF NOT EXISTS FOR (c:Content) ON (c.timesta
 echo "CREATE INDEX session_casename IF NOT EXISTS FOR (s:Session) ON (s.casename);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
 echo "CREATE INDEX session_targetname IF NOT EXISTS FOR (s:Session) ON (s.targetname);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
 
+echo "Creating temporal analysis indexes (POLE-optimized)..."
+echo "CREATE INDEX session_starttime IF NOT EXISTS FOR (s:Session) ON (s.starttime);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX session_stoptime IF NOT EXISTS FOR (s:Session) ON (s.stoptime);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX event_starttime IF NOT EXISTS FOR (e:Event) ON (e.starttime);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX event_endtime IF NOT EXISTS FOR (e:Event) ON (e.endtime);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+
+echo "Creating POLE relationship performance indexes..."
+echo "CREATE INDEX phone_participated IF NOT EXISTS FOR ()-[r:PARTICIPATED_IN]-() ON (r.timestamp);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3! || echo "Note: Relationship property indexes require Neo4j 5.x+"
+echo "CREATE INDEX person_uses IF NOT EXISTS FOR ()-[r:USES]-() ON (r.since);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3! || echo "Note: Relationship property indexes require Neo4j 5.x+"
+echo "CREATE INDEX session_direction IF NOT EXISTS FOR (s:Session) ON (s.direction);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX location_type IF NOT EXISTS FOR (l:Location) ON (l.type);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+echo "CREATE INDEX device_type IF NOT EXISTS FOR (d:Device) ON (d.type);" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
+
 echo "Creating full-text indexes..."
 echo "CREATE FULLTEXT INDEX ContentFullText IF NOT EXISTS FOR (c:Content) ON EACH [c.text];" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
 echo "CREATE FULLTEXT INDEX AliasText IF NOT EXISTS FOR (a:Alias) ON EACH [a.rawValue];" | docker exec -i "$NEO_NAME" cypher-shell -u neo4j -p Sup3rSecur3!
