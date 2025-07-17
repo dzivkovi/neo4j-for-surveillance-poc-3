@@ -61,7 +61,7 @@ echo "RETURN \$param;" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3r
 ### Development Validation
 ```bash
 # Test GraphRAG queries after environment setup
-source venv/bin/activate && python scripts/06-graphrag-demo.py
+source venv/bin/activate && python scripts/08-graphrag-demo.py
 
 # Run comprehensive business requirements test
 docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-suite.cypher
@@ -82,7 +82,7 @@ docker stop ${NEO_NAME} && docker rm ${NEO_NAME}
 ### Complete Setup Validation
 ```bash
 # Comprehensive setup verification
-python scripts/05-validate-setup.py
+python scripts/07-validate-setup.py
 
 # Expected output: ✅ All checks passed! Setup is complete.
 ```
@@ -95,16 +95,18 @@ python scripts/05-validate-setup.py
 # 2. Create schema (constraints + indexes)  
 scripts/01-create-schema.sh
 
-# 3. Import data
-python scripts/02-import-sessions.py --dataset default
-python scripts/03-import-transcripts.py --dataset default
+# 3. Import data  
+python scripts/02-import-sessions.py --dataset ${DATASET}
+python scripts/03-decode-sms-content.py              # NEW: Extract SMS from base64
+python scripts/04-import-additional-content.py       # NEW: Import all content types
+python scripts/05-import-transcripts.py --dataset ${DATASET}
 
 # 4. Generate embeddings
 export OPENAI_API_KEY="sk-..."
-./scripts/04-generate-embeddings.sh
+./scripts/06-generate-embeddings.sh
 
 # 5. Validate complete setup (only run after steps 1-4 complete)
-python scripts/05-validate-setup.py
+python scripts/07-validate-setup.py
 
 ### Before Committing Changes
 ```bash
@@ -112,6 +114,24 @@ python scripts/05-validate-setup.py
 python scripts/update_counts.py
 
 # Ensures consistent dashboard and documentation before commits
+```
+
+### Database Backup (ALWAYS use neo4j-admin dump)
+```bash
+# Create timestamped database dump
+./scripts/backup-neo4j.sh ${DATASET}
+
+# Creates: data/${DATASET}/neo4j-database-YYYY-MM-DD_HHMMSS.dump
+# Note: Container stops briefly during dump (Community Edition requirement)
+
+# To restore a dump:
+docker stop neo4j-${DATASET}
+docker run --rm \
+  --volumes-from neo4j-${DATASET} \
+  -v $(pwd)/data/${DATASET}/neo4j-database-YYYY-MM-DD_HHMMSS.dump:/dump.file \
+  neo4j:5.26.7-community \
+  neo4j-admin database load neo4j --from-stdin --overwrite-destination < /dump.file
+docker start neo4j-${DATASET}
 ```
 
 ### Evaluation System Commands
@@ -268,6 +288,41 @@ gh issue view 28  # Verify issue exists before creating fix/28-*
 - **96.4% of "failed" tests work correctly** when properly evaluated (validated 2025-07-03)
 - Use clear language: "needs assessment" not "failed" when discussing with clients
 - The evaluation system has high reliability - most issues are process/assessment related, not technical failures
+
+## Lessons Learned: Police Dataset Import
+
+**Critical discoveries from analyzing law enforcement NDJSON data:**
+
+1. **SMS Content Location**: SMS messages may be stored as base64-encoded XML in `Session.previewcontent` field, not in Content nodes. Always check all session fields before concluding data is missing.
+
+2. **Content Extraction Patterns**:
+   - **Intel Report & Social Network**: Extract from `fulltext[]` array
+   - **Telephony & Generic File**: Extract from `documents[].text`
+   - **Messaging (SMS)**: Decode from base64 `previewcontent`
+   - **Entity Report**: Check both `documents[]` and `fulltext[]`
+
+3. **Phone Object Scope**: Phone nodes handle BOTH telephony (calls) AND messaging (SMS) sessions. This is by design - phones are communication endpoints regardless of channel.
+
+4. **Import Sequence Matters**:
+   ```
+   1. Base sessions (establishes relationships)
+   2. SMS decode (extracts hidden content)
+   3. Additional content (police reports, social media)
+   4. Transcripts (external enrichment)
+   5. Embeddings (enables semantic search)
+   ```
+
+5. **Content Discovery Strategy**:
+   - First: Check what sessiontypes exist in data
+   - Second: Examine sample sessions of each type
+   - Third: Look for content in ALL fields (fulltext[], documents[], previewcontent)
+   - Fourth: Test extraction methods before concluding data is missing
+
+6. **Validation is Critical**: After each import step, validate:
+   - Count of new nodes created
+   - Content quality (sample checks)
+   - Relationship integrity
+   - Search capabilities (substring and semantic)
 
 ## Defensive Programming Requirements
 **MANDATORY validation for EVERY code change**:
