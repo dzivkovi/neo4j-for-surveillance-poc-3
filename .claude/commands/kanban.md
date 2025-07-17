@@ -22,16 +22,20 @@ Then handle everything else automatically.
 
 ## CRITICAL CHECKLIST (for all models):
 ```
-[ ] git status - See what changed
+[ ] git status - See what changed (RECORD: note any untracked files)
 [ ] Create issue - Get issue number
-[ ] git stash - Save current work
+[ ] git stash push -m "..." --include-untracked - Save ALL work
+[ ] VERIFY: git stash list - Confirm stash created
 [ ] Create branch - feat/XX-description
-[ ] git stash pop - Restore work
+[ ] git stash pop - Restore work to branch
+[ ] VERIFY: git status - Confirm all changes restored
 [ ] git add -A - Stage changes
 [ ] git commit - Link to issue
 [ ] git push - Push branch
 [ ] Create PR - Link everything
 ```
+
+**SAFETY GUARANTEE**: If process fails at any step, run `git stash list` and `git stash pop` to recover all work.
 
 ## Workflow: Retroactive Issue Creation
 
