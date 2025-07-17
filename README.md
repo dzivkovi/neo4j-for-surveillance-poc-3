@@ -22,16 +22,18 @@ python -m venv venv
 source venv/bin/activate
 pip install -r scripts/requirements.txt
 
-python scripts/02-import-sessions.py --dataset default     # ~2 min for 265 sessions
-python scripts/03-import-transcripts.py --dataset default  # imports LanceDB transcripts
+python scripts/02-import-sessions.py --dataset ${DATASET}      # ~2 min for 265 sessions
+python scripts/03-decode-sms-content.py                        # extract SMS from base64
+python scripts/04-import-additional-content.py                 # import police reports, social media, call transcripts
+python scripts/05-import-transcripts.py --dataset ${DATASET}   # imports LanceDB transcripts
 
 # 4. Generate embeddings for semantic search (requires OpenAI API key)
 export NEO_NAME="neo4j-${DATASET}"
 export OPENAI_API_KEY="sk-..."
-./scripts/04-generate-embeddings.sh
+./scripts/06-generate-embeddings.sh
 
 # 5. Verify complete installation
-python scripts/05-validate-setup.py
+python scripts/07-validate-setup.py
 
 # 6. Apply analyst knowledge aliases (MANUAL - when needed)
 # Use existing approach in scripts/03-analyst-knowledge-aliases.cypher
@@ -128,20 +130,35 @@ docker rm ${NEO_NAME}
 
 # Data restoration after restart
 scripts/01-create-schema.sh
-python scripts/02-import-sessions.py --dataset default
-python scripts/03-import-transcripts.py --dataset default
+python scripts/02-import-sessions.py --dataset ${DATASET}
+python scripts/03-decode-sms-content.py
+python scripts/04-import-additional-content.py
+python scripts/05-import-transcripts.py --dataset ${DATASET}
 
 # Test GenAI plugin installation
 docker exec -it ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! -c "SHOW FUNCTIONS YIELD name WHERE name CONTAINS 'genai' RETURN name"
 ```
 
-### Dataset Snapshots (Optional)
+### Database Backup and Restore
+
 ```bash
-# Create snapshot of current dataset
-docker stop ${NEO_NAME}
-docker commit ${NEO_NAME} ${NEO_NAME}:snap-$(date +%Y-%m-%d)
-docker start ${NEO_NAME}
+# Create portable database dump (recommended for case data)
+./scripts/backup-neo4j.sh ${DATASET}
+
+# Creates timestamped dump file:
+# data/${DATASET}/neo4j-database-YYYY-MM-DD_HHMMSS.dump
+
+# To restore from dump:
+docker stop neo4j-${DATASET}
+docker run --rm \
+  --volumes-from neo4j-${DATASET} \
+  -v $(pwd)/path/to/dump.file:/dump.file \
+  neo4j:5.26.7-community \
+  neo4j-admin database load neo4j --from-stdin --overwrite-destination < /dump.file
+docker start neo4j-${DATASET}
 ```
+
+**Note**: Database dumps are portable across Neo4j 5.x instances and ideal for sharing case data with clients.
 
 ## For AI Assistants
 
