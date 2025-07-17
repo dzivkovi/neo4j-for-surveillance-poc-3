@@ -52,7 +52,7 @@ docker run --name "$NEO_NAME" \
   -e NEO4J_server_memory_heap_initial__size=4G \
   -e NEO4J_server_memory_heap_max__size=4G \
   -e NEO4J_server_memory_pagecache_size=4G \
-  -e NEO4J_db_tx__timeout=120s \
+  -e NEO4J_db_transaction_timeout=120s \
   -e NEO4J_db_lock_acquisition_timeout=120s \
   -d neo4j:5.26.7-community
 

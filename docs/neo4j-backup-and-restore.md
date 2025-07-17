@@ -1,117 +1,83 @@
 # Neo4j Backup and Restore Guide
 
-**Last Updated:** 2025-07-16  
+**Last Updated:** 2025-07-17  
 **Applies to:** Neo4j Community Edition with Docker
 
 ## Overview
 
-This guide covers two backup methods for Neo4j databases:
-1. **Docker Snapshots** (Recommended for quick backup/restore)
-2. **Database Dumps** (For data portability and archival)
+This guide covers the standard backup method for Neo4j databases using `neo4j-admin database dump`.
+This creates portable .dump files that can be restored on any Neo4j 5.x instance.
 
-## Method 1: Docker Snapshots (Fastest)
+## Creating a Database Backup
 
-### Creating a Backup
+### Automated Script (Recommended)
 
 ```bash
-# Generic pattern
-docker commit neo4j-${CASENAME} neo4j-${CASENAME}-snapshot:$(date +%Y-%m-%d)
+# Use the backup script for any dataset
+./scripts/backup-neo4j.sh ${DATASET}
 
-# Example for 'gantry' case
-docker commit neo4j-gantry neo4j-gantry-snapshot:2025-07-16
+# Examples:
+./scripts/backup-neo4j.sh gantry        # Creates: data/gantry/neo4j-database-TIMESTAMP.dump
+./scripts/backup-neo4j.sh whiskey-jack  # Creates: data/whiskey-jack/neo4j-database-TIMESTAMP.dump
 ```
 
-**What's included:**
-- All data and indexes
-- All configurations
-- Installed plugins (APOC, GDS)
-- Memory settings
+**What happens:**
+1. Container stops briefly (required for Community Edition)
+2. Creates timestamped dump file
+3. Container automatically restarts
+4. Shows restore instructions
 
-### Listing Backups
+### Manual Process
 
-```bash
-# View all snapshots
-docker images | grep neo4j-.*-snapshot
-
-# Example output:
-# neo4j-gantry-snapshot   2025-07-16   0c84df0f3d9d   5.38GB
-# neo4j-gantry-snapshot   2025-07-14   e932c92fb0dd   2.75GB
-```
-
-### Restoring from Snapshot
+If you need to create a dump manually:
 
 ```bash
-# Stop current container if running
-docker stop neo4j-${CASENAME} && docker rm neo4j-${CASENAME}
+# 1. Stop the container
+docker stop neo4j-${DATASET}
 
-# Restore with optimized memory settings
-docker run -d \
-  --name neo4j-${CASENAME} \
-  --memory=8g --memory-swap=8g \
-  -p 7474:7474 -p 7687:7687 \
-  -e NEO4J_server_memory_heap_initial__size=4G \
-  -e NEO4J_server_memory_heap_max__size=4G \
-  -e NEO4J_server_memory_pagecache_size=4G \
-  neo4j-${CASENAME}-snapshot:2025-07-16
-
-# Example for 'gantry' case
-docker run -d \
-  --name neo4j-gantry \
-  --memory=8g --memory-swap=8g \
-  -p 7474:7474 -p 7687:7687 \
-  -e NEO4J_server_memory_heap_initial__size=4G \
-  -e NEO4J_server_memory_heap_max__size=4G \
-  -e NEO4J_server_memory_pagecache_size=4G \
-  neo4j-gantry-snapshot:2025-07-16
-```
-
-## Method 2: Database Dumps (Portable)
-
-### Creating a Dump (Offline Method - What Actually Works)
-
-**Note:** Neo4j Community Edition requires stopping the database to create dumps.
-
-```bash
-# 1. Stop the Neo4j container (this stops the database)
-docker stop neo4j-${CASENAME}
-
-# 2. Create a temporary container to access the stopped data
+# 2. Create the dump
 docker run --rm \
-  --volumes-from neo4j-${CASENAME} \
-  -v $(pwd)/data/${CASENAME}:/backup \
+  --volumes-from neo4j-${DATASET} \
+  -v $(pwd)/data/${DATASET}:/backup:rw \
   neo4j:5.26.7-community \
-  neo4j-admin database dump neo4j --to-stdout > data/${CASENAME}/neo4j-database-$(date +%Y-%m-%d).dump
+  bash -c "neo4j-admin database dump neo4j --to-stdout > /backup/neo4j-database-$(date +%Y-%m-%d_%H%M%S).dump"
 
-# 3. Restart the original container
-docker start neo4j-${CASENAME}
-
-# Example for gantry case:
-docker stop neo4j-gantry
-docker run --rm \
-  --volumes-from neo4j-gantry \
-  -v $(pwd)/data/gantry:/backup \
-  neo4j:5.26.7-community \
-  neo4j-admin database dump neo4j --to-stdout > data/gantry/neo4j-database-2025-07-16.dump
-docker start neo4j-gantry
+# 3. Restart the container
+docker start neo4j-${DATASET}
 ```
 
-This creates a dump file like: `data/gantry/neo4j-database-2025-07-16.dump` (628MB for our dataset)
-
-### Restoring from Dump
+## Restoring from a Database Dump
 
 ```bash
-# 1. Copy dump into container
-docker cp data/${CASENAME}/neo4j-database-YYYY-MM-DD.dump \
-  neo4j-${CASENAME}:/var/lib/neo4j/import/
+# 1. Stop the target container
+docker stop neo4j-${DATASET}
 
-# 2. Load the dump
-docker exec neo4j-${CASENAME} \
-  neo4j-admin database load neo4j \
-  --from-stdin < data/${CASENAME}/neo4j-database-YYYY-MM-DD.dump \
-  --overwrite-destination=true
+# 2. Load the dump (overwrites existing data)
+docker run --rm \
+  --volumes-from neo4j-${DATASET} \
+  -v $(pwd)/path/to/dump.file:/dump.file \
+  neo4j:5.26.7-community \
+  neo4j-admin database load neo4j --from-stdin --overwrite-destination < /dump.file
 
-# 3. Restart container
-docker restart neo4j-${CASENAME}
+# 3. Start the container
+docker start neo4j-${DATASET}
+```
+
+### Example: Restoring whiskey-jack dataset
+
+```bash
+# Stop container
+docker stop neo4j-whiskey-jack
+
+# Load specific dump
+docker run --rm \
+  --volumes-from neo4j-whiskey-jack \
+  -v $(pwd)/data/whiskey-jack/neo4j-database-2025-07-17_162849.dump:/dump.file \
+  neo4j:5.26.7-community \
+  neo4j-admin database load neo4j --from-stdin --overwrite-destination < /dump.file
+
+# Start container
+docker start neo4j-whiskey-jack
 ```
 
 ## Memory Configuration for Large Datasets
@@ -130,13 +96,16 @@ For datasets with 250K+ nodes (like the gantry case):
 -e NEO4J_server_memory_pagecache_size=4G
 
 # Additional settings for stability
--e NEO4J_db_tx__timeout=120s
+-e NEO4J_db_transaction_timeout=120s
 -e NEO4J_db_lock_acquisition_timeout=120s
 ```
 
-## Automated Backup Script
+## Important Notes
 
-See `scripts/backup-neo4j.sh` for automated daily backups.
+1. **Portability**: Dumps are portable across Neo4j 5.x instances
+2. **Downtime**: Community Edition requires brief downtime during backup
+3. **File Naming**: Always use timestamped filenames to avoid confusion
+4. **Storage**: Dump sizes vary by dataset (whiskey-jack: ~2MB, gantry: ~3GB)
 
 ## Best Practices
 
