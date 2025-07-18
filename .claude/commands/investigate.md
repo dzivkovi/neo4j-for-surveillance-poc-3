@@ -55,6 +55,13 @@ claude mcp add --transport http context7 https://mcp.context7.com/mcp
 
 ## INVESTIGATIVE WORKFLOW 2.0
 
+### Step 0: Runtime Dataset Detection (ALWAYS FIRST)
+```cypher
+// ALWAYS run this first to identify dataset
+MATCH (d:Dataset)
+RETURN d.name as dataset, d.containerName as container
+```
+
 ### Step 1: Schema Research & Planning (Required)
 ```
 1. Use MCP tools to understand schema
@@ -64,6 +71,10 @@ claude mcp add --transport http context7 https://mcp.context7.com/mcp
    - What biases might each approach have?
    - How might criminals try to hide?
 4. Check if Context7 docs needed for syntax
+5. Check if OPENAI_API_KEY exists for vector search:
+   - Run: echo $OPENAI_API_KEY | head -c 10
+   - If available, use vector search via MCP with params
+   - If not available, fall back to text search
 ```
 
 ### Step 2: Parallel Approach Execution (MANDATORY 2-3 APPROACHES)
@@ -92,6 +103,34 @@ claude mcp add --transport http context7 https://mcp.context7.com/mcp
 
 ### Step 3: Smart Execution with Error Recovery
 
+**CARTESIAN PRODUCT PREVENTION**
+Simple rule: **"If you MATCH twice, LIMIT once"**
+
+```cypher
+❌ BAD:
+MATCH (a:Session)
+MATCH (b:Content {sessionguid: a.sessionguid})  // Multiplies!
+
+✅ GOOD:
+MATCH (a:Session)
+WITH a LIMIT 100
+MATCH (b:Content {sessionguid: a.sessionguid})  // Safe!
+```
+
+**EXECUTION PRIORITY ORDER**:
+1. **First**: Get dataset name via MCP
+2. **Second**: Check for OPENAI_API_KEY in environment
+3. **Third**: Check if MCP Neo4j is available:
+   ```python
+   # Try MCP first (preferred - no passwords!)
+   try:
+       result = mcp__neo4j__read_neo4j_cypher(query, params)
+   except:
+       # Fall back to Docker if MCP unavailable
+       use_docker_execution()
+   ```
+4. **Fourth**: Execute approaches based on capabilities
+
 **TIMEOUT STRATEGY - Be Generous for Wow Moments**:
 - **30-second timeout**: For EACH individual Cypher query
 - **Overall investigation**: 2 MINUTES (120 seconds) - everyone can wait for wow!
@@ -99,24 +138,11 @@ claude mcp add --transport http context7 https://mcp.context7.com/mcp
 
 ```
 For each approach (run in parallel):
-1. Set 30-second timeout PER QUERY
-2. Execute query
-3. If syntax error:
-   - Fetch Context7 docs via MCP for component
-   - Fix syntax with latest API
-   - Retry (max 2 attempts)
-4. If timeout (>30s for single query):
-   - Simplify (add LIMIT, use indexes)
-   - Try alternative approach
-   - Note: Query >30s needs optimization
+1. Check query follows "If you MATCH twice, LIMIT once" rule
+2. Execute with 30-second timeout
+3. If no results or timeout, simplify query (add LIMIT, reduce scope)
+4. Use vector search when possible (score > 0.7)
 5. Capture results and execution time
-
-PARALLEL COORDINATION:
-- Launch all approaches simultaneously
-- Wait up to 2 MINUTES for amazing results
-- Complex graph algorithms might need time
-- Report all successful approaches
-- Note any that exceeded individual 30s limit
 ```
 
 ### Step 4: Validation Against Criminal Patterns
@@ -284,11 +310,71 @@ When results are not satisfactory:
 ## ALGORITHM USAGE PRIORITIES
 
 ### Vector Search (ALWAYS PREFER)
+
+**MCP Execution with OpenAI API Key (PREFERRED)**
+```python
+# Pass API key as parameter - NO hardcoded passwords!
+result = mcp__neo4j__read_neo4j_cypher(
+    query="""
+    WITH genai.vector.encode($searchText, 'OpenAI', {
+        token: $apiKey,
+        model: 'text-embedding-3-small',
+        dimensions: 1536
+    }) as searchEmbedding
+    
+    CALL db.index.vector.queryNodes('ContentVectorIndex', 30, searchEmbedding)
+    YIELD node, score
+    WHERE score > 0.7
+    
+    // LIMIT before joins!
+    WITH node, score
+    LIMIT 20
+    
+    // Now safe to join
+    MATCH (s:Session {sessionguid: node.sessionguid})
+    OPTIONAL MATCH (s)-[:LOCATED_AT]->(loc:Location)
+    
+    RETURN 
+      substring(node.text, 0, 200) as snippet,
+      score,
+      s.starttime as when,
+      CASE 
+        WHEN loc IS NOT NULL THEN toString(loc.geo)
+        ELSE s.telephonylocation
+      END as location
+    ORDER BY score DESC
+    """,
+    params={
+        "searchText": "vehicle theft",  # Your search query
+        "apiKey": os.environ.get("OPENAI_API_KEY")  # API key from environment
+    }
+)
+```
+
+**CRITICAL: Parameter names must match!**
+- Query uses `$searchText` and `$apiKey`
+- Params dict must have keys `"searchText"` and `"apiKey"` (not `"openai_api_key"`!)
+
+**Docker Execution (When MCP unavailable)**
+```bash
+# Get dataset name
+DATASET=$(echo "MATCH (d:Dataset) RETURN d.name" | docker exec -i neo4j-gantry cypher-shell -u neo4j -p Sup3rSecur3! --format plain | tail -1)
+NEO_NAME="neo4j-${DATASET}"
+
+# Execute with parameters
+echo "YOUR_CYPHER_QUERY" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! \
+  --param "openai_api_key => '${OPENAI_API_KEY}'" \
+  --param "searchQuery => 'your search text'"
+```
+
+**Text Search Fallback (If No API Key)**
 ```cypher
-// START with vector similarity when searching content
-CALL db.index.vector.queryNodes('ContentVectorIndex', k, embedding) 
+CALL db.index.fulltext.queryNodes('ContentFullText', $searchQuery)
 YIELD node, score
-// Only use text search if no embeddings
+WHERE score > 1.0
+WITH node, score LIMIT 20
+MATCH (s:Session {sessionguid: node.sessionguid})
+RETURN node.text, score
 ```
 
 ### GDS When Valuable

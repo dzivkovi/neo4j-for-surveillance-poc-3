@@ -58,6 +58,66 @@ echo "RETURN \$param;" | docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3r
 # docker exec -i $NEO_NAME cypher-shell -u neo4j -p Sup3rSecur3! -c "MATCH (n) RETURN count(n);"
 ```
 
+### 🚀 **PREFERRED: Neo4j MCP Server (No Docker/Passwords Needed!)**
+
+The MCP Neo4j server supports full parameter passing, including sensitive data like API keys. This eliminates hardcoded passwords and docker commands.
+
+#### MCP Setup
+```bash
+# Check if MCP Neo4j is configured
+claude mcp list | grep neo4j
+
+# If not configured, add to Claude Code settings
+```
+
+#### MCP Usage Pattern
+```python
+# ✅ CORRECT: Pass parameters including API keys
+result = mcp__neo4j__read_neo4j_cypher(
+    query="""
+    WITH genai.vector.encode($searchText, 'OpenAI', {
+        token: $apiKey,
+        model: 'text-embedding-3-small',
+        dimensions: 1536
+    }) as embedding
+    CALL db.index.vector.queryNodes('ContentVectorIndex', 20, embedding)
+    YIELD node, score
+    WHERE score > 0.7
+    RETURN node, score
+    """,
+    params={
+        "searchText": "vehicle theft",
+        "apiKey": os.environ.get("OPENAI_API_KEY")
+    }
+)
+```
+
+#### Key MCP Advantages
+1. **No hardcoded passwords** - Credentials in Claude config
+2. **Secure parameter passing** - API keys as parameters, not in query strings
+3. **No docker exec overhead** - Direct database connection
+4. **Automatic sanitization** - Neo4j prevents injection attacks
+
+#### Parameter Rules
+- Query uses `$paramName` syntax
+- `params` dict keys must match query parameter names exactly
+- All Neo4j data types supported (strings, numbers, lists, etc.)
+
+#### Common Patterns
+```python
+# Simple parameter
+params={"userId": 123}
+
+# Multiple parameters
+params={"name": "John", "age": 30}
+
+# API key for GenAI
+params={"apiKey": os.environ.get("OPENAI_API_KEY")}
+
+# Complex objects
+params={"embedding": [0.1, 0.2, 0.3...]}
+```
+
 ### Development Validation
 ```bash
 # Test GraphRAG queries after environment setup
