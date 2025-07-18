@@ -51,14 +51,23 @@ docker exec -i ${NEO_NAME} cypher-shell -u neo4j -p Sup3rSecur3! < queries/eval-
 
 ## Documentation
 
+### Schema & Architecture
+- **[Graph Schema Guide](docs/graph-schema-guide.md)** - Complete Neo4j schema documentation with POLE model
+- **[Schema Diagram](docs/neo4j-graph-schema.mmd)** - Visual entity-relationship diagram
+
+### Data Pipeline
 - **[Data Import](docs/import.md)** - Complete pipeline for data extraction and import
 - **[Embedding Generation](docs/embedding-generation-guide.md)** - OpenAI embeddings using Neo4j GenAI
+- **[Entity Resolution](docs/entity-resolution.md)** - Advanced identity linking
+
+### Query & Analysis
 - **[Evaluation Framework](evals/README.md)** - 77-question validation suite with real-time progress
 - **[Natural Language Queries](docs/mcp.md)** - Plain English database access via MCP
-- **[Entity Resolution](docs/entity-resolution.md)** - Advanced identity linking
-- **[Test Reports Guide](docs/pytest-reports-guide.md)** - HTML report generation and viewing
 - **[Search Syntax](docs/lucene.md)** - Full-text search capabilities
 - **[Case Study](docs/case-study.md)** - Real-world application example
+
+### Development & Testing
+- **[Test Reports Guide](docs/pytest-reports-guide.md)** - HTML report generation and viewing
 - **[GitHub Projects](docs/kanban.md)** - Task tracking and workflow
 - **[Claude Automation](docs/claude-automation.md)** - AI-powered PR reviews
 - **[Git Workflow Guide](docs/git-workflow-rescue.md)** - Rescue guide for retroactive design-issue-work cycle

@@ -1,0 +1,134 @@
+erDiagram
+    %% Neo4j Graph Schema for Surveillance Analytics POC
+    %% Based on POLE (Person, Object, Location, Event) model
+    %% Updated: January 2025 with full Gantry dataset statistics
+
+    %% ===== PERSON ENTITIES =====
+    PERSON {
+        string name PK "Unique person identifier"
+        string personid "Internal person ID"
+        datetime created_at "Node creation timestamp"
+    }
+    
+    %% ===== OBJECT ENTITIES =====
+    PHONE {
+        string number PK "Anonymized phone number"
+        string type "Phone type classification"
+        datetime created_at "Node creation timestamp"
+    }
+    
+    EMAIL {
+        string email PK "Anonymized email address"
+        string domain "Email domain"
+        datetime created_at "Node creation timestamp"
+    }
+    
+    DEVICE {
+        string imei PK "Device identifier"
+        string type "Device type"
+        string model "Device model"
+        datetime created_at "Node creation timestamp"
+    }
+    
+    ALIAS {
+        string rawValue PK "Alias identifier"
+        string type "Alias type"
+        string normalized "Normalized form"
+        datetime created_at "Node creation timestamp"
+    }
+    
+    %% ===== LOCATION ENTITIES =====
+    LOCATION {
+        string type "Location type"
+        geometry geo "Spatial coordinates"
+        string address "Address information"
+        string city "City name"
+        string country "Country code"
+        datetime created_at "Node creation timestamp"
+    }
+    
+    %% ===== EVENT ENTITIES =====
+    SESSION {
+        string sessionguid PK "Unique session ID"
+        string sessiontype "Communication type"
+        string contenttype "Content classification"
+        string casename "Investigation case"
+        string targetname "Investigation target"
+        datetime starttime "Session start"
+        datetime stoptime "Session end"
+        datetime createddate "Creation date"
+        string direction "Communication direction"
+        int durationinseconds "Duration"
+        string previewcontent "Content preview"
+    }
+    
+    CONTENT {
+        string session_id "Parent session reference"
+        string text "Message content"
+        vector embedding "1536-dim vector"
+        string source "Content origin"
+        string sessionType "Session classification"
+        string target "Target identifier"
+        string contentType "Content type"
+        datetime timestamp "Content timestamp"
+        datetime created_at "Node creation timestamp"
+    }
+    
+    EVENT {
+        string eventid "Event identifier"
+        datetime starttime "Event start"
+        datetime endtime "Event end"
+        string type "Event type"
+        string description "Event description"
+        datetime created_at "Node creation timestamp"
+    }
+
+    %% ===== RELATIONSHIPS =====
+    %% Person relationships
+    PERSON ||--o{ PHONE : "USES"
+    PERSON ||--o{ EMAIL : "USES"
+    PERSON ||--o{ DEVICE : "USES_DEVICE"
+    PERSON ||--o{ SESSION : "PARTICIPATED_IN"
+    PERSON ||--o{ ALIAS : "has"
+    
+    %% Communication relationships
+    PHONE ||--o{ SESSION : "PARTICIPATED_IN"
+    EMAIL ||--o{ SESSION : "PARTICIPATED_IN"
+    DEVICE ||--o{ PHONE : "HAS_ACCOUNT"
+    
+    %% Content relationships
+    SESSION ||--o{ CONTENT : "HAS_CONTENT"
+    SESSION ||--o{ LOCATION : "LOCATED_AT"
+    
+    %% Alias relationships
+    ALIAS ||--o{ PERSON : "ALIAS_OF"
+
+    %% ===== DATA STATISTICS (Gantry Dataset) =====
+    %% Total Nodes: 275,121
+    %% 
+    %% Node Distribution:
+    %% - Person: 7,500 nodes
+    %% - Phone: 642 nodes
+    %% - Email: 19 nodes
+    %% - Device: 17 nodes
+    %% - Session: 100,286 nodes
+    %% - Content: 157,828 nodes (with embeddings)
+    %% - Location: 661 nodes
+    %% - Alias: 8,168 nodes
+    %% 
+    %% Session Types:
+    %% - Messaging: 67,950 (67.8%)
+    %% - Telephony: 20,392 (20.3%)
+    %% - Social Network: 6,747 (6.7%)
+    %% - Entity Report: 4,310 (4.3%)
+    %% - Generic File: 818 (0.8%)
+    %% - Others: 69 (0.1%)
+    %% 
+    %% Relationship Statistics:
+    %% - PARTICIPATED_IN: 714,085
+    %% - HAS_CONTENT: 171,709
+    %% - LOCATED_AT: 26,383
+    %% - ALIAS_OF: 8,180
+    %% - USES: 660
+    %% - HAS_ACCOUNT: 23
+    %% - USES_DEVICE: 20
