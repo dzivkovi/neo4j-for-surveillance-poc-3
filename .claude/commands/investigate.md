@@ -1,4 +1,4 @@
-**Model Preference**: Use the latest Claude 4 Opus model
+Enter your surveillance analysis query to trace communication patterns & identify key participants
 
 **THINKING REQUIREMENT**: ULTRA THINK MODE ACTIVATED
 - This is criminal investigation - lives and justice depend on correctness
@@ -64,17 +64,17 @@ RETURN d.name as dataset, d.containerName as container
 
 ### Step 1: Schema Research & Planning (Required)
 ```
-1. Use MCP tools to understand schema
-2. ULTRA THINK: What is the investigator really asking?
-3. ULTRA THINK: Design 2-3 parallel approaches (MANDATORY)
+1. Check if OPENAI_API_KEY exists for vector search FIRST:
+   - Run: echo $OPENAI_API_KEY | head -c 10
+   - If available, prioritize vector search approach
+   - If not available, focus on text search approaches
+2. Use MCP tools to understand schema
+3. ULTRA THINK: What is the investigator really asking?
+4. ULTRA THINK: Design 2-3 parallel approaches (MANDATORY)
    - Which algorithms reveal truth vs artifacts?
    - What biases might each approach have?
    - How might criminals try to hide?
-4. Check if Context7 docs needed for syntax
-5. Check if OPENAI_API_KEY exists for vector search:
-   - Run: echo $OPENAI_API_KEY | head -c 10
-   - If available, use vector search via MCP with params
-   - If not available, fall back to text search
+5. Check if Context7 docs needed for syntax
 ```
 
 ### Step 2: Parallel Approach Execution (MANDATORY 2-3 APPROACHES)
@@ -119,7 +119,7 @@ MATCH (b:Content {sessionguid: a.sessionguid})  // Safe!
 
 **EXECUTION PRIORITY ORDER**:
 1. **First**: Get dataset name via MCP
-2. **Second**: Check for OPENAI_API_KEY in environment
+2. **Second**: FOR VECTOR SEARCH - Follow the 3 mandatory steps in "CRITICAL: API Key Value Handling" section above
 3. **Third**: Check if MCP Neo4j is available:
    ```python
    # Try MCP first (preferred - no passwords!)
@@ -354,6 +354,31 @@ result = mcp__neo4j__read_neo4j_cypher(
 **CRITICAL: Parameter names must match!**
 - Query uses `$searchText` and `$apiKey`
 - Params dict must have keys `"searchText"` and `"apiKey"` (not `"openai_api_key"`!)
+
+**CRITICAL: API Key Value Handling - MANDATORY STEPS**
+
+🚨 **FOLLOW THESE EXACT STEPS FOR EVERY VECTOR SEARCH - NO EXCEPTIONS:**
+
+**Step 1:** Get the FRESH API key value (NEVER skip this):
+```bash
+echo $OPENAI_API_KEY
+```
+
+**Step 2:** Copy the EXACT value from Step 1 output
+
+**Step 3:** Pass that EXACT value to MCP params:
+```python
+params={
+    "searchText": "your search query",
+    "apiKey": "sk-paste-exact-value-from-step-1-here"
+}
+```
+
+**❌ NEVER DO:**
+- `"apiKey": "${OPENAI_API_KEY}"` (literal string - WILL FAIL)
+- `"apiKey": "os.environ.get('OPENAI_API_KEY')"` (literal string - WILL FAIL)
+- Skip Step 1 and guess the API key value
+- Use old/cached API key values
 
 **Docker Execution (When MCP unavailable)**
 ```bash
