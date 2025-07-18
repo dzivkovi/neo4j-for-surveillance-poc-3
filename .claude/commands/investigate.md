@@ -98,8 +98,13 @@ RETURN d.name as dataset, d.containerName as container
 | Person Connections | Direct Cypher paths | APOC path.expand | GDS shortest path |
 | Find Suspects | Pattern match keywords | Vector semantic search | GDS community detection |
 | Key Players | Communication frequency | GDS PageRank | Betweenness centrality |
-| Content Search | Full-text Lucene | Vector embeddings | Combined approach |
+| Content Search | Full-text index (NEVER CONTAINS) | Vector embeddings | Combined approach |
 | Location Analysis | Basic spatial | Clustering patterns | Temporal analysis |
+
+**🚨 CRITICAL: NEVER use CONTAINS for Content Search!**
+- CONTAINS on Content.text is ~1000x slower than full-text indexes
+- Always use `db.index.fulltext.queryNodes()` for content search
+- CONTAINS is only acceptable for short, indexed properties like phone numbers
 
 ### Step 3: Smart Execution with Error Recovery
 
@@ -276,9 +281,9 @@ When results are not satisfactory:
 - **Caution**: Correlation vs causation
 
 ### Content Search
-- **Tools**: GenAI semantic search, full-text search
+- **Tools**: Full-text indexes (db.index.fulltext.queryNodes), Vector search
 - **Validation**: Relevance scoring, context verification
-- **Caution**: Semantic ambiguity, false positives
+- **Caution**: NEVER use CONTAINS on text content - use full-text indexes
 
 ## ERROR HANDLING WITH CONTEXT7
 
@@ -400,6 +405,9 @@ WHERE score > 1.0
 WITH node, score LIMIT 20
 MATCH (s:Session {sessionguid: node.sessionguid})
 RETURN node.text, score
+
+// ❌ NEVER do this:
+// MATCH (c:Content) WHERE c.text CONTAINS 'search term' // WRONG!
 ```
 
 ### GDS When Valuable
@@ -433,7 +441,7 @@ CALL apoc.algo.cover(...) // Relationship coverage
 **Core Principles**:
 1. ULTRA THINK: Criminals make obvious mistakes - start simple
 2. ULTRA THINK: Run advanced in parallel for validation
-3. ULTRA THINK: Vector search > text search for semantic meaning
+3. ULTRA THINK: Vector search > full-text index > NEVER substring/CONTAINS
 4. ULTRA THINK: Trust patterns over statistics (avoid artifacts)
 5. ULTRA THINK: Context7 docs prevent wasted time on syntax
 
