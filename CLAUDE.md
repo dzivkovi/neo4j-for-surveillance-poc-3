@@ -316,6 +316,13 @@ gh issue view 28  # Verify issue exists before creating fix/28-*
 **GitGuard Failure = Stop and Fix**: Never bypass security checks, always fix the root cause.
 
 ## Important Instructions
+
+### 🚫 **GIT COMMIT RULE: NEVER use `git add` or `git commit` without explicit user request**
+- **ONLY commit when user explicitly asks**: "commit this", "git add", "create a commit", etc.
+- **DEFAULT behavior**: Make changes but DO NOT stage or commit them
+- **User retains control**: Let the user decide what and when to commit
+
+### Other Critical Instructions
 - **NEVER sign commits or changes as Claude/AI** - use standard git authorship only
 - NEVER use emojis in any files or documentation unless explicitly requested by the User
 - Only create documentation files when explicitly requested
@@ -337,4 +344,4 @@ gh issue view 28  # Verify issue exists before creating fix/28-*
 3. **Before committing**: Verify all changes work and nothing broke
 4. **Always report**: Tell user exactly what you validated
 
-**NEVER claim success without proving it**
+**NEVER claim success without proving it!**
