@@ -4,7 +4,7 @@ Pleaase save the full content of your last response as a markdown file with a sp
 
 Save the file in the following format: `analysis/YYYY-MM-DD/NN-meaningful-file-name.md` where:
 
-- YYYY-MM-DD is the current date (use mcp__time__get_current_time with timezone="America/Toronto" and extract the date portion from the datetime field)
+- YYYY-MM-DD is the current date (use mcp__time__get_current_time with timezone="America/Toronto" and extract the date portion by splitting datetime on 'T' and taking the first part. For example: if datetime is "2025-07-20T23:04:42-04:00", the date is "2025-07-20" NOT "2025-01-20")
 - NN is a two-digit number (01, 02, etc.) indicating the order of the file for that day
 - meaningful-file-name is a brief description of the content
 
