@@ -1,10 +1,13 @@
-Pleaase save the full content of your last response as a markdown file with a specific naming convention and structure. Follow these instructions carefully:
+Please save the full content of your last response as a markdown file with a specific naming convention and structure. Follow these instructions carefully:
+
+## IMPORTANT: Use bash `date` command for dates - do NOT use MCP time server
 
 ## 1. File Naming and Location
 
 Save the file in the following format: `analysis/YYYY-MM-DD/NN-meaningful-file-name.md` where:
 
-- YYYY-MM-DD is the current date (use mcp__time__get_current_time with timezone="America/Toronto" and extract the date portion by splitting datetime on 'T' and taking the first part. For example: if datetime is "2025-07-20T23:04:42-04:00", the date is "2025-07-20" NOT "2025-01-20")
+- YYYY-MM-DD is the current date obtained by running the bash command: `date +%Y-%m-%d`
+  This will output something like "2025-07-20" - use this EXACT output as the folder name
 - NN is a two-digit number (01, 02, etc.) indicating the order of the file for that day
 - meaningful-file-name is a brief description of the content
 
@@ -14,6 +17,7 @@ If this is the first note of the day, start with 01. Otherwise, increment this n
 
 Each entry should include:
 
-- Timestamp and context (use the full datetime from mcp__time__get_current_time)
-- The question/query
+- Date and timestamp (use bash command: `date +"%Y-%m-%d at %H:%M:%S %Z"`)
+- Context of the conversation
+- The question/query from the user
 - Your analysis and findings as seen in the chat
